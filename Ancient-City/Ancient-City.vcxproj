@@ -72,11 +72,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;$(IncludePath)</IncludePath>
+    <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;..\_external\objLoader;$(IncludePath)</IncludePath>
     <LibraryPath>..\_external\glew-2.1.0-win32\lib\Release\x64;..\_external\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;$(IncludePath)</IncludePath>
+    <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;..\_external\objLoader;$(IncludePath)</IncludePath>
     <LibraryPath>..\_external\glew-2.1.0-win32\lib\Release\x64;..\_external\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -146,11 +146,13 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="box_stack.mtl" />
     <None Include="KeyBinder.tpp" />
     <None Include="lightingFS.glsl" />
     <None Include="lightingVS.glsl" />
     <None Include="modelFS.glsl" />
     <None Include="modelVS.glsl" />
+    <None Include="Pirat.mtl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logger\Logger.vcxproj">
@@ -161,12 +163,23 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="LightSource.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ObjLoaderTest.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="lightModel.txt" />
     <Text Include="model.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="box_stack.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
+    <Object Include="Pirat.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

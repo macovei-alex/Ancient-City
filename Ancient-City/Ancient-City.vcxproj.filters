@@ -16,6 +16,9 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{e16cbec0-f8ac-40de-a534-f0061b026b4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{23d52904-3b2c-46ee-b2d5-362e23e6a746}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -53,6 +56,12 @@
     <None Include="modelVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="box_stack.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
+    <None Include="Pirat.mtl">
+      <Filter>Resource Files\Models</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -70,13 +79,24 @@
     <ClInclude Include="LightSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ObjLoaderTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="lightModel.txt">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Models</Filter>
     </Text>
     <Text Include="model.txt">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Models</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="box_stack.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
+    <Object Include="Pirat.obj">
+      <Filter>Resource Files\Models</Filter>
+    </Object>
   </ItemGroup>
 </Project>

@@ -199,6 +199,8 @@ void RenderFrame()
 	lightSource->model.Render();
 }
 
+#include "objLoaderTest.h"
+
 int main()
 {
 	GLFWwindow* window = InitializeWindow();
@@ -213,11 +215,17 @@ int main()
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	model = new Model("model.txt", true);
+	// model = new Model("model.txt", true);
+	model = ObjLoaderMain("Pirat.obj");
+
 	lightSource = new LightSource(std::move(Model("lightModel.txt", true)));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
 
 	std::cout << std::endl;
+	std::cout << model->vertices.size() << '\n';
+	std::cout << model->normals.size() << '\n';
+	std::cout << model->colors.size() << '\n';
+	std::cout << model->indices.size() << '\n';
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -225,8 +233,8 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
-		lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
+		//model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
+		//lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		DisplayFPS(currentFrame);
 		PerformKeysActions(window);

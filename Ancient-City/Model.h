@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utils.h"
+
 #include <string>
 #include <vector>
 #include <glm.hpp>
@@ -8,12 +10,19 @@
 class Model
 {
 public:
+	Model();
+	Model(const std::vector<glm::vec3>& vertices,
+		const std::vector<glm::vec3>& colors,
+		const std::vector<glm::vec3u>& indices,
+		const std::vector<glm::vec3>& normals);
 	Model(const std::string& filePath, bool makeCentered = false);
 	Model(Model&& model) noexcept;
 	Model(const Model&);
 	~Model();
 
 	void Render() const;
+	void InitBuffers();
+	void DestroyBuffers();
 
 	glm::mat4 GetModelMatrix() const;
 	glm::vec3 GetPosition() const;
@@ -35,16 +44,18 @@ private:
 
 	void CalculateNormals();
 
-	void InitBuffers();
-	void DestroyBuffers();
-
 private:
+public:
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> colors;
 	std::vector<glm::vec<3, unsigned int>> indices;
 	std::vector<glm::vec3> normals;
 
-	GLuint vertexArrayID, vertexBufferID, colorBufferID, indexBufferID, normalBufferID;
+	GLuint vertexArrayID = 0;
+	GLuint vertexBufferID = 0;
+	GLuint colorBufferID = 0;
+	GLuint indexBufferID = 0;
+	GLuint normalBufferID = 0;
 
 	glm::mat4 modelMatrix;
 	bool isCentered;

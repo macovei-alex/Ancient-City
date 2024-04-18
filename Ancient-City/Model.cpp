@@ -7,6 +7,21 @@
 
 #include "Utils.h"
 
+Model::Model()
+	: modelMatrix(glm::mat4(1.0f)), isCentered(false)
+{
+	// empty
+}
+
+Model::Model(const std::vector<glm::vec3>& vertices,
+	const std::vector<glm::vec3>& colors,
+	const std::vector<glm::vec3u>& indices,
+	const std::vector<glm::vec3>& normals)
+	: vertices(vertices), colors(colors), indices(indices), normals(normals), modelMatrix(glm::mat4(1.0f)), isCentered(false)
+{
+	InitBuffers();
+}
+
 Model::Model(const std::string& filePath, bool makeCentered)
 	: modelMatrix(glm::mat4(1.0f)), isCentered(false)
 {
