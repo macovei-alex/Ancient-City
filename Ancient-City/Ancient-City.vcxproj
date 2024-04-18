@@ -72,8 +72,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)Logger;$(SolutionDir)_external\glew-2.1.0-win32\include;$(SolutionDir)_external\glfw-3.4.bin.WIN64\include;$(SolutionDir)_external\glm;$(SolutionDir)_external\stb;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)x64\Debug;$(SolutionDir)_external\glew-2.1.0-win32\lib\Release\x64;$(SolutionDir)_external\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;$(IncludePath)</IncludePath>
+    <LibraryPath>..\_external\glew-2.1.0-win32\lib\Release\x64;..\_external\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;$(IncludePath)</IncludePath>
+    <LibraryPath>..\_external\glew-2.1.0-win32\lib\Release\x64;..\_external\glfw-3.4.bin.WIN64\lib-vc2022;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -134,15 +138,34 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="LightSource.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp" />
+    <None Include="lightingFS.glsl" />
+    <None Include="lightingVS.glsl" />
+    <None Include="modelFS.glsl" />
+    <None Include="modelVS.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logger\Logger.vcxproj">
       <Project>{da4eecc0-5d97-4535-971b-8adbea611fdf}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="lightModel.txt" />
+    <Text Include="model.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
