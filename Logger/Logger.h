@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string_view>
 #include <string>
-#include <chrono>
 
 class Logger
 {
@@ -23,6 +22,9 @@ public:
 	void SetMinimumLogLevel(Level level);
 
 	void Log(std::string_view message, Level level = Level::Info) const;
+
+public:
+	static Logger cout;
 
 private:
 	std::ostream& m_os;

@@ -13,6 +13,11 @@
 #include "OBJ_Loader.h"
 #include "Model.h"
 
+static glm::vec3 MakeVec3(const objl::Vector3& vec)
+{
+	return glm::vec3(vec.X, vec.Y, vec.Z);
+}
+
 // Main function
 Model* ObjLoaderMain(const std::string& fileName)
 {
@@ -26,7 +31,6 @@ Model* ObjLoaderMain(const std::string& fileName)
 
 	if (loadout)
 	{
-		int shift = 0;
 		// Go through each loaded mesh and out its contents
 		for (int i = 0; i < Loader.LoadedMeshes.size(); i++)
 		{
@@ -43,23 +47,20 @@ Model* ObjLoaderMain(const std::string& fileName)
 			//  position, normal, and texture coordinate
 			for (int j = 0; j < curMesh.Vertices.size(); j++)
 			{
-				vertices.push_back(glm::vec3(
-					curMesh.Vertices[j].Position.X,
-					curMesh.Vertices[j].Position.Y,
-					curMesh.Vertices[j].Position.Y));
-
-				normals.push_back(glm::vec3(
-					curMesh.Vertices[j].Normal.X,
-					curMesh.Vertices[j].Normal.Y,
-					curMesh.Vertices[j].Normal.Z));
+				// empty
 			}
 
 			for (int j = 0; j < curMesh.Indices.size(); j += 3)
 			{
-				indices.push_back(glm::vec3u(
-					curMesh.Indices[j] + shift,
-					curMesh.Indices[j + 1] + shift,
-					curMesh.Indices[j + 2] + shift));
+				vertices.push_back(MakeVec3(curMesh.Vertices[curMesh.Indices[j]].Position));
+				vertices.push_back(MakeVec3(curMesh.Vertices[curMesh.Indices[j + 1]].Position));
+				vertices.push_back(MakeVec3(curMesh.Vertices[curMesh.Indices[j + 2]].Position));
+
+				normals.push_back(MakeVec3(curMesh.Vertices[curMesh.Indices[j]].Normal));
+				normals.push_back(MakeVec3(curMesh.Vertices[curMesh.Indices[j + 1]].Normal));
+				normals.push_back(MakeVec3(curMesh.Vertices[curMesh.Indices[j + 2]].Normal));
+
+				indices.push_back(glm::vec3u(vertices.size() - 3, vertices.size() - 2, vertices.size() - 1));
 			}
 
 			// Print Material
@@ -79,8 +80,6 @@ Model* ObjLoaderMain(const std::string& fileName)
 
 			// Leave a space to separate from the next mesh
 			std::cout << "\n";
-
-			shift += curMesh.Vertices.size();
 		}
 
 		for (int i = 0; i < vertices.size(); i++)
@@ -93,5 +92,6 @@ Model* ObjLoaderMain(const std::string& fileName)
 		std::cout << "Failed to Load File. May have failed to find it or it was not an .obj file.\n";
 	}
 
+	Model* model = new Model(vertices, colors, indices, normals);
 	return new Model(vertices, colors, indices, normals);
 }

@@ -2,11 +2,6 @@
 
 #include "Utils.h"
 
-#include <string>
-#include <vector>
-#include <glm.hpp>
-#include <glew.h>
-
 class Model
 {
 public:
@@ -23,6 +18,7 @@ public:
 	void Render() const;
 	void InitBuffers();
 	void DestroyBuffers();
+	void CalculateNormals();
 
 	glm::mat4 GetModelMatrix() const;
 	glm::vec3 GetPosition() const;
@@ -42,13 +38,11 @@ private:
 	void ReadColors(std::ifstream& fin);
 	void ReadIndices(std::ifstream& fin);
 
-	void CalculateNormals();
-
 private:
 public:
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> colors;
-	std::vector<glm::vec<3, unsigned int>> indices;
+	std::vector<glm::vec3u> indices;
 	std::vector<glm::vec3> normals;
 
 	GLuint vertexArrayID = 0;
