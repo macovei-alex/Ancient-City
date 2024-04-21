@@ -200,13 +200,13 @@ int main()
 	}
 	InitializeGraphics();
 
-	modelShaders = new ShaderProgram("modelVS.glsl", "modelFS.glsl");
-	lightingShaders = new ShaderProgram("lightingVS.glsl", "lightingFS.glsl");
+	modelShaders = new ShaderProgram("Shaders\\modelVS.glsl", "Shaders\\modelFS.glsl");
+	lightingShaders = new ShaderProgram("Shaders\\lightingVS.glsl", "Shaders\\lightingFS.glsl");
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	// model = new Model("model.txt", true);
-	model = ObjLoaderMain("box_stack.obj");
+	model = ObjLoaderMain("Models\\box_stack.obj");
 	// model->Rotate(glm::vec3(-PI / 4, 0, 0));
 
 	lightSource = new LightSource(std::move(Model("lightModel.txt", true)));

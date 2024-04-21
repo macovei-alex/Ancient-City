@@ -44,22 +44,22 @@
     <None Include="KeyBinder.tpp">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="lightingFS.glsl">
+    <None Include="Shaders\lightingFS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="lightingVS.glsl">
+    <None Include="Shaders\lightingVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="modelFS.glsl">
+    <None Include="Shaders\modelFS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="modelVS.glsl">
+    <None Include="Shaders\modelVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="box_stack.mtl">
+    <None Include="Models\box_stack.mtl">
       <Filter>Resource Files\Models</Filter>
     </None>
-    <None Include="Pirat.mtl">
+    <None Include="Models\Pirat.mtl">
       <Filter>Resource Files\Models</Filter>
     </None>
   </ItemGroup>
@@ -84,19 +84,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="lightModel.txt">
+    <Object Include="Models\box_stack.obj">
       <Filter>Resource Files\Models</Filter>
-    </Text>
-    <Text Include="model.txt">
+    </Object>
+    <Object Include="Models\Pirat.obj">
       <Filter>Resource Files\Models</Filter>
-    </Text>
+    </Object>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="box_stack.obj">
+    <Text Include="Models\lightModel.txt">
       <Filter>Resource Files\Models</Filter>
-    </Object>
-    <Object Include="Pirat.obj">
+    </Text>
+    <Text Include="Models\model.txt">
       <Filter>Resource Files\Models</Filter>
-    </Object>
+    </Text>
   </ItemGroup>
 </Project>
