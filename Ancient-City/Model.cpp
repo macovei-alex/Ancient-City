@@ -1,10 +1,5 @@
 #include "Model.h"
 
-#include <iostream>
-#include <fstream>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-
 #include "Utils.h"
 
 Model::Model()
@@ -266,7 +261,7 @@ void Model::Render() const
 
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
-	glDrawElements(GL_TRIANGLES, indices.size() * sizeof(glm::vec3u), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, (GLsizei)(indices.size() * sizeof(glm::vec3u)), GL_UNSIGNED_INT, 0);
 
 	glDisableVertexAttribArray(0);
 }

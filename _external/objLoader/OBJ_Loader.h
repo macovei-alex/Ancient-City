@@ -222,7 +222,7 @@ namespace objl
 	namespace math
 	{
 		// Vector3 Cross Product
-		Vector3 CrossV3(const Vector3 a, const Vector3 b)
+		Vector3 CrossV3(const Vector3& a, const Vector3& b)
 		{
 			return Vector3(a.Y * b.Z - a.Z * b.Y,
 				a.Z * b.X - a.X * b.Z,
@@ -230,19 +230,19 @@ namespace objl
 		}
 
 		// Vector3 Magnitude Calculation
-		float MagnitudeV3(const Vector3 in)
+		float MagnitudeV3(const Vector3& in)
 		{
 			return (sqrtf(powf(in.X, 2) + powf(in.Y, 2) + powf(in.Z, 2)));
 		}
 
 		// Vector3 DotProduct
-		float DotV3(const Vector3 a, const Vector3 b)
+		float DotV3(const Vector3& a, const Vector3& b)
 		{
 			return (a.X * b.X) + (a.Y * b.Y) + (a.Z * b.Z);
 		}
 
 		// Angle between 2 Vector3 Objects
-		float AngleBetweenV3(const Vector3 a, const Vector3 b)
+		float AngleBetweenV3(const Vector3& a, const Vector3& b)
 		{
 			float angle = DotV3(a, b);
 			angle /= (MagnitudeV3(a) * MagnitudeV3(b));
@@ -250,7 +250,7 @@ namespace objl
 		}
 
 		// Projection Calculation of a onto b
-		Vector3 ProjV3(const Vector3 a, const Vector3 b)
+		Vector3 ProjV3(const Vector3& a, const Vector3& b)
 		{
 			Vector3 bn = b / MagnitudeV3(b);
 			return bn * DotV3(a, bn);
@@ -270,7 +270,7 @@ namespace objl
 		}
 
 		// A test to see if P1 is on the same side as P2 of a line segment ab
-		bool SameSide(Vector3 p1, Vector3 p2, Vector3 a, Vector3 b)
+		bool SameSide(const Vector3& p1, const Vector3& p2, const Vector3& a, const Vector3& b)
 		{
 			Vector3 cp1 = math::CrossV3(b - a, p1 - a);
 			Vector3 cp2 = math::CrossV3(b - a, p2 - a);
@@ -282,7 +282,7 @@ namespace objl
 		}
 
 		// Generate a cross produect normal for a triangle
-		Vector3 GenTriNormal(Vector3 t1, Vector3 t2, Vector3 t3)
+		Vector3 GenTriNormal(const Vector3& t1, const Vector3& t2, const Vector3& t3)
 		{
 			Vector3 u = t2 - t1;
 			Vector3 v = t3 - t1;
@@ -293,7 +293,7 @@ namespace objl
 		}
 
 		// Check to see if a Vector3 Point is within a 3 Vector3 Triangle
-		bool inTriangle(Vector3 point, Vector3 tri1, Vector3 tri2, Vector3 tri3)
+		bool inTriangle(const Vector3& point, const Vector3& tri1, const Vector3& tri2, const Vector3& tri3)
 		{
 			// Test to see if it is within an infinite prism that the triangle outlines.
 			bool within_tri_prisim = SameSide(point, tri1, tri2, tri3) && SameSide(point, tri2, tri1, tri3)
@@ -318,9 +318,7 @@ namespace objl
 		}
 
 		// Split a String into a string array at a given token
-		inline void split(const std::string &in,
-			std::vector<std::string> &out,
-			std::string token)
+		inline void split(const std::string &in, std::vector<std::string> &out, const std::string& token)
 		{
 			out.clear();
 
@@ -395,7 +393,7 @@ namespace objl
 
 		// Get element at given index position
 		template <class T>
-		inline const T & getElement(const std::vector<T> &elements, std::string &index)
+		inline const T & getElement(const std::vector<T> &elements, const std::string &index)
 		{
 			int idx = std::stoi(index);
 			if (idx < 0)
@@ -466,6 +464,9 @@ namespace objl
 			std::string curline;
 			while (std::getline(file, curline))
 			{
+				std::vector<std::string> curline_split;
+				algorithm::split(curline, curline_split, " ");
+
 				#ifdef OBJL_CONSOLE_OUTPUT
 				if ((outputIndicator = ((outputIndicator + 1) % outputEveryNth)) == 1)
 				{
@@ -483,13 +484,13 @@ namespace objl
 				#endif
 
 				// Generate a Mesh Object or Prepare for an object to be created
-				if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g" || curline[0] == 'g')
+				if (curline_split[0] == "o" || curline_split[0] == "g" || curline[0] == 'g')
 				{
 					if (!listening)
 					{
 						listening = true;
 
-						if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g")
+						if (curline_split[0] == "o" || curline_split[0] == "g")
 						{
 							meshname = algorithm::tail(curline);
 						}
@@ -520,7 +521,7 @@ namespace objl
 						}
 						else
 						{
-							if (algorithm::firstToken(curline) == "o" || algorithm::firstToken(curline) == "g")
+							if (curline_split[0] == "o" || curline_split[0] == "g")
 							{
 								meshname = algorithm::tail(curline);
 							}
@@ -536,7 +537,7 @@ namespace objl
 					#endif
 				}
 				// Generate a Vertex Position
-				if (algorithm::firstToken(curline) == "v")
+				if (curline_split[0] == "v")
 				{
 					std::vector<std::string> spos;
 					Vector3 vpos;
@@ -549,7 +550,7 @@ namespace objl
 					Positions.push_back(vpos);
 				}
 				// Generate a Vertex Texture Coordinate
-				if (algorithm::firstToken(curline) == "vt")
+				if (curline_split[0] == "vt")
 				{
 					std::vector<std::string> stex;
 					Vector2 vtex;
@@ -561,7 +562,7 @@ namespace objl
 					TCoords.push_back(vtex);
 				}
 				// Generate a Vertex Normal;
-				if (algorithm::firstToken(curline) == "vn")
+				if (curline_split[0] == "vn")
 				{
 					std::vector<std::string> snor;
 					Vector3 vnor;
@@ -574,7 +575,7 @@ namespace objl
 					Normals.push_back(vnor);
 				}
 				// Generate a Face (vertices & indices)
-				if (algorithm::firstToken(curline) == "f")
+				if (curline_split[0] == "f")
 				{
 					// Generate the vertices
 					std::vector<Vertex> vVerts;
@@ -737,7 +738,7 @@ namespace objl
 			bool noNormal = false;
 
 			// For every given vertex do this
-			for (int i = 0; i < int(sface.size()); i++)
+			for (int i = 0; i < sface.size(); i++)
 			{
 				// See What type the vertex is.
 				int vtype;
@@ -834,7 +835,7 @@ namespace objl
 		}
 
 		// Triangulate a list of vertices into a face by printing
-		//	inducies corresponding with triangles within it
+		//	indecies corresponding with triangles within it
 		void VertexTriangluation(std::vector<unsigned int>& oIndices,
 			const std::vector<Vertex>& iVerts)
 		{
@@ -863,29 +864,13 @@ namespace objl
 				for (int i = 0; i < int(tVerts.size()); i++)
 				{
 					// pPrev = the previous vertex in the list
-					Vertex pPrev;
-					if (i == 0)
-					{
-						pPrev = tVerts[tVerts.size() - 1];
-					}
-					else
-					{
-						pPrev = tVerts[i - 1];
-					}
+					Vertex pPrev = (i != 0 ? tVerts[i - 1] : tVerts[tVerts.size() - 1]);
 
 					// pCur = the current vertex;
 					Vertex pCur = tVerts[i];
 
 					// pNext = the next vertex in the list
-					Vertex pNext;
-					if (i == tVerts.size() - 1)
-					{
-						pNext = tVerts[0];
-					}
-					else
-					{
-						pNext = tVerts[i + 1];
-					}
+					Vertex pNext = (i != tVerts.size() ? tVerts[i + 1] : tVerts[0]);
 
 					// Check to see if there are only 3 verts left
 					// if so this is the last triangle

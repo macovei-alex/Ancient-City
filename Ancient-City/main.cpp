@@ -2,24 +2,14 @@
 #pragma comment (lib, "glew32s.lib")
 #pragma comment (lib, "OpenGL32.lib")
 
-#define GLEW_STATIC
-#include <glew.h>
-
-#include <glfw3.h>
-
+#include "Utils.h"
 #include "KeyBinder.tpp"
 #include "Camera.h"
-#include "Utils.h"
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "LightSource.h"
 
-#include <iostream>
-#include <string>
-#include <filesystem>
-
-namespace fs = std::filesystem;
-
+constexpr float PI = 3.14159265359f;
 constexpr unsigned int SCREEN_WIDTH = 800;
 constexpr unsigned int SCREEN_HEIGHT = 600;
 
@@ -216,7 +206,8 @@ int main()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	// model = new Model("model.txt", true);
-	model = ObjLoaderMain("Pirat.obj");
+	model = ObjLoaderMain("box_stack.obj");
+	// model->Rotate(glm::vec3(-PI / 4, 0, 0));
 
 	lightSource = new LightSource(std::move(Model("lightModel.txt", true)));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));

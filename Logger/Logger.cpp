@@ -1,7 +1,9 @@
 #include "Logger.h"
 
 #include <format>
-#include <fstream>
+#include <chrono>
+
+Logger Logger::cout = Logger(std::cout);
 
 std::string_view LogLevelToString(Logger::Level level)
 {

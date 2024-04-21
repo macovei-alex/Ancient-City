@@ -1,8 +1,17 @@
 #pragma once
 
+#define GLEW_STATIC
 #include <glew.h>
 #include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+#include <gtc/type_ptr.hpp>
+#include <glfw3.h>
+
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <sstream>
 
 namespace glm
 {
