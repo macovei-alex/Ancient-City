@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 !_external/**
-!Ancient-city/*.obj
+!Ancient-city/Models/*.obj
