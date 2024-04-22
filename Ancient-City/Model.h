@@ -1,24 +1,16 @@
 #pragma once
 
 #include "Utils.h"
+#include "Mesh.h"
+#include "vertex.h"
+#include "texture.h"
 
 class Model
 {
 public:
 	Model();
-	Model(const std::vector<glm::vec3>& vertices,
-		const std::vector<glm::vec3>& colors,
-		const std::vector<glm::vec3u>& indices,
-		const std::vector<glm::vec3>& normals);
-	Model(const std::string& filePath, bool makeCentered = false);
-	Model(Model&& model) noexcept;
-	Model(const Model&);
-	~Model();
 
-	void Render() const;
-	void InitBuffers();
-	void DestroyBuffers();
-	void CalculateNormals();
+	void Render(ShaderProgram& shader) const;
 
 	glm::mat4 GetModelMatrix() const;
 	glm::vec3 GetPosition() const;
@@ -31,19 +23,10 @@ public:
 	void Scale(const glm::vec3& scale);
 	void Rotate(const glm::vec3& rotation);
 
-	void CenterModel();
-
-private:
-	void ReadVertices(std::ifstream& fin);
-	void ReadColors(std::ifstream& fin);
-	void ReadIndices(std::ifstream& fin);
-
 private:
 public:
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec3> colors;
-	std::vector<glm::vec3u> indices;
-	std::vector<glm::vec3> normals;
+	std::vector<Mesh> meshes;
+	std::vector<Texture> textures;
 
 	GLuint vertexArrayID = 0;
 	GLuint vertexBufferID = 0;
@@ -52,5 +35,4 @@ public:
 	GLuint normalBufferID = 0;
 
 	glm::mat4 modelMatrix;
-	bool isCentered;
 };

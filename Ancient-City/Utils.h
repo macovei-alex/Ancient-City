@@ -2,21 +2,43 @@
 
 #define GLEW_STATIC
 #include <glew.h>
+
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <glfw3.h>
+
+#include <stb_image.h>
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <sstream>
+#include <filesystem>
+#include <format>
+#include <memory>
+
+#include "Logger.h"
+
+#define dimof(vec) (sizeof(vec) / sizeof(vec[0]))
+#define ASSERT(cond) if (!(cond)) __debugbreak();
+
+#define DEBUG
+
+#ifdef DEBUG
+#define GLCall(func) GLClearError(); func; ASSERT(GLLogCall(#func, __FILE__, __LINE__));
+#else
+#define GLCall(func) func;
+#endif
+
+namespace fs = std::filesystem;
 
 namespace glm
 {
 	typedef glm::vec<3, unsigned int> vec3u;
 }
+typedef unsigned int uint;
 
 enum class Layout : GLuint
 {
@@ -58,3 +80,5 @@ enum class StartOffset : GLint
 
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vector);
 std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
+void GLClearError();
+bool GLLogCall(const char* function, const char* file, int line);

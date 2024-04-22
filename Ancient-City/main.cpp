@@ -1,6 +1,7 @@
 #pragma comment (lib, "glfw3.lib")
 #pragma comment (lib, "glew32s.lib")
 #pragma comment (lib, "OpenGL32.lib")
+#pragma comment (lib, "assimp-vc143-mt.lib")
 
 #include "Utils.h"
 #include "KeyBinder.tpp"
@@ -8,6 +9,12 @@
 #include "ShaderProgram.h"
 #include "Model.h"
 #include "LightSource.h"
+#include "ModelLoader.h"
+
+#ifndef STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+#endif
 
 constexpr float PI = 3.14159265359f;
 constexpr unsigned int SCREEN_WIDTH = 800;
@@ -178,18 +185,14 @@ void RenderFrame()
 	lightingShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
 	lightingShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 
-	model->Render();
+	model->Render(*lightingShaders);
 
-	modelShaders->Use();
+	// modelShaders->SetMat4("ModelMatrix", lightSource->model.GetModelMatrix());
+	// modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
+	// modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 
-	modelShaders->SetMat4("ModelMatrix", lightSource->model.GetModelMatrix());
-	modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-
-	lightSource->model.Render();
+	// lightSource->model.Render(*modelShaders);
 }
-
-#include "objLoaderTest.h"
 
 int main()
 {
@@ -206,17 +209,12 @@ int main()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	// model = new Model("model.txt", true);
-	model = ObjLoaderMain("Models\\box_stack.obj");
+	model = new Model(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
 	// model->Rotate(glm::vec3(-PI / 4, 0, 0));
 
-	lightSource = new LightSource(std::move(Model("Models\\lightModel.txt", true)));
+	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
+	lightSource->model.SetScale(glm::vec3(0.2f));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
-
-	std::cout << std::endl;
-	std::cout << model->vertices.size() << '\n';
-	std::cout << model->normals.size() << '\n';
-	std::cout << model->colors.size() << '\n';
-	std::cout << model->indices.size() << '\n';
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -224,7 +222,7 @@ int main()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		//model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
+		model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 		//lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		DisplayFPS(currentFrame);

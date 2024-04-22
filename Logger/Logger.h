@@ -22,6 +22,7 @@ public:
 	void SetMinimumLogLevel(Level level);
 
 	void Log(std::string_view message, Level level = Level::Info) const;
+	void operator()(std::string_view message, Level level = Level::Info) const;
 
 public:
 	static Logger cout;

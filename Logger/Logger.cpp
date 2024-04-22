@@ -54,3 +54,8 @@ void Logger::Log(std::string_view message, Level level) const
 
 	m_os << std::format("({}) [{}]: {}\n", NowInSeconds(), LogLevelToString(level), message);
 }
+
+void Logger::operator()(std::string_view message, Level level) const
+{
+	Log(message, level);
+}
