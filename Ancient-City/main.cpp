@@ -209,7 +209,7 @@ int main()
 	model = ObjLoaderMain("Models\\box_stack.obj");
 	// model->Rotate(glm::vec3(-PI / 4, 0, 0));
 
-	lightSource = new LightSource(std::move(Model("lightModel.txt", true)));
+	lightSource = new LightSource(std::move(Model("Models\\lightModel.txt", true)));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
 
 	std::cout << std::endl;

@@ -62,6 +62,9 @@
     <None Include="Models\Pirat.mtl">
       <Filter>Resource Files\Models</Filter>
     </None>
+    <None Include="postbuild.bat">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

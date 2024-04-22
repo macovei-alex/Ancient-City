@@ -119,6 +119,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>postbuild.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -136,6 +139,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>postbuild.bat</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -149,6 +155,7 @@
     <None Include="KeyBinder.tpp" />
     <None Include="Models\box_stack.mtl" />
     <None Include="Models\Pirat.mtl" />
+    <None Include="postbuild.bat" />
     <None Include="Shaders\lightingFS.glsl" />
     <None Include="Shaders\lightingVS.glsl" />
     <None Include="Shaders\modelFS.glsl" />
