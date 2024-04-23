@@ -21,9 +21,7 @@ constexpr unsigned int SCREEN_WIDTH = 800;
 constexpr unsigned int SCREEN_HEIGHT = 600;
 
 float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
-unsigned int VaoId, VboId, IboId, ColorBufferId;
+double lastFrame = 0.0f;
 
 ShaderProgram* modelShaders, * lightingShaders;
 Camera* camera;
@@ -33,7 +31,7 @@ LightSource* lightSource;
 void DisplayFPS(double currentTime)
 {
 	static int frameCounter = 0;
-	static int lastPrint = glfwGetTime();
+	static int lastPrint = (int)glfwGetTime();
 
 	frameCounter++;
 
@@ -41,7 +39,7 @@ void DisplayFPS(double currentTime)
 	{
 		std::cout << "FPS: " << frameCounter << std::endl;
 		frameCounter = 0;
-		lastPrint = currentTime;
+		lastPrint = (int)currentTime;
 	}
 }
 
@@ -208,18 +206,16 @@ int main()
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	// model = new Model("model.txt", true);
-	model = new Model(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
-	// model->Rotate(glm::vec3(-PI / 4, 0, 0));
+	model = new Model(std::move(ModelLoader::LoadModel("Models\\Pirat.obj")));
 
-	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
+	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\Pirat.obj")));
 	lightSource->model.SetScale(glm::vec3(0.2f));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
 		double currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
+		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
 
 		model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));

@@ -28,7 +28,7 @@ Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
-		std::cout << "\tERROR::ASSIMP: " << importer.GetErrorString() << std::endl;
+		LOG(importer.GetErrorString(), Logger::Level::Warning);
 		return model;
 	}
 
@@ -209,7 +209,7 @@ GLuint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
 	else
 	{
 		stbi_image_free(data);
-		Logger::cout(std::format("texture could not be loaded from {}", filePath));
+		LOG(std::format("Texture could not be loaded from {}", filePath), Logger::Level::Error);
 	}
 
 	return textureID;
