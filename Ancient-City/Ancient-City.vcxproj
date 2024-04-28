@@ -156,7 +156,7 @@
   <ItemGroup>
     <None Include="KeyBinder.tpp" />
     <None Include="Models\box_stack.mtl" />
-    <None Include="Models\Pirat.mtl" />
+    <None Include="Models\Pirat\Pirat.mtl" />
     <None Include="postbuild.bat" />
     <None Include="Shaders\lightingFS.glsl" />
     <None Include="Shaders\lightingVS.glsl" />
@@ -184,7 +184,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
-    <Object Include="Models\Pirat.obj">
+    <Object Include="Models\Pirat\Pirat.obj">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>

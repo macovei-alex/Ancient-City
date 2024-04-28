@@ -16,7 +16,6 @@
 #include <stb_image.h>
 #endif
 
-constexpr float PI = 3.14159265359f;
 constexpr unsigned int SCREEN_WIDTH = 800;
 constexpr unsigned int SCREEN_HEIGHT = 600;
 
@@ -206,9 +205,9 @@ int main()
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	model = new Model(std::move(ModelLoader::LoadModel("Models\\Pirat.obj")));
+	model = new Model(std::move(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj")));
 
-	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\Pirat.obj")));
+	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
 	lightSource->model.SetScale(glm::vec3(0.2f));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
 

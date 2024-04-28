@@ -35,6 +35,8 @@
 
 namespace fs = std::filesystem;
 
+constexpr float PI = 3.14159265359f;
+
 namespace glm
 {
 	typedef glm::vec<3, unsigned int> vec3u;

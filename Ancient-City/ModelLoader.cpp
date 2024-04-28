@@ -36,6 +36,9 @@ Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 
 	// process ASSIMP's root node recursively
 	ProcessNode(model, scene->mRootNode, scene);
+
+	LOG(std::format("Model {} loaded successfully", fileName), Logger::Level::Info);
+
 	return model;
 }
 

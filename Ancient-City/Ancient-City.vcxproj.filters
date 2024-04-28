@@ -65,11 +65,11 @@
     <None Include="Models\box_stack.mtl">
       <Filter>Resource Files\Models</Filter>
     </None>
-    <None Include="Models\Pirat.mtl">
-      <Filter>Resource Files\Models</Filter>
-    </None>
     <None Include="postbuild.bat">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Models\Pirat\Pirat.mtl">
+      <Filter>Resource Files\Models</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -105,7 +105,7 @@
     <Object Include="Models\box_stack.obj">
       <Filter>Resource Files\Models</Filter>
     </Object>
-    <Object Include="Models\Pirat.obj">
+    <Object Include="Models\Pirat\Pirat.obj">
       <Filter>Resource Files\Models</Filter>
     </Object>
   </ItemGroup>
