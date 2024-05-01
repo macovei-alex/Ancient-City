@@ -19,6 +19,9 @@
     <Filter Include="Resource Files\Models">
       <UniqueIdentifier>{23d52904-3b2c-46ee-b2d5-362e23e6a746}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Other">
+      <UniqueIdentifier>{3bc6b523-8693-4b34-a56a-455e1bda960d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,6 +48,9 @@
     <ClCompile Include="ModelLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp">
@@ -62,14 +68,17 @@
     <None Include="Shaders\modelVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Models\box_stack.mtl">
-      <Filter>Resource Files\Models</Filter>
+    <None Include="OpenGL-errors.html">
+      <Filter>Resource Files\Other</Filter>
     </None>
     <None Include="postbuild.bat">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Other</Filter>
     </None>
-    <None Include="Models\Pirat\Pirat.mtl">
-      <Filter>Resource Files\Models</Filter>
+    <None Include="Shaders\textureFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\textureVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -108,13 +117,8 @@
     <Object Include="Models\Pirat\Pirat.obj">
       <Filter>Resource Files\Models</Filter>
     </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Models\lightModel.txt">
+    <Object Include="Models\Wolf\Wolf.obj">
       <Filter>Resource Files\Models</Filter>
-    </Text>
-    <Text Include="Models\model.txt">
-      <Filter>Resource Files\Models</Filter>
-    </Text>
+    </Object>
   </ItemGroup>
 </Project>

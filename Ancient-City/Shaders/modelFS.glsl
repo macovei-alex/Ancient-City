@@ -1,10 +1,13 @@
 #version 330 core
 
-in vec3 MidColor;
+in vec2 MidTexCoords;
 
 out vec4 OutColor;
 
+uniform sampler2D Texture;
+
 void main()
-{
-    OutColor = vec4(MidColor, 1.0f);
+{             
+    vec4 texColor = texture(Texture, MidTexCoords);
+    OutColor = texColor;
 }

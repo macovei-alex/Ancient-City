@@ -32,7 +32,7 @@ bool GLLogCall(const char* function, const char* file, int line)
 		ss << std::hex << error;
 		std::string errorHex = ss.str();
 
-		std::cout << std::format("[OpenGL Error]:\n\t code ( 0x{} )\n\t in ( {} )\n\t at ( {} )\n\t during ( {} )\n", errorHex, file, line, function);
+		std::cout << std::format("[OpenGL Error]:\n\t code ( 0x{} )\n\t in ( {} )\n\t at ( line {} )\n\t during ( {} )\n", errorHex, file, line, function);
 		ret = false;
 	}
 	return ret;

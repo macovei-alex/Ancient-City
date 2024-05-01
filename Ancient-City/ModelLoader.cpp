@@ -28,7 +28,7 @@ Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
-		LOG(importer.GetErrorString(), Logger::Level::Warning);
+		LOG(importer.GetErrorString(), Logger::Level::Error);
 		return model;
 	}
 
@@ -52,11 +52,9 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene)
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		model.meshes.push_back(ProcessMesh(mesh, scene));
 	}
-	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
+
 	for (uint i = 0; i < node->mNumChildren; i++)
-	{
 		ProcessNode(model, node->mChildren[i], scene);
-	}
 }
 
 Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
@@ -147,7 +145,7 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& typeName)
+std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& textureName)
 {
 	std::vector<Texture> textures;
 	for (uint i = 0; i < material->GetTextureCount(type); i++)
@@ -169,7 +167,7 @@ std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiT
 		{   // if texture hasn't been loaded already, load it
 			Texture texture;
 			texture.id = TextureFromFile(str.C_Str());
-			texture.type = typeName;
+			texture.name = textureName;
 			texture.path = str.C_Str();
 			textures.push_back(texture);
 			loadedTextures.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.

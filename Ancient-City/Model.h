@@ -10,7 +10,7 @@ class Model
 public:
 	Model();
 
-	void Render(ShaderProgram& shader) const;
+	void Render(const ShaderProgram& shader) const;
 
 	glm::mat4 GetModelMatrix() const;
 	glm::vec3 GetPosition() const;
@@ -25,14 +25,7 @@ public:
 
 private:
 public:
+	glm::mat4 modelMatrix;
 	std::vector<Mesh> meshes;
 	std::vector<Texture> textures;
-
-	GLuint vertexArrayID = 0;
-	GLuint vertexBufferID = 0;
-	GLuint colorBufferID = 0;
-	GLuint indexBufferID = 0;
-	GLuint normalBufferID = 0;
-
-	glm::mat4 modelMatrix;
 };

@@ -11,7 +11,7 @@ class Mesh
 public:
     Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures);
     Mesh(uint numVertices, std::shared_ptr<Vertex> vertices, uint numIndexes, std::shared_ptr<uint> indices, const std::vector<Texture>& textures);
-    void Render(ShaderProgram& shader) const;
+    void Render(const ShaderProgram& shader) const;
 
 private:
     void InitBuffers();

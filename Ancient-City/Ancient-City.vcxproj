@@ -151,17 +151,19 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="texture.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp" />
-    <None Include="Models\box_stack.mtl" />
-    <None Include="Models\Pirat\Pirat.mtl" />
+    <None Include="OpenGL-errors.html" />
     <None Include="postbuild.bat" />
     <None Include="Shaders\lightingFS.glsl" />
     <None Include="Shaders\lightingVS.glsl" />
     <None Include="Shaders\modelFS.glsl" />
     <None Include="Shaders\modelVS.glsl" />
+    <None Include="Shaders\textureFS.glsl" />
+    <None Include="Shaders\textureVS.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logger\Logger.vcxproj">
@@ -188,10 +190,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Object>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Models\lightModel.txt" />
-    <Text Include="Models\model.txt" />
+    <Object Include="Models\Wolf\Wolf.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Object>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

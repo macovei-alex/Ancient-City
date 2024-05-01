@@ -20,7 +20,7 @@ Mesh::Mesh(uint vertexCount, std::shared_ptr<Vertex> vertices, uint indexCount, 
 	InitBuffers();
 }
 
-void Mesh::Render(ShaderProgram& shader) const
+void Mesh::Render(const ShaderProgram& shader) const
 {
 	// bind appropriate textures
 	uint diffuseNr = 1;
@@ -29,28 +29,39 @@ void Mesh::Render(ShaderProgram& shader) const
 	uint heightNr = 1;
 	for (size_t i = 0; i < textures.size(); i++)
 	{
-		glActiveTexture(GL_TEXTURE0 + (GLenum)i); // active proper texture unit before binding
+		GLCall(glActiveTexture(GL_TEXTURE0 + (GLenum)i)); // active proper texture unit before binding
 		// retrieve texture number (the N in diffuse_textureN)
 		std::string number;
-		std::string name = textures[i].type;
-		if (name == "texture_diffuse")
+		if (textures[i].name == "texture_diffuse")
+		{
 			number = std::to_string(diffuseNr++);
-		else if (name == "texture_specular")
-			number = std::to_string(specularNr++); // transfer unsigned int to string
-		else if (name == "texture_normal")
-			number = std::to_string(normalNr++); // transfer unsigned int to string
-		else if (name == "texture_height")
-			number = std::to_string(heightNr++); // transfer unsigned int to string
+		}
+		else if (textures[i].name == "texture_specular")
+		{
+			number = std::to_string(specularNr++);
+		}
+		else if (textures[i].name == "texture_normal")
+		{
+			number = std::to_string(normalNr++);
+		}
+		else if (textures[i].name == "texture_height")
+		{
+			number = std::to_string(heightNr++);
+		}
+
+		std::string textureName = textures[i].name + number;
+		GLCall(glGetUniformLocation(shader.GetID(), textureName.c_str()));
 
 		// now set the sampler to the correct texture unit
-		GLCall(glUniform1i(glGetUniformLocation(shader.GetID(), (name + number).c_str()), (int)i));
+		GLuint location = glGetUniformLocation(shader.GetID(), (textures[i].name + number).c_str());
+		GLCall(glUniform1i(location, (int)i));
 		// and finally bind the texture
-		glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
 	}
 
 	// draw mesh
 	GLCall(glBindVertexArray(VAO));
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0));
 	GLCall(glBindVertexArray(0));
 
 	GLCall(glActiveTexture(GL_TEXTURE0));
@@ -64,13 +75,13 @@ void Mesh::InitBuffers()
 
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), &vertices.get()[0], GL_STATIC_DRAW));
+	GLCall(glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), vertices.get(), GL_STATIC_DRAW));
 
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint), &indices.get()[0], GL_STATIC_DRAW));
+	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint), indices.get(), GL_STATIC_DRAW));
 
 	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0));
+	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position)));
 
 	GLCall(glEnableVertexAttribArray(1));
 	GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal)));

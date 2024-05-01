@@ -22,7 +22,7 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
-ShaderProgram* modelShaders, * lightingShaders;
+ShaderProgram* modelShaders, * lightingShaders, * textureShaders;
 Camera* camera;
 Model* model;
 LightSource* lightSource;
@@ -167,6 +167,7 @@ void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*
 	lightingShaders->Use();
 
 	lightingShaders->SetVec3("LightColor", lightSource->GetColor());
@@ -183,12 +184,22 @@ void RenderFrame()
 	lightingShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 
 	model->Render(*lightingShaders);
+	
 
-	// modelShaders->SetMat4("ModelMatrix", lightSource->model.GetModelMatrix());
-	// modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	// modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	modelShaders->Use();
 
-	// lightSource->model.Render(*modelShaders);
+	modelShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
+	modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
+	modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	*/
+
+	textureShaders->Use();
+
+	textureShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
+	textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
+	textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+
+	model->Render(*textureShaders);
 }
 
 int main()
@@ -202,6 +213,7 @@ int main()
 
 	modelShaders = new ShaderProgram("Shaders\\modelVS.glsl", "Shaders\\modelFS.glsl");
 	lightingShaders = new ShaderProgram("Shaders\\lightingVS.glsl", "Shaders\\lightingFS.glsl");
+	textureShaders = new ShaderProgram("Shaders\\textureVS.glsl", "Shaders\\textureFS.glsl");
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 

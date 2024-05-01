@@ -18,7 +18,7 @@ public:
 private:
     static void ProcessNode(Model& model, aiNode* node, const aiScene* scene);
     static Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-    static std::vector<Texture> LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& typeName);
+    static std::vector<Texture> LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& textureName);
     static GLuint TextureFromFile(const std::string& fileName, bool gamma = true);
     static void SetCurrentDirectory(const std::string& fileName);
 
