@@ -1,5 +1,11 @@
 #include "utils.h"
 
+std::ostream& operator<<(std::ostream& os, const glm::vec2& vector)
+{
+	os << vector.x << ' ' << vector.y;
+	return os;
+}
+
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vector)
 {
 	os << vector.x << ' ' << vector.y << ' ' << vector.z;

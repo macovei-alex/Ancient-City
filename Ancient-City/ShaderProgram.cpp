@@ -71,6 +71,7 @@ void ShaderProgram::Init(const std::string& vertexPath, const std::string& fragm
 	catch (std::ifstream::failure exception)
 	{
 		std::cout << "ERROR when reading the shaders: " << exception.what() << std::endl;
+		throw exception;
 	}
 
 	const GLchar* vShaderCode = vertexCode.c_str();
@@ -110,6 +111,7 @@ void ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::s
 			std::cout << "ERROR when compiling shader of type: " << type << "\n"
 				<< infoLog << "\n ---------------------------------------------------"
 				<< std::endl;
+			throw std::runtime_error("ERROR when compiling shader of type: " + type);
 		}
 	}
 	else
@@ -121,6 +123,7 @@ void ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::s
 			std::cout << "ERROR when linking program of type: " << type << "\n"
 				<< infoLog << "\n ---------------------------------------------------"
 				<< std::endl;
+			throw std::runtime_error("ERROR when linking program of type: " + type);
 		}
 	}
 }

@@ -81,6 +81,7 @@ enum class StartOffset : GLint
 	Zero = 0
 };
 
+std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vector);
 std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
 void GLClearError();

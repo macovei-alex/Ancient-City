@@ -9,6 +9,8 @@ class Model
 {
 public:
 	Model();
+	Model(const Model& model);
+	Model(Model&& model);
 
 	void Render(const ShaderProgram& shader) const;
 
@@ -19,8 +21,13 @@ public:
 	void SetScale(const glm::vec3& scale);
 	void SetRotation(const glm::vec3& rotation);
 
+	void Translate(float x, float y = 0, float z = 0);
 	void Translate(const glm::vec3& translation);
+
+	void Scale(float scale);
 	void Scale(const glm::vec3& scale);
+
+	void Rotate(float x, float y = 0, float z = 0);
 	void Rotate(const glm::vec3& rotation);
 
 private:

@@ -10,7 +10,9 @@ class Mesh
 {
 public:
     Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures);
-    Mesh(uint numVertices, std::shared_ptr<Vertex> vertices, uint numIndexes, std::shared_ptr<uint> indices, const std::vector<Texture>& textures);
+    Mesh(const Mesh& mesh);
+    Mesh(Mesh&& mesh);
+
     void Render(const ShaderProgram& shader) const;
 
 private:
@@ -20,8 +22,8 @@ public:
     uint vertexCount;
     uint indexCount;
 
-    std::shared_ptr<Vertex> vertices;
-    std::shared_ptr<uint> indices;
+    std::vector<Vertex> vertices;
+    std::vector<uint> indices;
     std::vector<Texture> textures;
 
     GLuint VAO;

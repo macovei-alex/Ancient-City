@@ -3,21 +3,39 @@
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures)
 	: vertexCount((uint)vertices.size()),
 	indexCount((uint)indices.size()),
-	vertices(new Vertex[vertexCount]),
-	indices(new uint[indexCount]),
-	textures(textures)
-{
-	InitBuffers();
-}
-
-Mesh::Mesh(uint vertexCount, std::shared_ptr<Vertex> vertices, uint indexCount, std::shared_ptr<uint> indices, const std::vector<Texture>& textures)
-	: vertexCount(vertexCount),
-	indexCount(indexCount),
 	vertices(vertices),
 	indices(indices),
 	textures(textures)
 {
 	InitBuffers();
+}
+
+Mesh::Mesh(const Mesh& mesh)
+	: vertexCount(mesh.vertexCount),
+	indexCount(mesh.indexCount),
+	vertices(mesh.vertices),
+	indices(mesh.indices),
+	textures(mesh.textures),
+	VAO(mesh.VAO),
+	VBO(mesh.VBO),
+	EBO(mesh.EBO)
+{
+	// empty
+}
+
+Mesh::Mesh(Mesh&& mesh)
+	: vertexCount(mesh.vertexCount),
+	indexCount(mesh.indexCount),
+	vertices(std::move(mesh.vertices)),
+	indices(std::move(mesh.indices)),
+	textures(std::move(mesh.textures)),
+	VAO(mesh.VAO),
+	VBO(mesh.VBO),
+	EBO(mesh.EBO)
+{
+	mesh.VAO = 0;
+	mesh.VBO = 0;
+	mesh.EBO = 0;
 }
 
 void Mesh::Render(const ShaderProgram& shader) const
@@ -53,8 +71,9 @@ void Mesh::Render(const ShaderProgram& shader) const
 		GLCall(glGetUniformLocation(shader.GetID(), textureName.c_str()));
 
 		// now set the sampler to the correct texture unit
-		GLuint location = glGetUniformLocation(shader.GetID(), (textures[i].name + number).c_str());
+		GLuint location = glGetUniformLocation(shader.GetID(), textureName.c_str());
 		GLCall(glUniform1i(location, (int)i));
+
 		// and finally bind the texture
 		GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
 	}
@@ -75,11 +94,11 @@ void Mesh::InitBuffers()
 
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), vertices.get(), GL_STATIC_DRAW));
+	GLCall(glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
 
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint), indices.get(), GL_STATIC_DRAW));
-
+	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint), indices.data(), GL_STATIC_DRAW));
+	
 	GLCall(glEnableVertexAttribArray(0));
 	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position)));
 
@@ -89,17 +108,20 @@ void Mesh::InitBuffers()
 	GLCall(glEnableVertexAttribArray(2));
 	GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords)));
 
-	// glEnableVertexAttribArray(3);
-	// glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
+	/*
+	
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 
-	// glEnableVertexAttribArray(4);
-	// glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, bitangent));
+	
+	glEnableVertexAttribArray(5);
+	glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
 
-	// glEnableVertexAttribArray(5);
-	// glVertexAttribIPointer(5, 4, GL_INT, sizeof(Vertex), (void*)offsetof(Vertex, boneIDs));
-
-	// glEnableVertexAttribArray(6);
-	// glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+	glEnableVertexAttribArray(6);
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
+	*/
 
 	GLCall(glBindVertexArray(0));
 }

@@ -1,9 +1,9 @@
 #version 330
 
-in vec3 MidNormal;
-in vec2 MidTexCoords;
+layout (location = 0) in vec3 MidNormal;
+layout (location = 1) in vec2 MidTexCoords;
 
-out vec4 OutColor;
+layout (location = 0) out vec4 OutColor;
 
 uniform sampler2D texture_diffuse1;
 

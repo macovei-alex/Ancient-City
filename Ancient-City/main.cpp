@@ -25,7 +25,7 @@ double lastFrame = 0.0f;
 ShaderProgram* modelShaders, * lightingShaders, * textureShaders;
 Camera* camera;
 Model* model;
-LightSource* lightSource;
+// LightSource* lightSource;
 
 void DisplayFPS(double currentTime)
 {
@@ -75,6 +75,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		camera->Set(width, height);
 	}
 
+	/*
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
 		lightSource->SetAmbientStrength(lightSource->GetAmbientStrength() + 0.1f);
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
@@ -91,6 +92,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		lightSource->SetSpecularExponent(lightSource->GetSpecularExponent() * 2);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
 		lightSource->SetSpecularExponent(lightSource->GetSpecularExponent() / 2);
+	*/
 }
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -158,7 +160,7 @@ void Clean()
 	delete modelShaders, lightingShaders;
 	delete camera;
 	delete model;
-	delete lightSource;
+	// delete lightSource;
 
 	glfwTerminate();
 }
@@ -218,10 +220,14 @@ int main()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	model = new Model(std::move(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj")));
+	model->Scale(0.05f);
+	model->Rotate(-glm::radians(90.0f), 0.0f, 0.0f);
 
+	/*
 	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
 	lightSource->model.SetScale(glm::vec3(0.2f));
 	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
+	*/
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -229,7 +235,7 @@ int main()
 		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
 
-		model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
+		model->Rotate(glm::vec3(0.0f, 0.0f, deltaTime));
 		//lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		DisplayFPS(currentFrame);

@@ -23,18 +23,18 @@ Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 		| aiProcess_FlipUVs
 		| aiProcess_CalcTangentSpace
 		| (smoothNormals ? aiProcess_GenSmoothNormals : aiProcess_GenNormals));
-	Model model;
 
 	// check for errors
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
 		LOG(importer.GetErrorString(), Logger::Level::Error);
-		return model;
+		throw std::exception("Failed to load model");
 	}
 
 	SetCurrentDirectory(fileName);
 
 	// process ASSIMP's root node recursively
+	Model model;
 	ProcessNode(model, scene->mRootNode, scene);
 
 	LOG(std::format("Model {} loaded successfully", fileName), Logger::Level::Info);
@@ -50,6 +50,7 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene)
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		std::cout << "New Mesh: " << mesh->mName.C_Str() << "\n";
 		model.meshes.push_back(ProcessMesh(mesh, scene));
 	}
 
@@ -59,7 +60,6 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene)
 
 Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
-	// data to fill
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
 	std::vector<Texture> textures;
@@ -114,7 +114,9 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		aiFace face = mesh->mFaces[i];
 		// retrieve all indices of the face and store them in the indices vector
 		for (uint j = 0; j < face.mNumIndices; j++)
+		{
 			indices.push_back(face.mIndices[j]);
+		}
 	}
 
 	// process materials
