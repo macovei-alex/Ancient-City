@@ -219,9 +219,10 @@ int main()
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	model = new Model(std::move(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj")));
-	model->Scale(0.05f);
-	model->Rotate(-glm::radians(90.0f), 0.0f, 0.0f);
+	glm::mat4 preloadTransforms = glm::mat4(1.0f);
+	preloadTransforms = glm::scale(preloadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
+	preloadTransforms = glm::rotate(preloadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = new Model(std::move(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", preloadTransforms)));
 
 	/*
 	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
@@ -235,7 +236,7 @@ int main()
 		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
 
-		model->Rotate(glm::vec3(0.0f, 0.0f, deltaTime));
+		model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 		//lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		DisplayFPS(currentFrame);

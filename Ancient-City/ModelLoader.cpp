@@ -17,10 +17,10 @@ void ModelLoader::SetCurrentDirectory(const std::string& fileName)
 
 Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 {
-	return LoadModel(fileName, smoothNormals, glm::vec3(1.0f), glm::vec3(0.0f));
+	return LoadModel(fileName, glm::mat4(1.0f), smoothNormals);
 }
 
-Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals, const glm::vec3& scale, const glm::vec3& rotation)
+Model ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& preloadTransforms, bool smoothNormals)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(fileName,
@@ -40,14 +40,14 @@ Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals, co
 
 	// process ASSIMP's root node recursively
 	Model model;
-	ProcessNode(model, scene->mRootNode, scene, scale, rotation);
+	ProcessNode(model, scene->mRootNode, scene, preloadTransforms);
 
 	LOG(std::format("Model {} loaded successfully", fileName), Logger::Level::Info);
 
 	return model;
 }
 
-void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::vec3& scale, const glm::vec3& rotation)
+void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::mat4& preloadTransforms)
 {
 	// process each mesh located at the current node
 	for (uint i = 0; i < node->mNumMeshes; i++)
@@ -55,15 +55,14 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, 
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		std::cout << "New Mesh: " << mesh->mName.C_Str() << "\n";
-		model.meshes.push_back(ProcessMesh(mesh, scene, scale, rotation));
+		model.meshes.push_back(ProcessMesh(mesh, scene, preloadTransforms));
 	}
 
 	for (uint i = 0; i < node->mNumChildren; i++)
-		ProcessNode(model, node->mChildren[i], scene, scale, rotation);
+		ProcessNode(model, node->mChildren[i], scene, preloadTransforms);
 }
 
-Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::vec3& scale, const glm::vec3& rotation)
+Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& preloadTranforms)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
@@ -73,11 +72,11 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::vec
 	for (uint i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		vertex.position += mesh->mVertices[i];
+		vertex.position += preloadTranforms * mesh->mVertices[i];
 		// normals
 		if (mesh->HasNormals())
 		{
-			vertex.normal += mesh->mNormals[i];
+			vertex.normal += preloadTranforms * mesh->mNormals[i];
 		}
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?

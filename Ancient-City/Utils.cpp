@@ -15,6 +15,18 @@ glm::vec3& glm::operator+=(glm::vec3& vec, const aiVector3D& other)
 	return vec;
 }
 
+glm::vec3 glm::operator*(const glm::mat4& mat, const glm::vec3& vec)
+{
+	glm::vec3 result = mat * glm::vec4(vec, 1.0f);
+	return glm::vec3(result);
+}
+
+glm::vec3 glm::operator*(const glm::mat4& mat, const aiVector3D& vec)
+{
+	glm::vec3 result = mat * glm::vec4(vec.x, vec.y, vec.z, 1.0f);
+	return glm::vec3(result);
+}
+
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector)
 {
 	os << vector.x << ' ' << vector.y;
