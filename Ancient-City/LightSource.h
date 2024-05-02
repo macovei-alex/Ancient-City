@@ -5,6 +5,7 @@
 class LightSource
 {
 public:
+	LightSource() = default;
 	LightSource(const Model& model);
 	LightSource(Model&& model);
 
@@ -24,7 +25,6 @@ public:
 	Model model;
 
 private:
-
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	float ambientStrength = 0.3f;

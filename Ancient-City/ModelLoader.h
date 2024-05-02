@@ -14,6 +14,7 @@ static class ModelLoader
 {
 public:
     static Model* LoadModel(const std::string& path, bool smoothNormals = false);
+    static Model* LoadModel(const std::string& path, float scale);
     static Model* LoadModel(const std::string& path, const glm::mat4& onLoadTransforms, bool smoothNormals = false);
 
 private:

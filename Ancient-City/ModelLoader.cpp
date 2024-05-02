@@ -20,6 +20,11 @@ Model* ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 	return LoadModel(fileName, glm::mat4(1.0f), smoothNormals);
 }
 
+Model* ModelLoader::LoadModel(const std::string& fileName, float scale)
+{
+	return LoadModel(fileName, glm::scale(glm::mat4(1.0f), glm::vec3(scale)), false);
+}
+
 Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLoadTransforms, bool smoothNormals)
 {
 	Assimp::Importer importer;

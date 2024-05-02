@@ -110,15 +110,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="Models\box_stack.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Object>
-    <Object Include="Models\Pirat\Pirat.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Object>
-    <Object Include="Models\Wolf\Wolf.obj">
-      <Filter>Resource Files\Models</Filter>
-    </Object>
-  </ItemGroup>
 </Project>

@@ -4,10 +4,9 @@ in vec2 MidTexCoords;
 
 out vec4 OutColor;
 
-uniform sampler2D Texture;
+uniform sampler2D texture_diffuse1;
 
 void main()
-{             
-    vec4 texColor = texture(Texture, MidTexCoords);
-    OutColor = texColor;
+{
+    OutColor = vec4(1);
 }

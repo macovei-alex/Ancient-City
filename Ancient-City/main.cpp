@@ -25,7 +25,7 @@ double lastFrame = 0.0f;
 ShaderProgram* modelShaders, * lightingShaders, * textureShaders;
 Camera* camera;
 Model* model;
-// LightSource* lightSource;
+LightSource* lightSource;
 
 void DisplayFPS(double currentTime)
 {
@@ -75,7 +75,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		camera->Set(width, height);
 	}
 
-	/*
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
 		lightSource->SetAmbientStrength(lightSource->GetAmbientStrength() + 0.1f);
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
@@ -92,7 +91,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		lightSource->SetSpecularExponent(lightSource->GetSpecularExponent() * 2);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
 		lightSource->SetSpecularExponent(lightSource->GetSpecularExponent() / 2);
-	*/
 }
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -169,39 +167,32 @@ void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/*
-	lightingShaders->Use();
-
-	lightingShaders->SetVec3("LightColor", lightSource->GetColor());
-	lightingShaders->SetVec3("LightPosition", lightSource->model.GetPosition());
-	lightingShaders->SetVec3("ViewPosition", camera->GetPosition());
-
-	lightingShaders->SetFloat("AmbientStrength", lightSource->GetAmbientStrength());
-	lightingShaders->SetFloat("DiffuseStrength", lightSource->GetDiffuseStrength());
-	lightingShaders->SetFloat("SpecularStrength", lightSource->GetSpecularStrength());
-	lightingShaders->SetInt("SpecularExponent", lightSource->GetSpecularExponent());
-
-	lightingShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
-	lightingShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	lightingShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-
-	model->Render(*lightingShaders);
-	
-
-	modelShaders->Use();
-
-	modelShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
-	modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-	*/
-
 	textureShaders->Use();
+
+	textureShaders->SetVec3("LightColor", lightSource->GetColor());
+	textureShaders->SetVec3("LightPosition", lightSource->model.GetPosition());
+	textureShaders->SetVec3("ViewPosition", camera->GetPosition());
+
+	textureShaders->SetFloat("AmbientStrength", lightSource->GetAmbientStrength());
+	textureShaders->SetFloat("DiffuseStrength", lightSource->GetDiffuseStrength());
+	textureShaders->SetFloat("SpecularStrength", lightSource->GetSpecularStrength());
+	textureShaders->SetInt("SpecularExponent", lightSource->GetSpecularExponent());
 
 	textureShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
 	textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
 	textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 
 	model->Render(*textureShaders);
+
+	// light source
+
+	modelShaders->Use();
+
+	modelShaders->SetMat4("ModelMatrix", lightSource->model.GetModelMatrix());
+	modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
+	modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+
+	lightSource->model.Render(*modelShaders);
 }
 
 int main()
@@ -223,13 +214,11 @@ int main()
 	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
 	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
 	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms);
 
-	/*
-	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));
-	lightSource->model.SetScale(glm::vec3(0.2f));
-	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f));
-	*/
+	lightSource = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.005f)));
+	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, 0.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{

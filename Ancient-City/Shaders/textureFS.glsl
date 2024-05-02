@@ -1,13 +1,44 @@
 #version 330
 
-layout (location = 0) in vec3 MidNormal;
-layout (location = 1) in vec2 MidTexCoords;
+in vec3 MidPosition;
+in vec3 MidNormal;
+in vec2 MidTexCoords;
 
-layout (location = 0) out vec4 OutColor;
+out vec4 OutColor;
+
+uniform vec3 LightColor;
+uniform vec3 LightPosition;
+uniform vec3 ViewPosition;
+
+uniform float AmbientStrength;
+uniform float DiffuseStrength;
+uniform float SpecularStrength;
+uniform int SpecularExponent;
 
 uniform sampler2D texture_diffuse1;
 
 void main()
 {
-	 OutColor = texture(texture_diffuse1, MidTexCoords);
+	// With lighting
+	/*
+	vec3 ambient = AmbientStrength * LightColor;
+
+	vec3 lightDirection = normalize(LightPosition - MidPosition);
+	float diffuseValue = max(dot(MidNormal, lightDirection), 0.0);
+	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
+
+	vec3 viewDirection = normalize(ViewPosition - MidPosition);
+	vec3 reflectionDirection = reflect(-lightDirection, MidNormal);
+	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
+	vec3 specular = SpecularStrength * specularPower * LightColor;
+
+	vec4 textureColor = texture(texture_diffuse1, MidTexCoords);
+	vec3 result = (ambient + diffuse + specular) * textureColor.rgb;
+
+	OutColor = vec4(result, 1);
+	// OutColor = vec4(result, texColor.a);
+	*/
+
+	// Without lighting
+	OutColor = texture(texture_diffuse1, MidTexCoords);
 }
