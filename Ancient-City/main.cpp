@@ -219,10 +219,11 @@ int main()
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	glm::mat4 preloadTransforms = glm::mat4(1.0f);
-	preloadTransforms = glm::scale(preloadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
-	preloadTransforms = glm::rotate(preloadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	model = new Model(std::move(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", preloadTransforms)));
+	glm::mat4 onLoadTransforms = glm::mat4(1.0f);
+	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
+	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
+	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	model = ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms);
 
 	/*
 	lightSource = new LightSource(std::move(ModelLoader::LoadModel("Models\\box_stack.obj")));

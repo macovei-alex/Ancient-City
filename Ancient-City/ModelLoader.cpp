@@ -15,12 +15,12 @@ void ModelLoader::SetCurrentDirectory(const std::string& fileName)
 	currentDirectory = filePath.remove_filename();
 }
 
-Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
+Model* ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 {
 	return LoadModel(fileName, glm::mat4(1.0f), smoothNormals);
 }
 
-Model ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& preloadTransforms, bool smoothNormals)
+Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLoadTransforms, bool smoothNormals)
 {
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(fileName,
@@ -39,15 +39,15 @@ Model ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& prelo
 	SetCurrentDirectory(fileName);
 
 	// process ASSIMP's root node recursively
-	Model model;
-	ProcessNode(model, scene->mRootNode, scene, preloadTransforms);
+	Model* model = new Model();
+	ProcessNode(*model, scene->mRootNode, scene, onLoadTransforms);
 
 	LOG(std::format("Model {} loaded successfully", fileName), Logger::Level::Info);
 
 	return model;
 }
 
-void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::mat4& preloadTransforms)
+void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::mat4& onLoadTransforms)
 {
 	// process each mesh located at the current node
 	for (uint i = 0; i < node->mNumMeshes; i++)
@@ -55,11 +55,11 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, 
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		model.meshes.push_back(ProcessMesh(mesh, scene, preloadTransforms));
+		model.meshes.push_back(ProcessMesh(mesh, scene, onLoadTransforms));
 	}
 
 	for (uint i = 0; i < node->mNumChildren; i++)
-		ProcessNode(model, node->mChildren[i], scene, preloadTransforms);
+		ProcessNode(model, node->mChildren[i], scene, onLoadTransforms);
 }
 
 Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& preloadTranforms)
