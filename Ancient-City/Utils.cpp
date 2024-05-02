@@ -1,5 +1,20 @@
 #include "utils.h"
 
+glm::vec2& glm::operator+=(glm::vec2& vec, const aiVector2D& other)
+{
+	vec.x += other.x;
+	vec.y += other.y;
+	return vec;
+}
+
+glm::vec3& glm::operator+=(glm::vec3& vec, const aiVector3D& other)
+{
+	vec.x += other.x;
+	vec.y += other.y;
+	vec.z += other.z;
+	return vec;
+}
+
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector)
 {
 	os << vector.x << ' ' << vector.y;

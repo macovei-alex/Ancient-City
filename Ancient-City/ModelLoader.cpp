@@ -17,6 +17,11 @@ void ModelLoader::SetCurrentDirectory(const std::string& fileName)
 
 Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 {
+	return LoadModel(fileName, smoothNormals, glm::vec3(1.0f), glm::vec3(0.0f));
+}
+
+Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals, const glm::vec3& scale, const glm::vec3& rotation)
+{
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(fileName,
 		aiProcess_Triangulate
@@ -35,14 +40,14 @@ Model ModelLoader::LoadModel(const std::string& fileName, bool smoothNormals)
 
 	// process ASSIMP's root node recursively
 	Model model;
-	ProcessNode(model, scene->mRootNode, scene);
+	ProcessNode(model, scene->mRootNode, scene, scale, rotation);
 
 	LOG(std::format("Model {} loaded successfully", fileName), Logger::Level::Info);
 
 	return model;
 }
 
-void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene)
+void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::vec3& scale, const glm::vec3& rotation)
 {
 	// process each mesh located at the current node
 	for (uint i = 0; i < node->mNumMeshes; i++)
@@ -51,14 +56,14 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene)
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		std::cout << "New Mesh: " << mesh->mName.C_Str() << "\n";
-		model.meshes.push_back(ProcessMesh(mesh, scene));
+		model.meshes.push_back(ProcessMesh(mesh, scene, scale, rotation));
 	}
 
 	for (uint i = 0; i < node->mNumChildren; i++)
-		ProcessNode(model, node->mChildren[i], scene);
+		ProcessNode(model, node->mChildren[i], scene, scale, rotation);
 }
 
-Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::vec3& scale, const glm::vec3& rotation)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
@@ -68,16 +73,11 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	for (uint i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		// positions
-		vertex.position.x = mesh->mVertices[i].x;
-		vertex.position.y = mesh->mVertices[i].y;
-		vertex.position.z = mesh->mVertices[i].z;
+		vertex.position += mesh->mVertices[i];
 		// normals
 		if (mesh->HasNormals())
 		{
-			vertex.normal.x = mesh->mNormals[i].x;
-			vertex.normal.y = mesh->mNormals[i].y;
-			vertex.normal.z = mesh->mNormals[i].z;
+			vertex.normal += mesh->mNormals[i];
 		}
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
@@ -86,24 +86,14 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
 			vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
 
-			// tangent
-			vertex.tangent.x = mesh->mTangents[i].x;
-			vertex.tangent.y = mesh->mTangents[i].y;
-			vertex.tangent.z = mesh->mTangents[i].z;
-
-			// bitangent
-			vertex.bitangent.x = mesh->mBitangents[i].x;
-			vertex.bitangent.y = mesh->mBitangents[i].y;
-			vertex.bitangent.z = mesh->mBitangents[i].z;
+			vertex.tangent += mesh->mTangents[i];
+			vertex.bitangent += mesh->mBitangents[i];
 		}
 		else
 		{
 			vertex.texCoords = glm::vec2(0.0f, 0.0f);
-
-			// -----------------------------------------------------------------------------
 			vertex.tangent = glm::vec3(0.0f, 0.0f, 0.0f);
 			vertex.bitangent = glm::vec3(0.0f, 0.0f, 0.0f);
-			// -----------------------------------------------------------------------------
 		}
 
 		vertices.push_back(vertex);

@@ -10,6 +10,8 @@
 
 #include <stb_image.h>
 
+#include <assimp/types.h>
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -40,6 +42,8 @@ constexpr float PI = 3.14159265359f;
 namespace glm
 {
 	typedef glm::vec<3, unsigned int> vec3u;
+	glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other);
+	glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other);
 }
 typedef unsigned int uint;
 
@@ -81,6 +85,7 @@ enum class StartOffset : GLint
 	Zero = 0
 };
 
+glm::vec3& assign(glm::vec3& vec, const aiVector3D& other);
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vector);
 std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
