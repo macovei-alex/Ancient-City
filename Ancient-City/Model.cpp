@@ -1,6 +1,8 @@
 #include "Model.h"
 
-#include "Utils.h"
+#include "utils.h"
+
+#include <gtc/matrix_transform.hpp>
 
 Model::Model()
 	: modelMatrix(glm::mat4(1.0f))

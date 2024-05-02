@@ -1,5 +1,12 @@
 #include "ModelLoader.h"
 
+#include <gtc/matrix_transform.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+#include <filesystem>
+namespace fs = std::filesystem;
+
 std::vector<Texture> ModelLoader::loadedTextures;
 fs::path ModelLoader::currentDirectory;
 

@@ -4,22 +4,8 @@
 #include <glew.h>
 
 #include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
-#include <gtc/type_ptr.hpp>
-#include <glfw3.h>
-
-#include <stb_image.h>
 
 #include <assimp/types.h>
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <filesystem>
-#include <format>
-#include <memory>
 
 #include "Logger.h"
 
@@ -87,7 +73,6 @@ enum class StartOffset : GLint
 	Zero = 0
 };
 
-glm::vec3& assign(glm::vec3& vec, const aiVector3D& other);
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vector);
 std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);

@@ -3,18 +3,21 @@
 #pragma comment (lib, "OpenGL32.lib")
 #pragma comment (lib, "assimp-vc143-mt.lib")
 
-#include "Utils.h"
+#include "utils.h"
 #include "KeyBinder.tpp"
 #include "Camera.h"
 #include "ShaderProgram.h"
-#include "Model.h"
 #include "LightSource.h"
 #include "ModelLoader.h"
 
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#ifndef GLEW_STATIC
+#define GLEW_STATIC
 #endif
+#include <glew.h>
+
+#include <glfw3.h>
+
+#include <gtc/matrix_transform.hpp>
 
 constexpr unsigned int SCREEN_WIDTH = 800;
 constexpr unsigned int SCREEN_HEIGHT = 600;

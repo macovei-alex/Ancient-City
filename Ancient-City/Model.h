@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Utils.h"
 #include "Mesh.h"
-#include "vertex.h"
-#include "texture.h"
+
+#include <vector>
 
 class Model
 {

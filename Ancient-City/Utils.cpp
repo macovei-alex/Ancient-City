@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#include <format>
+#include <sstream>
+
 glm::vec2& glm::operator+=(glm::vec2& vec, const aiVector2D& other)
 {
 	vec.x += other.x;

@@ -1,9 +1,9 @@
 #include "Mesh.h"
 
+#include <vector>
+
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures)
-	: vertexCount((uint)vertices.size()),
-	indexCount((uint)indices.size()),
-	vertices(vertices),
+	: vertices(vertices),
 	indices(indices),
 	textures(textures)
 {
@@ -11,9 +11,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices
 }
 
 Mesh::Mesh(const Mesh& mesh)
-	: vertexCount(mesh.vertexCount),
-	indexCount(mesh.indexCount),
-	vertices(mesh.vertices),
+	: vertices(mesh.vertices),
 	indices(mesh.indices),
 	textures(mesh.textures),
 	VAO(mesh.VAO),
@@ -24,9 +22,7 @@ Mesh::Mesh(const Mesh& mesh)
 }
 
 Mesh::Mesh(Mesh&& mesh)
-	: vertexCount(mesh.vertexCount),
-	indexCount(mesh.indexCount),
-	vertices(std::move(mesh.vertices)),
+	: vertices(std::move(mesh.vertices)),
 	indices(std::move(mesh.indices)),
 	textures(std::move(mesh.textures)),
 	VAO(mesh.VAO),
@@ -80,7 +76,7 @@ void Mesh::Render(const ShaderProgram& shader) const
 
 	// draw mesh
 	GLCall(glBindVertexArray(VAO));
-	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0));
 	GLCall(glBindVertexArray(0));
 
 	GLCall(glActiveTexture(GL_TEXTURE0));
@@ -94,10 +90,10 @@ void Mesh::InitBuffers()
 
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, vertexCount * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
+	GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
 
 	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(uint), indices.data(), GL_STATIC_DRAW));
+	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), indices.data(), GL_STATIC_DRAW));
 	
 	GLCall(glEnableVertexAttribArray(0));
 	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position)));

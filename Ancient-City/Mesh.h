@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Utils.h"
+#include <vector>
 
 #include "ShaderProgram.h"
 #include "texture.h"
@@ -19,9 +19,6 @@ private:
     void InitBuffers();
 
 public:
-    uint vertexCount;
-    uint indexCount;
-
     std::vector<Vertex> vertices;
     std::vector<uint> indices;
     std::vector<Texture> textures;

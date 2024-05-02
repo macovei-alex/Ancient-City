@@ -1,6 +1,8 @@
 #include "Camera.h"
 
-#include "Utils.h"
+#include "utils.h"
+
+#include <gtc/matrix_transform.hpp>
 
 const float Camera::Z_NEAR = 0.1f;
 const float Camera::Z_FAR = 500.0f;

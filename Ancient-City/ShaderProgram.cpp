@@ -1,6 +1,6 @@
 #include "ShaderProgram.h"
 
-#include "Utils.h"
+#include <sstream>
 
 ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
 {

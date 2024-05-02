@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Utils.h"
-
-#include "Model.h"
-#include "Mesh.h"
-#include "texture.h"
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include "Model.h"
+
+#include <vector>
 
 static class ModelLoader
 {
