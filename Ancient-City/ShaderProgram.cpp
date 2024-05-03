@@ -2,11 +2,6 @@
 
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
-{
-	Init(vertexPath, fragmentPath);
-}
-
 ShaderProgram::~ShaderProgram()
 {
 	GLCall(glDeleteProgram(ID));
@@ -15,11 +10,6 @@ ShaderProgram::~ShaderProgram()
 void ShaderProgram::Use() const
 {
 	GLCall(glUseProgram(ID));
-}
-
-GLuint ShaderProgram::GetID() const
-{
-	return ID;
 }
 
 void ShaderProgram::SetInt(const std::string& locationName, int value) const

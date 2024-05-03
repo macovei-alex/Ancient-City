@@ -34,7 +34,7 @@ std::vector<std::unique_ptr<Model>> models;
 static void DisplayFPS(double currentTime)
 {
 	static int frameCounter = 0;
-	static int lastPrint = (int)glfwGetTime();
+	static double lastPrint = glfwGetTime();
 
 	frameCounter++;
 
@@ -42,7 +42,7 @@ static void DisplayFPS(double currentTime)
 	{
 		std::cout << "FPS: " << frameCounter << std::endl;
 		frameCounter = 0;
-		lastPrint = (int)currentTime;
+		lastPrint = currentTime;
 	}
 }
 
@@ -232,7 +232,7 @@ int main()
 	LoadModels();
 
 	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f)));
-	sun->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, -2.0f));
+	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, -2.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -241,7 +241,6 @@ int main()
 		lastFrame = currentFrame;
 
 		models[0]->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
-		//lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		DisplayFPS(currentFrame);
 		PerformKeysActions(window);

@@ -5,13 +5,12 @@
 class ShaderProgram
 {
 public:
-	ShaderProgram() = delete;
-	ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath);
+	inline ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) { Init(vertexPath, fragmentPath); }
 	~ShaderProgram();
 
 	void Use() const;
 
-	GLuint GetID() const;
+	inline GLuint GetID() const { return ID; }
 
 	void SetInt(const std::string& locationName, int value) const;
 	void SetFloat(const std::string& locationName, float value) const;

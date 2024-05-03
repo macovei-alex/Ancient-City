@@ -78,3 +78,5 @@ std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
 std::string_view GetKeyPressed(int key);
+template<typename T>
+inline bool IsBetween(const T& val, const T& low, const T& high) { return val >= low && val <= high; }

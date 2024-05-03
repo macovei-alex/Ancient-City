@@ -6,27 +6,28 @@ class LightSource
 {
 public:
 	LightSource() = default;
-	LightSource(const Model& model);
-	LightSource(Model&& model);
+	inline LightSource(const Model& model) : model(model) {}
+	inline LightSource(Model&& model) : model(model) {}
 
-	float GetAmbientStrength() const;
-	float GetSpecularStrength() const;
-	float GetDiffuseStrength() const;
-	int GetSpecularExponent() const;
-	glm::vec3 GetColor() const;
+	inline float GetAmbientStrength() const { return ambientStrength; }
+	inline float GetSpecularStrength() const { return specularStrength; }
+	inline float GetDiffuseStrength() const { return diffuseStrength; }
+	inline int GetSpecularExponent() const { return specularExponent; }
+	inline glm::vec3 GetColor() const { return lightColor; }
 
-	void SetAmbientStrength(float ambientStrength);
-	void SetSpecularStrength(float specularStrength);
-	void SetDiffuseStrength(float diffuseStrength);
-	void SetSpecularExponent(int specularExponent);
-	void SetLightColor(const glm::vec3& lightColor);
+	inline void SetAmbientStrength(float ambientStrength) { this->ambientStrength = ambientStrength; }
+	inline void SetSpecularStrength(float specularStrength) { this->specularStrength = specularStrength; }
+	inline void SetDiffuseStrength(float diffuseStrength) { this->diffuseStrength = diffuseStrength; }
+	inline void SetSpecularExponent(int specularExponent) { this->specularExponent = specularExponent; }
+	inline void SetLightColor(const glm::vec3& lightColor) { this->lightColor = lightColor; }
 
 	void AddAmbientStrength(float difference);
 	void AddSpecularStrength(float difference);
 	void AddDiffuseStrength(float difference);
 	void MultiplySpecularExponent(float difference);
 
-	glm::vec3 GetPosition() const;
+	inline glm::vec3 GetPosition() const { return model.GetPosition(); }
+	inline void SetPosition(const glm::vec3& position) { model.SetPosition(position); }
 
 public:
 	Model model;
