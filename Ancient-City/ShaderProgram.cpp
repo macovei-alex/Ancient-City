@@ -9,12 +9,12 @@ ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& f
 
 ShaderProgram::~ShaderProgram()
 {
-	glDeleteProgram(ID);
+	GLCall(glDeleteProgram(ID));
 }
 
 void ShaderProgram::Use() const
 {
-	glUseProgram(ID);
+	GLCall(glUseProgram(ID));
 }
 
 GLuint ShaderProgram::GetID() const
@@ -24,22 +24,22 @@ GLuint ShaderProgram::GetID() const
 
 void ShaderProgram::SetInt(const std::string& locationName, int value) const
 {
-	glUniform1i(glGetUniformLocation(ID, locationName.c_str()), value);
+	GLCall(glUniform1i(glGetUniformLocation(ID, locationName.c_str()), value));
 }
 
 void ShaderProgram::SetFloat(const std::string& locationName, float value) const
 {
-	glUniform1f(glGetUniformLocation(ID, locationName.c_str()), value);
+	GLCall(glUniform1f(glGetUniformLocation(ID, locationName.c_str()), value));
 }
 
 void ShaderProgram::SetVec3(const std::string& locationName, const glm::vec3& value) const
 {
-	glUniform3fv(glGetUniformLocation(ID, locationName.c_str()), 1, &value[0]);
+	GLCall(glUniform3fv(glGetUniformLocation(ID, locationName.c_str()), 1, &value[0]));
 }
 
 void ShaderProgram::SetMat4(const std::string& locationName, const glm::mat4& mat) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(ID, locationName.c_str()), 1, GL_FALSE, &mat[0][0]);
+	GLCall(glUniformMatrix4fv(glGetUniformLocation(ID, locationName.c_str()), 1, GL_FALSE, &mat[0][0]));
 }
 
 void ShaderProgram::Init(const std::string& vertexPath, const std::string& fragmentPath)

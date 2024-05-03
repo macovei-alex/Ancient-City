@@ -174,7 +174,7 @@ static void RenderFrame()
 	textureShaders->Use();
 
 	textureShaders->SetVec3("LightColor", sun->GetColor());
-	textureShaders->SetVec3("LightPosition", sun->model.GetPosition());
+	textureShaders->SetVec3("LightPosition", sun->GetPosition());
 	textureShaders->SetVec3("ViewPosition", camera->GetPosition());
 
 	textureShaders->SetFloat("AmbientStrength", sun->GetAmbientStrength());
@@ -182,12 +182,12 @@ static void RenderFrame()
 	textureShaders->SetFloat("SpecularStrength", sun->GetSpecularStrength());
 	textureShaders->SetInt("SpecularExponent", sun->GetSpecularExponent());
 
+	textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
+	textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+
 	for (const auto& model : models)
 	{
 		textureShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
-		textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-		textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-
 		model->Render(*textureShaders);
 	}
 
@@ -231,8 +231,8 @@ int main()
 
 	LoadModels();
 
-	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.005f)));
-	sun->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, -1.0f));
+	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f)));
+	sun->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, -2.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{

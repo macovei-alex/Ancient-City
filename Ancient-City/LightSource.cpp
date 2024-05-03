@@ -93,3 +93,8 @@ void LightSource::MultiplySpecularExponent(float difference)
 {
 	SetSpecularExponent(this->specularExponent * difference);
 }
+
+glm::vec3 LightSource::GetPosition() const
+{
+	return model.GetPosition();
+}

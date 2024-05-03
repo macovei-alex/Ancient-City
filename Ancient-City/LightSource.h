@@ -26,6 +26,8 @@ public:
 	void AddDiffuseStrength(float difference);
 	void MultiplySpecularExponent(float difference);
 
+	glm::vec3 GetPosition() const;
+
 public:
 	Model model;
 

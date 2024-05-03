@@ -2,7 +2,7 @@
 
 in vec3 MidPosition;
 in vec3 MidNormal;
-in vec2 MidTextureCoords;
+in vec2 MidTexCoords;
 
 out vec4 OutColor;
 
@@ -33,10 +33,10 @@ void main()
 	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
 	vec3 specular = SpecularStrength * specularPower * LightColor;
 
-	vec4 textureColor = texture(texture_diffuse1, MidTextureCoords);
-	vec3 result = (ambient + diffuse + specular) * textureColor.rgb;
+	vec4 texColor = texture(texture_diffuse1, MidTexCoords);
+	vec3 result = (ambient + diffuse + specular) * texColor.rgb;
 
-	OutColor = vec4(result, textureColor.a);
+	OutColor = vec4(result, texColor.a);
 
 
 	// Without lighting
