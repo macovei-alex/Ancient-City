@@ -23,9 +23,7 @@ public:
     std::vector<uint> indices;
     std::vector<Texture> textures;
 
-    GLuint VAO;
-
 private:
-    GLuint VBO, EBO;
+    GLuint VAO, VBO, EBO;
 };
 

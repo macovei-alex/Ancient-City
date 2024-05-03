@@ -27,10 +27,11 @@ double lastFrame = 0.0f;
 
 ShaderProgram* modelShaders, * lightingShaders, * textureShaders;
 Camera* camera;
-Model* model;
-LightSource* lightSource;
+LightSource* sun;
 
-void DisplayFPS(double currentTime)
+std::vector<std::unique_ptr<Model>> models;
+
+static void DisplayFPS(double currentTime)
 {
 	static int frameCounter = 0;
 	static int lastPrint = (int)glfwGetTime();
@@ -45,12 +46,12 @@ void DisplayFPS(double currentTime)
 	}
 }
 
-void PerformKeysActions(GLFWwindow* window)
+static void PerformKeysActions(GLFWwindow* window)
 {
 	float time = deltaTime;
-
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		time *= Camera::SPEED_BOOST_MULTIPLIER;
+	
+	/*if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		time *= Camera::SPEED_BOOST_MULTIPLIER;*/
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera->MoveForward(time);
@@ -60,13 +61,13 @@ void PerformKeysActions(GLFWwindow* window)
 		camera->MoveLeft(time);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera->MoveRight(time);
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera->MoveUp(time);
-	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+	if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		camera->MoveDown(time);
 }
 
-void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
@@ -79,52 +80,51 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-		lightSource->SetAmbientStrength(lightSource->GetAmbientStrength() + 0.1f);
+		sun->SetAmbientStrength(sun->GetAmbientStrength() + 0.1f);
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
-		lightSource->SetAmbientStrength(lightSource->GetAmbientStrength() - 0.1f);
+		sun->SetAmbientStrength(sun->GetAmbientStrength() - 0.1f);
 	else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-		lightSource->SetSpecularStrength(lightSource->GetSpecularStrength() + 0.1f);
+		sun->SetSpecularStrength(sun->GetSpecularStrength() + 0.1f);
 	else if (key == GLFW_KEY_V && action == GLFW_PRESS)
-		lightSource->SetSpecularStrength(lightSource->GetSpecularStrength() - 0.1f);
+		sun->SetSpecularStrength(sun->GetSpecularStrength() - 0.1f);
 	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
-		lightSource->SetDiffuseStrength(lightSource->GetDiffuseStrength() + 0.1f);
+		sun->SetDiffuseStrength(sun->GetDiffuseStrength() + 0.1f);
 	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
-		lightSource->SetDiffuseStrength(lightSource->GetDiffuseStrength() - 0.1f);
+		sun->SetDiffuseStrength(sun->GetDiffuseStrength() - 0.1f);
 	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-		lightSource->SetSpecularExponent(lightSource->GetSpecularExponent() * 2);
+		sun->SetSpecularExponent(sun->GetSpecularExponent() * 2);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
-		lightSource->SetSpecularExponent(lightSource->GetSpecularExponent() / 2);
+		sun->SetSpecularExponent(sun->GetSpecularExponent() / 2);
 }
 
-void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
+static void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	camera->Set(width, height);
 }
 
-void MouseCallback(GLFWwindow* window, double deltaX, double deltaY)
+static void MouseCallback(GLFWwindow* window, double deltaX, double deltaY)
 {
 	camera->HandlMouseMovement(static_cast<float>(deltaX), static_cast<float>(deltaY));
 }
 
-void ScrollCallback(GLFWwindow* window, double xoffset, double yOffset)
+static void ScrollCallback(GLFWwindow* window, double xoffset, double yOffset)
 {
 	camera->HandleMouseScroll(static_cast<float>(yOffset));
 }
 
-void InitializeGraphics()
+static void InitializeGraphics()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // culoarea de fond a ecranului
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_LIGHTING);
 
-	// Eliminam cullingul deoarece modelele vor avea doar fata exterioara
 	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 }
 
-GLFWwindow* InitializeWindow()
+static GLFWwindow* InitializeWindow()
 {
 	// glfw: initialize and configure
 	glfwInit();
@@ -140,6 +140,7 @@ GLFWwindow* InitializeWindow()
 		glfwTerminate();
 		return nullptr;
 	}
+	glfwSetWindowPos(window, 400, 200);
 
 	glfwMakeContextCurrent(window);
 	glfwSetKeyCallback(window, KeyCallback);
@@ -147,55 +148,67 @@ GLFWwindow* InitializeWindow()
 	glfwSetCursorPosCallback(window, MouseCallback);
 	glfwSetScrollCallback(window, ScrollCallback);
 
-	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	glewInit();
 	return window;
 }
 
-void Clean()
+static void Clean()
 {
 	delete modelShaders, lightingShaders;
 	delete camera;
-	delete model;
-	// delete lightSource;
+	delete sun;
 
 	glfwTerminate();
 }
 
-void RenderFrame()
+static void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	textureShaders->Use();
 
-	textureShaders->SetVec3("LightColor", lightSource->GetColor());
-	textureShaders->SetVec3("LightPosition", lightSource->model.GetPosition());
+	textureShaders->SetVec3("LightColor", sun->GetColor());
+	textureShaders->SetVec3("LightPosition", sun->model.GetPosition());
 	textureShaders->SetVec3("ViewPosition", camera->GetPosition());
 
-	textureShaders->SetFloat("AmbientStrength", lightSource->GetAmbientStrength());
-	textureShaders->SetFloat("DiffuseStrength", lightSource->GetDiffuseStrength());
-	textureShaders->SetFloat("SpecularStrength", lightSource->GetSpecularStrength());
-	textureShaders->SetInt("SpecularExponent", lightSource->GetSpecularExponent());
+	textureShaders->SetFloat("AmbientStrength", sun->GetAmbientStrength());
+	textureShaders->SetFloat("DiffuseStrength", sun->GetDiffuseStrength());
+	textureShaders->SetFloat("SpecularStrength", sun->GetSpecularStrength());
+	textureShaders->SetInt("SpecularExponent", sun->GetSpecularExponent());
 
-	textureShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
-	textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	for (const auto& model : models)
+	{
+		textureShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
+		textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
+		textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 
-	model->Render(*textureShaders);
+		model->Render(*textureShaders);
+	}
 
 	// light source
 
 	modelShaders->Use();
 
-	modelShaders->SetMat4("ModelMatrix", lightSource->model.GetModelMatrix());
+	modelShaders->SetMat4("ModelMatrix", sun->model.GetModelMatrix());
 	modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
 	modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 
-	lightSource->model.Render(*modelShaders);
+	sun->model.Render(*modelShaders);
+}
+
+static void LoadModels()
+{
+	glm::mat4 onLoadTransforms = glm::mat4(1.0f);
+	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
+	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
+	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	models.emplace_back(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms));
+	models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1), glm::vec3(2, 0, 0))));
 }
 
 int main()
@@ -213,15 +226,10 @@ int main()
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	glm::mat4 onLoadTransforms = glm::mat4(1.0f);
-	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
-	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
-	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	model = ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms);
+	LoadModels();
 
-	lightSource = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.005f)));
-	lightSource->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, 0.0f));
+	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.005f)));
+	sun->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, 0.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -229,7 +237,7 @@ int main()
 		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
 
-		model->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
+		models[0]->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 		//lightSource->model.Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		DisplayFPS(currentFrame);

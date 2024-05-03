@@ -16,9 +16,6 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{e16cbec0-f8ac-40de-a534-f0061b026b4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Models">
-      <UniqueIdentifier>{23d52904-3b2c-46ee-b2d5-362e23e6a746}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Other">
       <UniqueIdentifier>{3bc6b523-8693-4b34-a56a-455e1bda960d}</UniqueIdentifier>
     </Filter>
