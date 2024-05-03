@@ -2,9 +2,8 @@
 
 #define GLEW_STATIC
 #include <glew.h>
-
+#include <glfw3.h>
 #include <glm.hpp>
-
 #include <assimp/types.h>
 
 #include "Logger.h"
@@ -78,3 +77,4 @@ std::ostream& operator<<(std::ostream& os, const glm::vec3& vector);
 std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
+std::string_view GetKeyPressed(int key);

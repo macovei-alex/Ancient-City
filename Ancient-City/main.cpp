@@ -50,8 +50,8 @@ static void PerformKeysActions(GLFWwindow* window)
 {
 	float time = deltaTime;
 	
-	/*if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		time *= Camera::SPEED_BOOST_MULTIPLIER;*/
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		time *= Camera::SPEED_BOOST_MULTIPLIER;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera->MoveForward(time);
@@ -80,21 +80,24 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	}
 
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-		sun->SetAmbientStrength(sun->GetAmbientStrength() + 0.1f);
+		sun->AddAmbientStrength(0.1f);
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
-		sun->SetAmbientStrength(sun->GetAmbientStrength() - 0.1f);
+		sun->AddAmbientStrength(-0.1f);
 	else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-		sun->SetSpecularStrength(sun->GetSpecularStrength() + 0.1f);
+		sun->AddSpecularStrength(0.1f);
 	else if (key == GLFW_KEY_V && action == GLFW_PRESS)
-		sun->SetSpecularStrength(sun->GetSpecularStrength() - 0.1f);
+		sun->AddSpecularStrength(-0.1f);
 	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
-		sun->SetDiffuseStrength(sun->GetDiffuseStrength() + 0.1f);
+		sun->AddDiffuseStrength(0.1f);
 	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
-		sun->SetDiffuseStrength(sun->GetDiffuseStrength() - 0.1f);
+		sun->AddDiffuseStrength(-0.1f);
 	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-		sun->SetSpecularExponent(sun->GetSpecularExponent() * 2);
+		sun->MultiplySpecularExponent(2);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
-		sun->SetSpecularExponent(sun->GetSpecularExponent() / 2);
+		sun->MultiplySpecularExponent(1.0f / 2);
+
+	if(action == GLFW_PRESS)
+		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
 }
 
 static void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -229,7 +232,7 @@ int main()
 	LoadModels();
 
 	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.005f)));
-	sun->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, 0.0f));
+	sun->model.SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, -1.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{

@@ -73,3 +73,23 @@ void LightSource::SetLightColor(const glm::vec3& lightColor)
 {
 	this->lightColor = lightColor;
 }
+
+void LightSource::AddAmbientStrength(float difference)
+{
+	SetAmbientStrength(this->ambientStrength + difference);
+}
+
+void LightSource::AddSpecularStrength(float difference)
+{
+	SetSpecularStrength(this->specularStrength + difference);
+}
+
+void LightSource::AddDiffuseStrength(float difference)
+{
+	SetDiffuseStrength(this->diffuseStrength + difference);
+}
+
+void LightSource::MultiplySpecularExponent(float difference)
+{
+	SetSpecularExponent(this->specularExponent * difference);
+}

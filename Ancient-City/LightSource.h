@@ -21,6 +21,11 @@ public:
 	void SetSpecularExponent(int specularExponent);
 	void SetLightColor(const glm::vec3& lightColor);
 
+	void AddAmbientStrength(float difference);
+	void AddSpecularStrength(float difference);
+	void AddDiffuseStrength(float difference);
+	void MultiplySpecularExponent(float difference);
+
 public:
 	Model model;
 
