@@ -73,41 +73,10 @@ void Camera::MoveCamera(float xOffset, float yOffset, float zOffset)
 	position += zOffset * forward * Camera::SPEED_FACTOR;
 }
 
-void Camera::MoveForward(float distance)
-{
-	MoveCamera(0, 0, distance);
-}
-
-void Camera::MoveBackward(float distance)
-{
-	MoveCamera(0, 0, -distance);
-}
-
-void Camera::MoveRight(float distance)
-{
-	MoveCamera(distance, 0, 0);
-}
-
-void Camera::MoveLeft(float distance)
-{
-	MoveCamera(-distance, 0, 0);
-}
-
-void Camera::MoveUp(float distance)
-{
-	MoveCamera(0, distance, 0);
-}
-
-void Camera::MoveDown(float distance)
-{
-	MoveCamera(0, -distance, 0);
-}
-
-void Camera::HandlMouseMovement(float deltaX, float deltaY)
+void Camera::HandleMouseMovement(float deltaX, float deltaY)
 {
 	ProcessMouseMovement((deltaX - lastX) * MOUSE_SENSITIVITY, (lastY - deltaY) * MOUSE_SENSITIVITY);
-	lastX = deltaX;
-	lastY = deltaY;
+	SetLastMousePos(deltaX, deltaY);
 	UpdateCameraVectors();
 }
 

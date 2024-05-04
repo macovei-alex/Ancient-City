@@ -5,9 +5,12 @@
 #include <glfw3.h>
 #include <glm.hpp>
 #include <assimp/types.h>
+#include <format>
+#include <filesystem>
 
 #include "Logger.h"
 
+#define nameof(var) #var
 #define dimof(vec) (sizeof(vec) / sizeof(vec[0])
 #define LOG(message, level) Logger::cout(std::format("{}:{} - {}", fs::path(__FILE__).filename().string(), __LINE__, message), level)
 #define ASSERT(cond) if (!(cond)) __debugbreak();
@@ -80,3 +83,4 @@ bool GLLogCall(const char* function, const char* file, int line);
 std::string_view GetKeyPressed(int key);
 template<typename T>
 inline bool IsBetween(const T& val, const T& low, const T& high) { return val >= low && val <= high; }
+std::string TrimBeginEnd(const std::string& str, const std::string& beginning, const std::string& end);

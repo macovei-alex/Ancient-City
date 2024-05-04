@@ -14,15 +14,17 @@ public:
 
 	void MoveCamera(float xOffset, float yOffset, float zOffset);
 
-	void MoveForward(float distance);
-	void MoveBackward(float distance);
-	void MoveRight(float distance);
-	void MoveLeft(float distance);
-	void MoveUp(float distance);
-	void MoveDown(float distance);
+	inline void MoveForward(float distance) { MoveCamera(0, 0, distance); }
+	inline void MoveBackward(float distance) { MoveCamera(0, 0, -distance); }
+	inline void MoveRight(float distance) { MoveCamera(distance, 0, 0); }
+	inline void MoveLeft(float distance) { MoveCamera(-distance, 0, 0); }
+	inline void MoveUp(float distance) { MoveCamera(0, distance, 0); }
+	inline void MoveDown(float distance) { MoveCamera(0, -distance, 0); }
 
-	void HandlMouseMovement(float xPos, float yPos);
+	void HandleMouseMovement(float xPos, float yPos);
 	void HandleMouseScroll(float yOffset);
+
+	inline void SetLastMousePos(float x, float y) { lastX = x; lastY = y; }
 
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);

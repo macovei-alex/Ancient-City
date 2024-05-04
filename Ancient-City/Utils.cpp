@@ -1,6 +1,5 @@
 #include "utils.h"
 
-#include <format>
 #include <sstream>
 #include <unordered_map>
 
@@ -126,4 +125,16 @@ std::string_view GetKeyPressed(int key)
 
 	auto it = keyMap.find(key);
 	return it != keyMap.end() ? it->second : "INVALID";
+}
+
+std::string TrimBeginEnd(const std::string& str, const std::string& begin, const std::string& end)
+{
+	size_t startPos = str.find(begin);
+	size_t endPos = str.rfind(end);
+
+	if (startPos == std::string::npos || endPos == std::string::npos)
+		return str;
+
+	size_t length = endPos - startPos - begin.length();
+	return str.substr(startPos + begin.length(), length);
 }

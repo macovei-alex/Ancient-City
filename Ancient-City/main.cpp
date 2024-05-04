@@ -9,15 +9,16 @@
 #include "ShaderProgram.h"
 #include "LightSource.h"
 #include "ModelLoader.h"
-
-#ifndef GLEW_STATIC
-#define GLEW_STATIC
-#endif
-#include <glew.h>
-
-#include <glfw3.h>
+#include "hotReload.hpp"
 
 #include <gtc/matrix_transform.hpp>
+
+struct Options
+{
+	bool hotReloadShaders = false;
+};
+
+Options options;
 
 constexpr unsigned int SCREEN_WIDTH = 800;
 constexpr unsigned int SCREEN_HEIGHT = 600;
@@ -25,9 +26,9 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
-ShaderProgram* modelShaders, * lightingShaders, * textureShaders;
-Camera* camera;
-LightSource* sun;
+ShaderProgram* modelShaders = nullptr, * lightingShaders = nullptr, * textureShaders = nullptr;
+Camera* camera = nullptr;
+LightSource* sun = nullptr;
 
 std::vector<std::unique_ptr<Model>> models;
 
@@ -49,7 +50,7 @@ static void DisplayFPS(double currentTime)
 static void PerformKeysActions(GLFWwindow* window)
 {
 	float time = deltaTime;
-	
+
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		time *= Camera::SPEED_BOOST_MULTIPLIER;
 
@@ -61,9 +62,9 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveLeft(time);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera->MoveRight(time);
-	if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera->MoveUp(time);
-	if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		camera->MoveDown(time);
 }
 
@@ -96,7 +97,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(1.0f / 2);
 
-	if(action == GLFW_PRESS)
+	if (action == GLFW_PRESS)
 		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
 }
 
@@ -107,7 +108,10 @@ static void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 
 static void MouseCallback(GLFWwindow* window, double deltaX, double deltaY)
 {
-	camera->HandlMouseMovement(static_cast<float>(deltaX), static_cast<float>(deltaY));
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		camera->HandleMouseMovement(static_cast<float>(deltaX), static_cast<float>(deltaY));
+	else
+		camera->SetLastMousePos(static_cast<float>(deltaX), static_cast<float>(deltaY));
 }
 
 static void ScrollCallback(GLFWwindow* window, double xoffset, double yOffset)
@@ -151,7 +155,7 @@ static GLFWwindow* InitializeWindow()
 	glfwSetCursorPosCallback(window, MouseCallback);
 	glfwSetScrollCallback(window, ScrollCallback);
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	glewInit();
@@ -165,6 +169,7 @@ static void Clean()
 	delete sun;
 
 	glfwTerminate();
+	CleanHotReloadHandles();
 }
 
 static void RenderFrame()
@@ -191,7 +196,7 @@ static void RenderFrame()
 		model->Render(*textureShaders);
 	}
 
-	// light source
+	// sun
 
 	modelShaders->Use();
 
@@ -214,8 +219,42 @@ static void LoadModels()
 	models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1), glm::vec3(2, 0, 0))));
 }
 
-int main()
+static void LoadShader(const std::string& shaderFilesIdentifier)
 {
+	if (shaderFilesIdentifier == "model")
+	{
+		if (modelShaders != nullptr)
+			delete modelShaders;
+		modelShaders = new ShaderProgram("Shaders\\modelVS.glsl", "Shaders\\modelFS.glsl");
+	}
+
+	else if (shaderFilesIdentifier == "lighting")
+	{
+		if (lightingShaders != nullptr)
+			delete lightingShaders;
+		lightingShaders = new ShaderProgram("Shaders\\lightingVS.glsl", "Shaders\\lightingFS.glsl");
+	}
+
+	else if (shaderFilesIdentifier == "texture")
+	{
+		if (textureShaders != nullptr)
+			delete textureShaders;
+		textureShaders = new ShaderProgram("Shaders\\textureVS.glsl", "Shaders\\textureFS.glsl");
+	}
+}
+
+int main(int argc, char* argv[])
+{
+	if (argc > 1)
+	{
+		for (int i = 1; i < argc; i++)
+			if (std::strcmp(argv[i], "-r") == 0 || std::strcmp(argv[i], "--hotRealoadShaders") == 0)
+			{
+				options.hotReloadShaders = true;
+				AddHotReloadDir("Shaders\\");
+			}
+	}
+
 	GLFWwindow* window = InitializeWindow();
 	if (window == nullptr)
 	{
@@ -223,9 +262,9 @@ int main()
 	}
 	InitializeGraphics();
 
-	modelShaders = new ShaderProgram("Shaders\\modelVS.glsl", "Shaders\\modelFS.glsl");
-	lightingShaders = new ShaderProgram("Shaders\\lightingVS.glsl", "Shaders\\lightingFS.glsl");
-	textureShaders = new ShaderProgram("Shaders\\textureVS.glsl", "Shaders\\textureFS.glsl");
+	LoadShader("model");
+	LoadShader("lighting");
+	LoadShader("texture");
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -241,6 +280,18 @@ int main()
 		lastFrame = currentFrame;
 
 		models[0]->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
+
+		if (options.hotReloadShaders)
+		{
+			std::vector<std::string> changedFiles = std::move(CheckHotReload());
+			for (const auto& file : changedFiles)
+			{
+				std::string shaderIdentifier = file[file.size() - 7] == 'V' 
+					? TrimBeginEnd(file, "Shaders\\", "VS.glsl")
+					: TrimBeginEnd(file, "Shaders\\", "FS.glsl");
+				LoadShader(shaderIdentifier);
+			}
+		}
 
 		DisplayFPS(currentFrame);
 		PerformKeysActions(window);
