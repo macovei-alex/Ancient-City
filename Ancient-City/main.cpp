@@ -12,6 +12,7 @@
 #include "hotReload.hpp"
 
 #include <gtc/matrix_transform.hpp>
+#include <thread>
 
 struct Options
 {
@@ -216,30 +217,35 @@ static void LoadModels()
 	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	models.emplace_back(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms));
-	models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1), glm::vec3(2, 0, 0))));
+	models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f))));
 }
 
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
+	ShaderProgram** targetedShaderPtr = nullptr;
 	if (shaderFilesIdentifier == "model")
-	{
-		if (modelShaders != nullptr)
-			delete modelShaders;
-		modelShaders = new ShaderProgram("Shaders\\modelVS.glsl", "Shaders\\modelFS.glsl");
-	}
+		targetedShaderPtr = &modelShaders;
 
 	else if (shaderFilesIdentifier == "lighting")
-	{
-		if (lightingShaders != nullptr)
-			delete lightingShaders;
-		lightingShaders = new ShaderProgram("Shaders\\lightingVS.glsl", "Shaders\\lightingFS.glsl");
-	}
+		targetedShaderPtr = &lightingShaders;
 
 	else if (shaderFilesIdentifier == "texture")
+		targetedShaderPtr = &textureShaders;
+
+	else
 	{
-		if (textureShaders != nullptr)
-			delete textureShaders;
-		textureShaders = new ShaderProgram("Shaders\\textureVS.glsl", "Shaders\\textureFS.glsl");
+		std::cout << "Unknown shader identifier: " << shaderFilesIdentifier << std::endl;
+		return;
+	}
+
+	ShaderProgram* newShader = new ShaderProgram(
+		std::format("Shaders\\{}VS.glsl", shaderFilesIdentifier),
+		std::format("Shaders\\{}FS.glsl", shaderFilesIdentifier));
+	if (newShader->GetID() != -1)
+	{
+		if (*targetedShaderPtr != nullptr)
+			delete *targetedShaderPtr;
+		*targetedShaderPtr = newShader;
 	}
 }
 
@@ -271,7 +277,7 @@ int main(int argc, char* argv[])
 	LoadModels();
 
 	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f)));
-	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 2.0f, -2.0f));
+	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
 	while (!glfwWindowShouldClose(window))
 	{

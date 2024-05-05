@@ -5,7 +5,7 @@
 class ShaderProgram
 {
 public:
-	inline ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) { Init(vertexPath, fragmentPath); }
+	ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath);
 	~ShaderProgram();
 
 	void Use() const;
@@ -18,8 +18,8 @@ public:
 	void SetMat4(const std::string& locationName, const glm::mat4& mat) const;
 
 private:
-	void Init(const std::string& vertexPath, const std::string& fragmentPath);
-	void CheckCompileErrors(GLuint shaderStencilTesting, const std::string& type);
+	bool Init(const std::string& vertexPath, const std::string& fragmentPath);
+	bool CheckCompileErrors(GLuint shaderStencilTesting, const std::string& type);
 
 private:
 	GLuint ID;

@@ -2,9 +2,16 @@
 
 #include <sstream>
 
+ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
+{
+	if (!Init(vertexPath, fragmentPath))
+		ID = -1;
+}
+
 ShaderProgram::~ShaderProgram()
 {
-	GLCall(glDeleteProgram(ID));
+	if(ID != -1)
+		GLCall(glDeleteProgram(ID));
 }
 
 void ShaderProgram::Use() const
@@ -32,7 +39,7 @@ void ShaderProgram::SetMat4(const std::string& locationName, const glm::mat4& ma
 	GLCall(glUniformMatrix4fv(glGetUniformLocation(ID, locationName.c_str()), 1, GL_FALSE, &mat[0][0]));
 }
 
-void ShaderProgram::Init(const std::string& vertexPath, const std::string& fragmentPath)
+bool ShaderProgram::Init(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -70,24 +77,29 @@ void ShaderProgram::Init(const std::string& vertexPath, const std::string& fragm
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex, 1, &vShaderCode, NULL);
 	glCompileShader(vertex);
-	CheckCompileErrors(vertex, "VERTEX");
+	if (CheckCompileErrors(vertex, "VERTEX"))
+		return false;
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment, 1, &fShaderCode, NULL);
 	glCompileShader(fragment);
-	CheckCompileErrors(fragment, "FRAGMENT");
+	if (CheckCompileErrors(fragment, "FRAGMENT"))
+		return false;
 
 	ID = glCreateProgram();
 	glAttachShader(ID, vertex);
 	glAttachShader(ID, fragment);
 	glLinkProgram(ID);
-	CheckCompileErrors(ID, "PROGRAM");
+	if(CheckCompileErrors(ID, "PROGRAM"))
+		return false;
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+
+	return true;
 }
 
-void ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& type)
+bool ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& type)
 {
 	GLint success;
 	GLchar infoLog[1024];
@@ -98,10 +110,8 @@ void ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::s
 		if (!success)
 		{
 			glGetShaderInfoLog(shaderStencilTesting, 1024, NULL, infoLog);
-			std::cout << "ERROR when compiling shader of type: " << type << "\n"
-				<< infoLog << "\n ---------------------------------------------------"
-				<< std::endl;
-			throw std::runtime_error("ERROR when compiling shader of type: " + type);
+			std::cout << "ERROR when compiling shader of type: " << type << '\n' << infoLog << "\n---------------------------------------------------\n";
+			return true;
 		}
 	}
 	else
@@ -110,10 +120,10 @@ void ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::s
 		if (!success)
 		{
 			glGetProgramInfoLog(shaderStencilTesting, 1024, NULL, infoLog);
-			std::cout << "ERROR when linking program of type: " << type << "\n"
-				<< infoLog << "\n ---------------------------------------------------"
-				<< std::endl;
-			throw std::runtime_error("ERROR when linking program of type: " + type);
+			std::cout << "ERROR when linking program of type: " << type << '\n' << infoLog << "\n---------------------------------------------------\n";
+			return true;
 		}
 	}
+
+	return false;
 }
