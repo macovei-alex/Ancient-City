@@ -157,6 +157,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="utils.cpp" />
+    <ClCompile Include="VAO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="VAO.h" />
     <ClInclude Include="vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

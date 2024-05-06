@@ -91,6 +91,7 @@ void Skybox::Render(Shader& skyboxShader, const Camera& camera) const
 {
 	skyboxShader.Use();
 	GLCall(glDepthFunc(GL_LEQUAL));
+	GLCall(glCullFace(GL_FRONT));
 
 	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
 	glm::mat4 projection = camera.GetProjectionMatrix();
@@ -103,9 +104,10 @@ void Skybox::Render(Shader& skyboxShader, const Camera& camera) const
 
 	GLCall(glActiveTexture(GL_TEXTURE0));
 	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
-	GLCall(glDrawElements(GL_TRIANGLES, Skybox::indices.size(), GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, (GLsizei)Skybox::indices.size(), GL_UNSIGNED_INT, 0));
 
 	GLCall(glBindVertexArray(0));
 
 	GLCall(glDepthFunc(GL_LESS));
+	GLCall(glCullFace(GL_BACK));
 }

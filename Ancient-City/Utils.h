@@ -11,7 +11,7 @@
 #include "Logger.h"
 
 #define nameof(var) #var
-#define dimof(vec) (sizeof(vec) / sizeof(vec[0])
+#define dimof(vec) (sizeof(vec) / sizeof(vec[0]))
 #define LOG(message, level) Logger::cout(std::format("{}:{} - {}", fs::path(__FILE__).filename().string(), __LINE__, message), level)
 #define ASSERT(cond) if (!(cond)) __debugbreak();
 
