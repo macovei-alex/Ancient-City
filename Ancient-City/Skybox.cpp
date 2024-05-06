@@ -65,22 +65,28 @@ Skybox::Skybox(const std::string& dirPath)
 	GLCall(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
 
 	// This might help with seams on some systems
-	// GLCall(glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS));
+	GLCall(glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS));
 
 	for (int i = 0; i < Skybox::facesCubemap.size(); i++)
 	{
 		int width, height, nrChannels;
+
+		if(i == 0)
+			stbi_set_flip_vertically_on_load(true);
+		else
+			stbi_set_flip_vertically_on_load(false);
+
 		unsigned char* data = stbi_load((dirPath + Skybox::facesCubemap[i]).c_str(), &width, &height, &nrChannels, 0);
 		if (data)
 		{
-			stbi_set_flip_vertically_on_load(false);
 			GLCall(glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
 			stbi_image_free(data);
 		}
 		else
 		{
-			LOG(std::format("Failed to load texture: \n", facesCubemap[i]), Logger::Level::Error);
+			LOG(std::format("Failed to load texture: {}\n", dirPath + facesCubemap[i]), Logger::Level::Error);
 			stbi_image_free(data);
+			return;
 		}
 	}
 
