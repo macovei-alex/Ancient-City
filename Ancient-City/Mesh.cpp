@@ -2,36 +2,30 @@
 
 #include <vector>
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures)
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures) noexcept
 	: vertices(vertices),
 	indices(indices),
-	textures(textures)
-{
-	InitBuffers();
-}
-
-Mesh::Mesh(const Mesh& mesh)
-	: vertices(mesh.vertices),
-	indices(mesh.indices),
-	textures(mesh.textures),
-	VAO(mesh.VAO),
-	VBO(mesh.VBO),
-	EBO(mesh.EBO)
+	textures(textures),
+	vao(vertices, indices)
 {
 	// empty
 }
 
-Mesh::Mesh(Mesh&& mesh)
+Mesh::Mesh(const Mesh& mesh) noexcept
+	: vertices(mesh.vertices),
+	indices(mesh.indices),
+	textures(mesh.textures),
+	vao(mesh.vao)
+{
+	// empty
+}
+
+Mesh::Mesh(Mesh&& mesh) noexcept
 	: vertices(std::move(mesh.vertices)),
 	indices(std::move(mesh.indices)),
 	textures(std::move(mesh.textures)),
-	VAO(mesh.VAO),
-	VBO(mesh.VBO),
-	EBO(mesh.EBO)
+	vao(std::move(mesh.vao))
 {
-	mesh.VAO = 0;
-	mesh.VBO = 0;
-	mesh.EBO = 0;
 }
 
 void Mesh::Render(const Shader& shader) const
@@ -64,48 +58,25 @@ void Mesh::Render(const Shader& shader) const
 		}
 
 		std::string textureName = textures[i].name + number;
-		GLCall(glGetUniformLocation(shader.GetID(), textureName.c_str()));
 
 		// now set the sampler to the correct texture unit
-		GLuint location = glGetUniformLocation(shader.GetID(), textureName.c_str());
-		GLCall(glUniform1i(location, (int)i));
+		shader.SetInt(textureName, static_cast<int>(i));
 
 		// and finally bind the texture
 		GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
 	}
 
 	// draw mesh
-	GLCall(glBindVertexArray(VAO));
+	vao.Bind();
 	GLCall(glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, 0));
-	GLCall(glBindVertexArray(0));
+	vao.Unbind();
 
 	GLCall(glActiveTexture(GL_TEXTURE0));
 }
 
+/*
 void Mesh::InitBuffers()
 {
-	GLCall(glGenVertexArrays(1, &VAO));
-	GLCall(glGenBuffers(1, &VBO));
-	GLCall(glGenBuffers(1, &EBO));
-
-	GLCall(glBindVertexArray(VAO));
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW));
-
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), indices.data(), GL_STATIC_DRAW));
-	
-	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position)));
-
-	GLCall(glEnableVertexAttribArray(1));
-	GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal)));
-
-	GLCall(glEnableVertexAttribArray(2));
-	GLCall(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texCoords)));
-
-	/*
-	
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tangent));
 
@@ -117,7 +88,7 @@ void Mesh::InitBuffers()
 
 	glEnableVertexAttribArray(6);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, weights));
-	*/
 
-	GLCall(glBindVertexArray(0));
+	GLCall(vao.Unbind());
 }
+*/

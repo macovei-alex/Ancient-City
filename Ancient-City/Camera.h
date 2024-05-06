@@ -54,4 +54,5 @@ public:
 	static const float SPEED_BOOST_MULTIPLIER;
 	static const glm::vec3 START_POSITION;
 	static const glm::vec3 START_FACING;
+	static const float MOUSE_SCROLL_MULTIPLIER;
 };

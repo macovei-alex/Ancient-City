@@ -4,19 +4,16 @@
 
 #include "Shader.h"
 #include "texture.h"
-#include "vertex.h"
+#include "VAO.h"
 
 class Mesh
 {
 public:
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures);
-    Mesh(const Mesh& mesh);
-    Mesh(Mesh&& mesh);
+    Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures) noexcept;
+    Mesh(const Mesh& mesh) noexcept;
+    Mesh(Mesh&& mesh) noexcept;
 
     void Render(const Shader& shader) const;
-
-private:
-    void InitBuffers();
 
 public:
     std::vector<Vertex> vertices;
@@ -24,6 +21,6 @@ public:
     std::vector<Texture> textures;
 
 private:
-    GLuint VAO, VBO, EBO;
+    VAO vao;
 };
 

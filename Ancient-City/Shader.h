@@ -1,7 +1,5 @@
 #pragma once
 
-#include <bitset>
-
 #include "utils.h"
 #include "Camera.h"
 
