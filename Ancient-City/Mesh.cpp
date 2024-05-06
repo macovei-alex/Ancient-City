@@ -34,7 +34,7 @@ Mesh::Mesh(Mesh&& mesh)
 	mesh.EBO = 0;
 }
 
-void Mesh::Render(const ShaderProgram& shader) const
+void Mesh::Render(const Shader& shader) const
 {
 	// bind appropriate textures
 	uint diffuseNr = 1;

@@ -3,14 +3,14 @@
 #include <sstream>
 #include <unordered_map>
 
-glm::vec2& glm::operator+=(glm::vec2& vec, const aiVector2D& other)
+glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other)
 {
 	vec.x += other.x;
 	vec.y += other.y;
 	return vec;
 }
 
-glm::vec3& glm::operator+=(glm::vec3& vec, const aiVector3D& other)
+glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other)
 {
 	vec.x += other.x;
 	vec.y += other.y;
@@ -18,12 +18,12 @@ glm::vec3& glm::operator+=(glm::vec3& vec, const aiVector3D& other)
 	return vec;
 }
 
-glm::vec3 glm::operator*(const glm::mat4& mat, const glm::vec3& vec)
+glm::vec3 operator*(const glm::mat4& mat, const glm::vec3& vec)
 {
 	return mat * glm::vec4(vec, 1.0f);
 }
 
-glm::vec3 glm::operator*(const glm::mat4& mat, const aiVector3D& vec)
+glm::vec3 operator*(const glm::mat4& mat, const aiVector3D& vec)
 {
 	return mat * glm::vec4(vec.x, vec.y, vec.z, 1.0f);
 }

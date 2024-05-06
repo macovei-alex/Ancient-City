@@ -1,45 +1,73 @@
-#include "ShaderProgram.h"
+#include "Shader.h"
 
 #include <sstream>
 
-ShaderProgram::ShaderProgram(const std::string& vertexPath, const std::string& fragmentPath)
+#include "LightSource.h"
+
+Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	if (!Init(vertexPath, fragmentPath))
 		ID = -1;
 }
 
-ShaderProgram::~ShaderProgram()
+Shader::~Shader()
 {
-	if(ID != -1)
+	if (ID != -1)
 		GLCall(glDeleteProgram(ID));
 }
 
-void ShaderProgram::Use() const
+void Shader::Use() const
 {
 	GLCall(glUseProgram(ID));
 }
 
-void ShaderProgram::SetInt(const std::string& locationName, int value) const
+void Shader::SetInt(const std::string& locationName, int value) const
 {
 	GLCall(glUniform1i(glGetUniformLocation(ID, locationName.c_str()), value));
 }
 
-void ShaderProgram::SetFloat(const std::string& locationName, float value) const
+void Shader::SetFloat(const std::string& locationName, float value) const
 {
 	GLCall(glUniform1f(glGetUniformLocation(ID, locationName.c_str()), value));
 }
 
-void ShaderProgram::SetVec3(const std::string& locationName, const glm::vec3& value) const
+void Shader::SetVec3(const std::string& locationName, const glm::vec3& value) const
 {
 	GLCall(glUniform3fv(glGetUniformLocation(ID, locationName.c_str()), 1, &value[0]));
 }
 
-void ShaderProgram::SetMat4(const std::string& locationName, const glm::mat4& mat) const
+void Shader::SetMat4(const std::string& locationName, const glm::mat4& mat) const
 {
 	GLCall(glUniformMatrix4fv(glGetUniformLocation(ID, locationName.c_str()), 1, GL_FALSE, &mat[0][0]));
 }
 
-bool ShaderProgram::Init(const std::string& vertexPath, const std::string& fragmentPath)
+void Shader::SetUniforms(Camera* camera, LightSource* lightSource, Model* model, uint bits) const
+{
+	if (bits & Uniforms::LightColor)
+		SetVec3("LightColor", lightSource->GetColor());
+	if (bits & Uniforms::LightPosition)
+		SetVec3("LightPosition", lightSource->GetPosition());
+	if (bits & Uniforms::ViewPosition)
+		SetVec3("ViewPosition", camera->GetPosition());
+
+	if (bits & Uniforms::AmbientStrength)
+		SetFloat("AmbientStrength", lightSource->GetAmbientStrength());
+	if (bits & Uniforms::DiffuseStrength)
+		SetFloat("DiffuseStrength", lightSource->GetDiffuseStrength());
+	if (bits & Uniforms::SpecularStrength)
+		SetFloat("SpecularStrength", lightSource->GetSpecularStrength());
+	if (bits & Uniforms::SpecularExponent)
+		SetInt("SpecularExponent", lightSource->GetSpecularExponent());
+
+	if (bits & Uniforms::ViewMatrix)
+		SetMat4("ViewMatrix", camera->GetViewMatrix());
+	if (bits & Uniforms::ProjectionMatrix)
+		SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	if(bits & Uniforms::ModelMatrix)
+		SetMat4("ModelMatrix", model->GetModelMatrix());
+}
+
+bool Shader::Init(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	std::string vertexCode;
 	std::string fragmentCode;
@@ -90,7 +118,7 @@ bool ShaderProgram::Init(const std::string& vertexPath, const std::string& fragm
 	glAttachShader(ID, vertex);
 	glAttachShader(ID, fragment);
 	glLinkProgram(ID);
-	if(CheckCompileErrors(ID, "PROGRAM"))
+	if (CheckCompileErrors(ID, "PROGRAM"))
 		return false;
 
 	glDeleteShader(vertex);
@@ -99,7 +127,7 @@ bool ShaderProgram::Init(const std::string& vertexPath, const std::string& fragm
 	return true;
 }
 
-bool ShaderProgram::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& type)
+bool Shader::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& type)
 {
 	GLint success;
 	GLchar infoLog[1024];

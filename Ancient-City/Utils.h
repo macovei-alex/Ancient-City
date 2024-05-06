@@ -27,14 +27,10 @@ namespace fs = std::filesystem;
 
 constexpr float PI = 3.14159265359f;
 
-namespace glm
-{
-	typedef glm::vec<3, unsigned int> vec3u;
-	glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other);
-	glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other);
-	glm::vec3 operator*(const glm::mat4& mat, const glm::vec3& vec);
-	glm::vec3 operator*(const glm::mat4& mat, const aiVector3D& vec);
-}
+glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other);
+glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other);
+glm::vec3 operator*(const glm::mat4& mat, const glm::vec3& vec);
+glm::vec3 operator*(const glm::mat4& mat, const aiVector3D& vec);
 typedef unsigned int uint;
 
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);

@@ -40,7 +40,7 @@ void Model::Rotate(const glm::vec3& rotation)
 	modelMatrix = glm::rotate(modelMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
-void Model::Render(const ShaderProgram& shaders) const
+void Model::Render(const Shader& shaders) const
 {
 	for (uint i = 0; i < meshes.size(); i++)
 		meshes[i].Render(shaders);

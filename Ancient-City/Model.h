@@ -11,7 +11,7 @@ public:
 	Model(const Model& model) = default;
 	Model(Model&& model) = default;
 
-	void Render(const ShaderProgram& shader) const;
+	void Render(const Shader& shader) const;
 
 	inline glm::mat4 GetModelMatrix() const { return modelMatrix; }
 	inline glm::vec3 GetPosition() const { return glm::vec3(modelMatrix[3]); }

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "ShaderProgram.h"
+#include "Shader.h"
 #include "texture.h"
 #include "vertex.h"
 
@@ -13,7 +13,7 @@ public:
     Mesh(const Mesh& mesh);
     Mesh(Mesh&& mesh);
 
-    void Render(const ShaderProgram& shader) const;
+    void Render(const Shader& shader) const;
 
 private:
     void InitBuffers();

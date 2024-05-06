@@ -10,7 +10,7 @@ static std::vector<std::pair<std::string, HANDLE>> dirHandles;
 extern void AddHotReloadDir(const std::string& dirPath)
 {
 	WCHAR* dirPathUTF16 = new WCHAR[dirPath.size() + 1];
-	MultiByteToWideChar(CP_ACP, 0, dirPath.c_str(), -1, dirPathUTF16, dirPath.size() + 1);
+	MultiByteToWideChar(CP_ACP, 0, dirPath.c_str(), -1, dirPathUTF16, static_cast<int>(dirPath.size() + 1));
 
 	HANDLE handle = FindFirstChangeNotification(dirPathUTF16, FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
 
@@ -42,7 +42,7 @@ extern std::vector<std::string> CheckHotReload()
 				{
 					std::wstring fileNameUTF16(fileInfo->FileName, fileInfo->FileNameLength / sizeof(wchar_t));
 					char* fileName = new char[fileNameUTF16.size() + 1];
-					WideCharToMultiByte(CP_ACP, 0, fileNameUTF16.c_str(), -1, fileName, fileNameUTF16.size() + 1, NULL, NULL);
+					WideCharToMultiByte(CP_ACP, 0, fileNameUTF16.c_str(), -1, fileName, static_cast<int>(fileNameUTF16.size() + 1), NULL, NULL);
 					filesToReload.push_back(dirHandle.first + fileName);
 
 					if (fileInfo->NextEntryOffset == 0)

@@ -6,10 +6,11 @@
 #include "utils.h"
 #include "KeyBinder.tpp"
 #include "Camera.h"
-#include "ShaderProgram.h"
+#include "Shader.h"
 #include "LightSource.h"
 #include "ModelLoader.h"
 #include "hotReload.hpp"
+#include "Skybox.h"
 
 #include <gtc/matrix_transform.hpp>
 #include <thread>
@@ -27,9 +28,11 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
-ShaderProgram* modelShaders = nullptr, * lightingShaders = nullptr, * textureShaders = nullptr;
+Shader* modelShaders = nullptr, * lightingShaders = nullptr;
+Shader* textureShaders = nullptr, * skyboxShaders = nullptr;
 Camera* camera = nullptr;
 LightSource* sun = nullptr;
+Skybox* skybox = nullptr;
 
 std::vector<std::unique_ptr<Model>> models;
 
@@ -177,34 +180,21 @@ static void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	skybox->Render(*skyboxShaders, *camera);
+
 	textureShaders->Use();
-
-	textureShaders->SetVec3("LightColor", sun->GetColor());
-	textureShaders->SetVec3("LightPosition", sun->GetPosition());
-	textureShaders->SetVec3("ViewPosition", camera->GetPosition());
-
-	textureShaders->SetFloat("AmbientStrength", sun->GetAmbientStrength());
-	textureShaders->SetFloat("DiffuseStrength", sun->GetDiffuseStrength());
-	textureShaders->SetFloat("SpecularStrength", sun->GetSpecularStrength());
-	textureShaders->SetInt("SpecularExponent", sun->GetSpecularExponent());
-
-	textureShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	textureShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	textureShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
 
 	for (const auto& model : models)
 	{
-		textureShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
+		textureShaders->SetUniforms(nullptr, nullptr, model.get(), Shader::Uniforms::ModelMatrix);
 		model->Render(*textureShaders);
 	}
 
-	// sun
-
 	modelShaders->Use();
-
-	modelShaders->SetMat4("ModelMatrix", sun->model.GetModelMatrix());
-	modelShaders->SetMat4("ViewMatrix", camera->GetViewMatrix());
-	modelShaders->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-
+	modelShaders->SetUniforms(camera, nullptr, &sun->model, Shader::Uniforms::ViewMatrix 
+		| Shader::Uniforms::ProjectionMatrix
+		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
 }
 
@@ -222,7 +212,7 @@ static void LoadModels()
 
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
-	ShaderProgram** targetedShaderPtr = nullptr;
+	Shader** targetedShaderPtr = nullptr;
 	if (shaderFilesIdentifier == "model")
 		targetedShaderPtr = &modelShaders;
 
@@ -232,13 +222,16 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 	else if (shaderFilesIdentifier == "texture")
 		targetedShaderPtr = &textureShaders;
 
+	else if(shaderFilesIdentifier == "skybox")
+		targetedShaderPtr = &skyboxShaders;
+
 	else
 	{
 		std::cout << "Unknown shader identifier: " << shaderFilesIdentifier << std::endl;
 		return;
 	}
 
-	ShaderProgram* newShader = new ShaderProgram(
+	Shader* newShader = new Shader(
 		std::format("Shaders\\{}VS.glsl", shaderFilesIdentifier),
 		std::format("Shaders\\{}FS.glsl", shaderFilesIdentifier));
 	if (newShader->GetID() != -1)
@@ -271,6 +264,7 @@ int main(int argc, char* argv[])
 	LoadShader("model");
 	LoadShader("lighting");
 	LoadShader("texture");
+	LoadShader("skybox");
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
@@ -278,6 +272,8 @@ int main(int argc, char* argv[])
 
 	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f)));
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
+
+	skybox = new Skybox("Models\\Skybox");
 
 	while (!glfwWindowShouldClose(window))
 	{
