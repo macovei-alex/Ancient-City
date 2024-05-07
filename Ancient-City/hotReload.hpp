@@ -12,7 +12,7 @@ extern void AddHotReloadDir(const std::string& dirPath)
 	WCHAR* dirPathUTF16 = new WCHAR[dirPath.size() + 1];
 	MultiByteToWideChar(CP_ACP, 0, dirPath.c_str(), -1, dirPathUTF16, static_cast<int>(dirPath.size() + 1));
 
-	HANDLE handle = FindFirstChangeNotification(dirPathUTF16, FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
+	HANDLE handle = FindFirstChangeNotificationW(dirPathUTF16, FALSE, FILE_NOTIFY_CHANGE_LAST_WRITE);
 
 	if (handle == INVALID_HANDLE_VALUE)
 	{

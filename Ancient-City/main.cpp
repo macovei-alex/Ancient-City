@@ -89,13 +89,13 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
 		sun->AddAmbientStrength(-0.1f);
 	else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-		sun->AddSpecularStrength(0.1f);
-	else if (key == GLFW_KEY_V && action == GLFW_PRESS)
-		sun->AddSpecularStrength(-0.1f);
-	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
 		sun->AddDiffuseStrength(0.1f);
-	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
+	else if (key == GLFW_KEY_V && action == GLFW_PRESS)
 		sun->AddDiffuseStrength(-0.1f);
+	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
+		sun->AddSpecularStrength(0.1f);
+	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
+		sun->AddSpecularStrength(-0.1f);
 	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(2);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
@@ -173,7 +173,9 @@ static void Clean()
 	delete sun;
 
 	glfwTerminate();
-	CleanHotReloadHandles();
+
+	if(options.hotReloadShaders)
+		CleanHotReloadHandles();
 }
 
 static void RenderFrame()
@@ -197,19 +199,6 @@ static void RenderFrame()
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
 }
-
-static void LoadModels()
-{
-	glm::mat4 onLoadTransforms = glm::mat4(1.0f);
-	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
-	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
-	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	models.emplace_back(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms));
-	// models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f))));
-}
-
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
 	Shader** targetedShaderPtr = nullptr;
@@ -222,7 +211,7 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 	else if (shaderFilesIdentifier == "texture")
 		targetedShaderPtr = &textureShaders;
 
-	else if(shaderFilesIdentifier == "skybox")
+	else if (shaderFilesIdentifier == "skybox")
 		targetedShaderPtr = &skyboxShaders;
 
 	else
@@ -237,9 +226,23 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 	if (newShader->GetID() != -1)
 	{
 		if (*targetedShaderPtr != nullptr)
-			delete *targetedShaderPtr;
+			delete* targetedShaderPtr;
 		*targetedShaderPtr = newShader;
 	}
+}
+
+static void LoadModels()
+{
+	glm::mat4 onLoadTransforms = glm::mat4(1.0f);
+	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
+	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
+	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	// models.emplace_back(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms));
+	// models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f))));
+	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj", 
+		glm::translate(glm::mat4(1), glm::vec3(0, -2, 0))));
 }
 
 int main(int argc, char* argv[])
@@ -270,7 +273,7 @@ int main(int argc, char* argv[])
 
 	LoadModels();
 
-	sun = new LightSource(std::move(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f)));
+	sun = new LightSource(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f));
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
 	skybox = new Skybox("Models\\Skybox");
@@ -280,8 +283,6 @@ int main(int argc, char* argv[])
 		double currentFrame = glfwGetTime();
 		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
-
-		models[0]->Rotate(glm::vec3(0.0f, deltaTime, 0.0f));
 
 		if (options.hotReloadShaders)
 		{

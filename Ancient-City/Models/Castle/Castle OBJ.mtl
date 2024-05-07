@@ -1,0 +1,46 @@
+# Blender 4.1.0 MTL File: 'castle.blend'
+# www.blender.org
+
+newmtl lambert10SG
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Ground and Fountain Texture.jpg
+map_Bump Ground and Fountain Texture Bump.jpg
+
+newmtl lambert11SG
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Towers Doors and Windows Texture.jpg
+map_Bump Towers Doors and Windows Texture Bump.jpg
+
+newmtl lambert12SG
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Castle Interior Texture.jpg
+map_Bump Castle Interior Texture Bump.jpg
+
+newmtl lambert9SG
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Castle Exterior Texture.jpg
+map_Bump Castle Exterior Texture Bump.jpg

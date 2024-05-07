@@ -9,7 +9,7 @@ const float Camera::Z_FAR = 500.0f;
 const float Camera::YAW = -90.0f;
 const float Camera::PITCH = 0.0f;
 const float Camera::FOV = 45.0f;
-const float Camera::SPEED_FACTOR = 10.0f;
+const float Camera::SPEED_FACTOR = 20.0f;
 const float Camera::MOUSE_SENSITIVITY = 0.05f;
 const float Camera::SPEED_BOOST_MULTIPLIER = 0.1f;
 const glm::vec3 Camera::START_POSITION = glm::vec3(0.0f, 0.0f, 10.0f);
@@ -52,11 +52,11 @@ glm::mat4 Camera::GetProjectionMatrix() const
 {
 	if (isPerspective)
 	{
-		float aspectRatio = ((float)(width)) / height;
+		float aspectRatio = (static_cast<float>(width)) / height;
 		return glm::perspective(glm::radians(fovY), aspectRatio, zNear, zFar);
 	}
 
-	float scaleFactor = 2000.0f;
+	float scaleFactor = 1000.0f;
 	return glm::ortho(
 		-width / scaleFactor, width / scaleFactor,
 		-height / scaleFactor, height / scaleFactor, -zFar, zFar);
