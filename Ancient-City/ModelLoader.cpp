@@ -1,7 +1,6 @@
 #include "ModelLoader.h"
 
 #include <gtc/matrix_transform.hpp>
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 #include <filesystem>
@@ -12,12 +11,6 @@ fs::path ModelLoader::currentDirectory;
 
 void ModelLoader::SetCurrentDirectory(const std::string& fileName)
 {
-	/*size_t found = fileName.find_last_of('\\');
-	if (found == std::string::npos)
-	{
-		throw std::exception("The directory must be set from a file path");
-	}*/
-
 	fs::path filePath = fs::absolute(fs::canonical(fileName));
 	currentDirectory = filePath.remove_filename();
 }

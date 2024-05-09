@@ -233,14 +233,6 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 
 static void LoadModels()
 {
-	glm::mat4 onLoadTransforms = glm::mat4(1.0f);
-	onLoadTransforms = glm::translate(onLoadTransforms, glm::vec3(0.0f, -2.0f, 0.0f));
-	onLoadTransforms = glm::scale(onLoadTransforms, glm::vec3(0.05f, 0.05f, 0.05f));
-	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	onLoadTransforms = glm::rotate(onLoadTransforms, glm::radians(-180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	// models.emplace_back(ModelLoader::LoadModel("Models\\Wolf\\Wolf.obj", onLoadTransforms));
-	// models.emplace_back(ModelLoader::LoadModel("Models\\Pirat\\pirat.obj", glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 0.0f))));
 	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj", 
 		glm::translate(glm::mat4(1), glm::vec3(0, -2, 0))));
 }

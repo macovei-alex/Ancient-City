@@ -156,6 +156,7 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="VAO.cpp" />
   </ItemGroup>
