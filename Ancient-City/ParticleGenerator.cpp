@@ -2,8 +2,8 @@
 
 #include <random>
 
-ParticleGenerator::ParticleGenerator(float particleSpawnTimeOffset)
-	: particleSpawnTimeOffset(particleSpawnTimeOffset)
+ParticleGenerator::ParticleGenerator(float spawnDelay)
+	: spawnDelay(spawnDelay)
 {
 	// empty
 }
@@ -14,13 +14,17 @@ void ParticleGenerator::TrySpawnParticles(float timePassed)
 	static std::mt19937 generator(seed());
 	static std::normal_distribution<float> distribution(0.0f, 1.0f);
 
-	static float timeSinceLastSpawn = 0.0f;
+	static float totalTime = 0.0f;
+	static uint particlesSpawned = 0;
 
-	timeSinceLastSpawn += timePassed;
-	if (timeSinceLastSpawn >= particleSpawnTimeOffset)
+	totalTime += timePassed;
+	uint newParticlesCount = totalTime / spawnDelay - particlesSpawned;
+
+	particlesSpawned += newParticlesCount;
+	for (; newParticlesCount > 0; newParticlesCount--)
 	{
-		timeSinceLastSpawn = 0.0f;
-		particles.emplace_back(Particle(glm::vec3(distribution(generator), distribution(generator), distribution(generator))));
+		// particles.emplace_back(Particle(glm::vec3(distribution(generator), distribution(generator), distribution(generator))));
+		particles.emplace_back(Particle(glm::vec3(1, 1, 1)));
 	}
 }
 
@@ -29,5 +33,8 @@ void ParticleGenerator::MoveParticles(float timePassed)
 	for (auto& particle : particles)
 	{
 		particle.Move(timePassed);
+
+		if (particle.IsDead())
+			particle.Respawn(particle.velocity);
 	}
 }
