@@ -2,19 +2,20 @@
 
 #include <random>
 
-ParticleGenerator::ParticleGenerator(float spawnDelay)
-	: spawnDelay(spawnDelay)
+ParticleGenerator::ParticleGenerator(const glm::vec3& position, float spawnDelaySeconds)
+	: position(position), spawnDelaySeconds(spawnDelaySeconds)
 {
 	Particle::InitStaticVAO();
 }
 
 void ParticleGenerator::RenderParticles(Shader& particleShader) const
 {
+	particleShader.SetVec3("ParticleGeneratorPosition", position);
 	for (const auto& particle : particles)
 		particle.Render(particleShader);
 }
 
-void ParticleGenerator::SpawnParticles(float deltaTime)
+void ParticleGenerator::SpawnParticles(float deltaTimeMillis)
 {
 	static std::random_device seed;
 	static std::mt19937 generator(seed());
@@ -23,8 +24,10 @@ void ParticleGenerator::SpawnParticles(float deltaTime)
 	static float totalTime = 0.0f;
 	static uint particlesSpawned = 0;
 
-	totalTime += deltaTime;
-	uint newParticlesCount = totalTime / spawnDelay - particlesSpawned;
+	deltaTimeMillis /= 1000;
+
+	totalTime += deltaTimeMillis;
+	uint newParticlesCount = totalTime / spawnDelaySeconds - particlesSpawned;
 
 	particlesSpawned += newParticlesCount;
 	for (; newParticlesCount > 0; newParticlesCount--)

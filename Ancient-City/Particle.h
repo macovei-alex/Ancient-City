@@ -5,7 +5,7 @@
 class Particle
 {
 public:
-	glm::vec3 position;
+	glm::vec3 offset;
 	glm::vec3 velocity;
 	float lifeTime;
 
@@ -14,7 +14,7 @@ public:
 
 	inline float GetLifeTime() const { return lifeTime; }
 	inline bool IsDead() const { return lifeTime <= 0; }
-	inline void Move(float deltaTime) { position += velocity * deltaTime; lifeTime -= deltaTime; }
+	inline void Move(float deltaTime) { offset += velocity * deltaTime; lifeTime -= deltaTime; }
 	void Render(Shader& particleShader) const;
 
 	static void InitStaticVAO();

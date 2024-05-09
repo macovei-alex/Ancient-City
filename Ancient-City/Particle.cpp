@@ -56,7 +56,7 @@ Particle::Particle(const glm::vec3 & velocity)
 
 void Particle::Respawn(const glm::vec3& newVelocity)
 {
-	position = glm::vec3(0.0f);
+	offset = glm::vec3(0.0f);
 	velocity = newVelocity;
 	lifeTime = 1.0f;
 }
@@ -65,7 +65,7 @@ void Particle::Render(Shader& particleShader) const
 {
 	// It is assumed that the projection matrix has been set and the static data has been initialized already
 
-	particleShader.SetVec3("ParticlePosition", position);
+	particleShader.SetVec3("ParticleOffset", offset);
 
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glDrawArrays(GL_TRIANGLES, 0, sizeof(Particle::vertices) / 6 * sizeof(Particle::vertices[0])));

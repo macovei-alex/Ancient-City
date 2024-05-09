@@ -183,7 +183,7 @@ static void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	/*
+	
 	skybox->Render(*skyboxShaders, *camera);
 
 	textureShaders->Use();
@@ -200,10 +200,10 @@ static void RenderFrame()
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
-	*/
 
 	particleShader->Use();
 	particleShader->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	particleShader->SetMat4("ViewMatrix", camera->GetViewMatrix());
 	for (const auto& particleGenerator : particleGenerators)
 	{
 		particleGenerator.RenderParticles(*particleShader);
@@ -249,7 +249,7 @@ static void SetupWorld()
 	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
 		glm::translate(glm::mat4(1), glm::vec3(0, -2, 0))));
 
-	particleGenerators.push_back(ParticleGenerator(0.1f));
+	particleGenerators.push_back(ParticleGenerator(glm::vec3(1, 0, -1), 0.1f));
 }
 
 int main(int argc, char* argv[])

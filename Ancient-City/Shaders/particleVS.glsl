@@ -1,15 +1,17 @@
 #version 330 core
 
-layout (location = 0) in vec3 InBasePosition;
-layout (location = 1) in vec3 InBaseColor;
+layout (location = 0) in vec3 InBufferPoisition;
+layout (location = 1) in vec3 InColor;
 
 out vec3 MidColor;
 
+uniform mat4 ViewMatrix;
 uniform mat4 ProjectionMatrix;
-uniform vec3 ParticlePosition;
+uniform vec3 ParticleGeneratorPosition;
+uniform vec3 ParticleOffset;
 
 void main()
 {
-	MidColor = InBaseColor;
-	gl_Position = ProjectionMatrix * vec4(InBasePosition + ParticlePosition, 1);
+	MidColor = InColor;
+	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticleGeneratorPosition + InBufferPoisition + ParticleOffset, 1);
 }
