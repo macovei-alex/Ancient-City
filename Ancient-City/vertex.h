@@ -14,5 +14,7 @@ struct Vertex
 	inline Vertex() : position(0.0f), normal(0.0f), texCoords(0.0f), tangent(0.0f), bitangent(0.0f) {}
 
 	inline friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex)
-	{ return os << vertex.position << ' ' << vertex.normal << ' ' << vertex.texCoords << '\n'; }
+	{ 
+		return os << vertex.position << ' ' << vertex.normal << ' ' << vertex.texCoords << '\n';
+	}
 };

@@ -54,6 +54,9 @@
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp">
@@ -87,6 +90,12 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Shaders\skyboxVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particleFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\particleVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -125,6 +134,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VAO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

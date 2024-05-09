@@ -10,7 +10,7 @@ std::vector<Texture> ModelLoader::loadedTextures;
 fs::path ModelLoader::currentDirectory;
 
 void ModelLoader::SetCurrentDirectory(const std::string& fileName)
-{
+{	
 	fs::path filePath = fs::absolute(fs::canonical(fileName));
 	currentDirectory = filePath.remove_filename();
 }
