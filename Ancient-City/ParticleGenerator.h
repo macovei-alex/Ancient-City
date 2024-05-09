@@ -7,8 +7,8 @@ class ParticleGenerator
 public:
 	ParticleGenerator(float spawnDelay = 0.1f);
 	void RenderParticles(Shader& particleShader) const;
-	void SpawnParticles(float timePassed);
-	void MoveParticles(float timePassed);
+	void SpawnParticles(float deltaTime);
+	void MoveParticles(float deltaTime);
 
 private:
 	std::vector<Particle> particles;

@@ -14,22 +14,12 @@ public:
 
 	inline float GetLifeTime() const { return lifeTime; }
 	inline bool IsDead() const { return lifeTime <= 0; }
-	inline void Move(float timePassed) { position += velocity * timePassed; lifeTime -= timePassed; }
+	inline void Move(float deltaTime) { position += velocity * deltaTime; lifeTime -= deltaTime; }
 	void Render(Shader& particleShader) const;
 
 	static void InitStaticVAO();
 
 private:
-	inline static uint VAO = 0;
-	inline static const float vertices[] =
-	{
-		// positions          // colors
-		 1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-		-1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-
-		 1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-		 1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 1.0f
-	};
+	static const float vertices[];
+	static uint VAO;
 };

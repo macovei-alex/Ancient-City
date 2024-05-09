@@ -14,7 +14,7 @@ void ParticleGenerator::RenderParticles(Shader& particleShader) const
 		particle.Render(particleShader);
 }
 
-void ParticleGenerator::SpawnParticles(float timePassed)
+void ParticleGenerator::SpawnParticles(float deltaTime)
 {
 	static std::random_device seed;
 	static std::mt19937 generator(seed());
@@ -23,7 +23,7 @@ void ParticleGenerator::SpawnParticles(float timePassed)
 	static float totalTime = 0.0f;
 	static uint particlesSpawned = 0;
 
-	totalTime += timePassed;
+	totalTime += deltaTime;
 	uint newParticlesCount = totalTime / spawnDelay - particlesSpawned;
 
 	particlesSpawned += newParticlesCount;
@@ -34,11 +34,11 @@ void ParticleGenerator::SpawnParticles(float timePassed)
 	}
 }
 
-void ParticleGenerator::MoveParticles(float timePassed)
+void ParticleGenerator::MoveParticles(float deltaTime)
 {
 	for (auto& particle : particles)
 	{
-		particle.Move(timePassed);
+		particle.Move(deltaTime);
 
 		if (particle.IsDead())
 			particle.Respawn(particle.velocity);

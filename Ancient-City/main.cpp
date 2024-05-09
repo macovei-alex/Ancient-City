@@ -183,6 +183,7 @@ static void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*
 	skybox->Render(*skyboxShaders, *camera);
 
 	textureShaders->Use();
@@ -199,6 +200,7 @@ static void RenderFrame()
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
+	*/
 
 	particleShader->Use();
 	particleShader->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
