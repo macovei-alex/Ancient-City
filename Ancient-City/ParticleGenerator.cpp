@@ -5,10 +5,16 @@
 ParticleGenerator::ParticleGenerator(float spawnDelay)
 	: spawnDelay(spawnDelay)
 {
-	// empty
+	Particle::InitStaticVAO();
 }
 
-void ParticleGenerator::TrySpawnParticles(float timePassed)
+void ParticleGenerator::RenderParticles(Shader& particleShader) const
+{
+	for (const auto& particle : particles)
+		particle.Render(particleShader);
+}
+
+void ParticleGenerator::SpawnParticles(float timePassed)
 {
 	static std::random_device seed;
 	static std::mt19937 generator(seed());

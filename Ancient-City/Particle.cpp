@@ -18,8 +18,7 @@ void Particle::Render(Shader& particleShader) const
 {
 	// It is assumed that the projection matrix has been set and the static data has been initialized already
 
-	particleShader.Use();
-	particleShader.SetVec3("position", position);
+	particleShader.SetVec3("ParticlePosition", position);
 
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glDrawArrays(GL_TRIANGLES, 0, 6));
@@ -40,10 +39,10 @@ void Particle::InitStaticVAO()
 	GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW));
 
 	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0));
+	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0));
 
 	GLCall(glEnableVertexAttribArray(1));
-	GLCall(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)3));
+	GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)3));
 
 	GLCall(glBindVertexArray(0));
 }

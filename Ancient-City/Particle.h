@@ -23,13 +23,13 @@ private:
 	inline static uint VAO = 0;
 	inline static const float vertices[] =
 	{
-		// positions          // tex coords
-		 1.0f,  1.0f, 0.0f,   1.0f, 0.0f,
-		-1.0f,  1.0f, 0.0f,   0.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,   0.0f, 1.0f,
+		// positions          // colors
+		 1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+		-1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
 
-		 1.0f,  1.0f, 0.0f,   1.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,   0.0f, 1.0f,
-		 1.0f, -1.0f, 0.0f,   1.0f, 1.0f
+		 1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+		-1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 1.0f,
+		 1.0f, -1.0f, 0.0f,   1.0f, 1.0f, 1.0f
 	};
 };

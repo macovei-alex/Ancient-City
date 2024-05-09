@@ -11,6 +11,7 @@
 #include "ModelLoader.h"
 #include "hotReload.hpp"
 #include "Skybox.h"
+#include "ParticleGenerator.h"
 
 #include <gtc/matrix_transform.hpp>
 #include <thread>
@@ -28,13 +29,13 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
-Shader* modelShaders = nullptr, * lightingShaders = nullptr;
-Shader* textureShaders = nullptr, * skyboxShaders = nullptr;
+Shader* modelShaders = nullptr, * lightingShaders = nullptr, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShader = nullptr;
 Camera* camera = nullptr;
 LightSource* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<std::unique_ptr<Model>> models;
+std::vector<ParticleGenerator> particleGenerators;
 
 static void DisplayFPS(double currentTime)
 {
@@ -198,6 +199,13 @@ static void RenderFrame()
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
+
+	particleShader->Use();
+	particleShader->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
+	for (const auto& particleGenerator : particleGenerators)
+	{
+		particleGenerator.RenderParticles(*particleShader);
+	}
 }
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
@@ -213,6 +221,9 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 
 	else if (shaderFilesIdentifier == "skybox")
 		targetedShaderPtr = &skyboxShaders;
+
+	else if(shaderFilesIdentifier == "particle")
+		targetedShaderPtr = &particleShader;
 
 	else
 	{
@@ -231,10 +242,12 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 	}
 }
 
-static void LoadModels()
+static void SetupWorld()
 {
-	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj", 
+	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
 		glm::translate(glm::mat4(1), glm::vec3(0, -2, 0))));
+
+	particleGenerators.push_back(ParticleGenerator(0.1f));
 }
 
 int main(int argc, char* argv[])
@@ -260,10 +273,11 @@ int main(int argc, char* argv[])
 	LoadShader("lighting");
 	LoadShader("texture");
 	LoadShader("skybox");
+	LoadShader("particle");
 
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	LoadModels();
+	SetupWorld();
 
 	sun = new LightSource(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f));
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
@@ -278,7 +292,7 @@ int main(int argc, char* argv[])
 
 		if (options.hotReloadShaders)
 		{
-			std::vector<std::string> changedFiles = std::move(CheckHotReload());
+			std::vector<std::string> changedFiles = CheckHotReload();
 			for (const auto& file : changedFiles)
 			{
 				std::string shaderIdentifier = file[file.size() - 7] == 'V' 
@@ -286,6 +300,12 @@ int main(int argc, char* argv[])
 					: TrimBeginEnd(file, "Shaders\\", "FS.glsl");
 				LoadShader(shaderIdentifier);
 			}
+		}
+
+		for (auto& particleGenerators : particleGenerators)
+		{
+			particleGenerators.MoveParticles(deltaTime);
+			particleGenerators.SpawnParticles(deltaTime);
 		}
 
 		DisplayFPS(currentFrame);

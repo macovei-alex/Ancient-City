@@ -1,17 +1,15 @@
 #version 330 core
 
-layout (location = 0) in vec3 InPosition;
-layout (location = 1) in vec2 InTexCoords;
+layout (location = 0) in vec3 InBasePosition;
+layout (location = 1) in vec3 InBaseColor;
 
-out vec2 MidTexCoords;
+out vec3 MidColor;
 
 uniform mat4 ProjectionMatrix;
-uniform vec3 Offset;
+uniform vec3 ParticlePosition;
 
 void main()
 {
-	float scale = 10.0f;
-	MidTexCoords = InTexCoords;
-
-	gl_Position = ProjectionMatrix * vec4(InPosition + Offset);
+	MidColor = InBaseColor;
+	gl_Position = ProjectionMatrix * vec4(InBasePosition + ParticlePosition, 1);
 }

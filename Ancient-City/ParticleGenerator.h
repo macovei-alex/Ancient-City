@@ -6,7 +6,8 @@ class ParticleGenerator
 {
 public:
 	ParticleGenerator(float spawnDelay = 0.1f);
-	void TrySpawnParticles(float timePassed);
+	void RenderParticles(Shader& particleShader) const;
+	void SpawnParticles(float timePassed);
 	void MoveParticles(float timePassed);
 
 private:

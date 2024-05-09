@@ -1,12 +1,10 @@
 #version 330 core
 
-in vec2 MidTexCoords;
+in vec3 MidColor;
 
 out vec4 OutColor;
 
-uniform sampler2D ParticleTexture;
-
 void main()
 {
-	OutColor = texture(ParticleTexture, MidTexCoords);
+	OutColor = vec4(MidColor, 1.0);
 }
