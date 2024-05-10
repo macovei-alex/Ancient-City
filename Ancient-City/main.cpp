@@ -198,10 +198,10 @@ static void RenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetUniforms(camera, nullptr, sun->model.get(), Shader::Uniforms::ViewMatrix
+	modelShaders->SetUniforms(camera, nullptr, &sun->model, Shader::Uniforms::ViewMatrix
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
-	sun->model->Render(*modelShaders);
+	sun->model.Render(*modelShaders);
 
 	particleShaders->Use();
 	particleShaders->SetUniforms(camera, nullptr, nullptr, 
@@ -254,11 +254,11 @@ static void SetupWorld()
 	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
-	auto sphere = std::make_shared<Model>(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f));
-	sun = new LightSource(sphere);
+	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
+	sun = new LightSource(*sphere);
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
-	auto generator = ParticleGenerator(sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f);
+	auto generator = ParticleGenerator(*sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f);
 	//auto generator = ParticleGenerator().WithSpeedModifier(2.0f).WithLifeTime(2.0f);
 	particleGenerators.push_back(std::make_unique<ParticleGenerator>(generator));
 }

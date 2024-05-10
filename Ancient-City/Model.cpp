@@ -42,6 +42,6 @@ void Model::Rotate(const glm::vec3& rotation)
 
 void Model::Render(const Shader& shaders) const
 {
-	for (uint i = 0; i < meshes.size(); i++)
-		meshes[i].Render(shaders);
+	for (uint i = 0; i < meshes->size(); i++)
+		(*meshes)[i].Render(shaders);
 }

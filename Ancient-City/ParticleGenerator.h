@@ -8,7 +8,7 @@ class ParticleGenerator
 {
 public:
 	ParticleGenerator();
-	ParticleGenerator(std::shared_ptr<Model> particleModel);
+	ParticleGenerator(const Model& particleModel);
 	void InitMembersDefault();
 
 	void RenderParticles(Shader& particleShader) const;
@@ -21,7 +21,7 @@ public:
 	inline ParticleGenerator& WithLifeTime(float time) { lifeTime = time; return *this; }
 
 private:
-	std::shared_ptr<Model> particleModel;
+	Model particleModel;
 	std::vector<Particle> particles;
 	glm::vec3 position;
 	float spawnDelay;

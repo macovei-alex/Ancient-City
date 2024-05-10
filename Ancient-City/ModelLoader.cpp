@@ -60,7 +60,7 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, 
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		model.meshes.push_back(ProcessMesh(mesh, scene, onLoadTransforms));
+		model.meshes->push_back(ProcessMesh(mesh, scene, onLoadTransforms));
 	}
 
 	for (uint i = 0; i < node->mNumChildren; i++)

@@ -3,11 +3,12 @@
 #include "Mesh.h"
 #include <gtc/matrix_transform.hpp>
 #include <vector>
+#include <memory>
 
 class Model
 {
 public:
-	inline Model() : modelMatrix(1.0f) {}
+	inline Model() : modelMatrix(1.0f), meshes(std::make_shared<std::vector<Mesh>>()), textures(std::make_shared<std::vector<Texture>>()) {}
 	Model(const Model& model) = default;
 	Model(Model&& model) = default;
 
@@ -30,8 +31,8 @@ public:
 	void Rotate(const glm::vec3& rotation);
 
 public:
-	std::vector<Mesh> meshes;
-	std::vector<Texture> textures;
+	std::shared_ptr<std::vector<Mesh>> meshes;
+	std::shared_ptr<std::vector<Texture>> textures;
 
 private:
 	glm::mat4 modelMatrix;

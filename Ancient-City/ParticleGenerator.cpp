@@ -33,13 +33,13 @@ const std::vector<uint> ParticleGenerator::DEFAULT_MODEL_INDICES =
 };
 
 ParticleGenerator::ParticleGenerator()
-	: particleModel(std::make_shared<Model>())
+	: particleModel()
 {
 	InitMembersDefault();
-	particleModel->meshes.push_back(Mesh(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, std::vector<Texture>()));
+	particleModel.meshes->push_back(Mesh(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, std::vector<Texture>()));
 }
 
-ParticleGenerator::ParticleGenerator(std::shared_ptr<Model> particleModel)
+ParticleGenerator::ParticleGenerator(const Model& particleModel)
 	: particleModel(particleModel)
 {
 	InitMembersDefault();
@@ -59,7 +59,7 @@ void ParticleGenerator::RenderParticles(Shader& particleShader) const
 	for (const auto& particle : particles)
 	{
 		particleShader.SetVec3("ParticleOffset", particle.offset);
-		particleModel->Render(particleShader);
+		particleModel.Render(particleShader);
 	}
 }
 
