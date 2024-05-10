@@ -69,8 +69,10 @@ glm::vec3 Camera::GetPosition() const
 
 void Camera::MoveCamera(float xOffset, float yOffset, float zOffset)
 {
+	static const glm::vec3 straightUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
 	position += xOffset * right * Camera::SPEED_FACTOR;
-	position += yOffset * up * Camera::SPEED_FACTOR;
+	position += yOffset * straightUp * Camera::SPEED_FACTOR;
 	position += zOffset * forward * Camera::SPEED_FACTOR;
 }
 

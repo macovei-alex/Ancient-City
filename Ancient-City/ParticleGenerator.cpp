@@ -1,16 +1,56 @@
 #include "ParticleGenerator.h"
 
 #include <random>
+#include <vector>
 #include "Model.h"
 
-ParticleGenerator::ParticleGenerator(std::shared_ptr<Model> particleModel)
-	: particleModel(particleModel),
-	position(glm::vec3(0.0f)),
-	spawnDelay(0.1f),
-	speedModifier(2.0f),
-	lifeTime(2.0f)
+const std::vector<Vertex> ParticleGenerator::DEFAULT_MODEL_VERTICES = 
 {
-	// empty
+	Vertex(-0.25f, -0.25f,  0.25f),
+	Vertex( 0.25f, -0.25f,  0.25f),
+	Vertex( 0.25f,  0.25f,  0.25f),
+	Vertex(-0.25f,  0.25f,  0.25f),
+	Vertex(-0.25f, -0.25f, -0.25f),
+	Vertex( 0.25f, -0.25f, -0.25f),
+	Vertex( 0.25f,  0.25f, -0.25f),
+	Vertex(-0.25f,  0.25f, -0.25f)
+};
+
+const std::vector<uint> ParticleGenerator::DEFAULT_MODEL_INDICES = 
+{
+	0, 1, 2,
+	2, 3, 0,
+	1, 5, 6,
+	1, 6, 2,
+	5, 4, 7,
+	5, 7, 6,
+	4, 0, 3,
+	4, 3, 7,
+	0, 1, 5,
+	0, 5, 4,
+	3, 2, 6,
+	3, 6, 7
+};
+
+ParticleGenerator::ParticleGenerator()
+	: particleModel(std::make_shared<Model>())
+{
+	InitMembersDefault();
+	particleModel->meshes.push_back(Mesh(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, std::vector<Texture>()));
+}
+
+ParticleGenerator::ParticleGenerator(std::shared_ptr<Model> particleModel)
+	: particleModel(particleModel)
+{
+	InitMembersDefault();
+}
+
+void ParticleGenerator::InitMembersDefault()
+{
+	position = glm::vec3(0.0f);
+	spawnDelay = 0.1f;
+	speedModifier = 2.0f;
+	lifeTime = 2.0f;
 }
 
 void ParticleGenerator::RenderParticles(Shader& particleShader) const
@@ -33,7 +73,7 @@ void ParticleGenerator::SpawnParticles(float deltaTime)
 	static uint particlesSpawned = 0;
 
 	totalTime += deltaTime;
-	uint newParticlesCount = totalTime / spawnDelay - particlesSpawned;
+	uint newParticlesCount = (uint)(totalTime / spawnDelay - particlesSpawned);
 	particlesSpawned += newParticlesCount;
 
 	for (; newParticlesCount > 0; newParticlesCount--)

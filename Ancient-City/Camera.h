@@ -31,7 +31,6 @@ private:
 	void ProcessMouseScroll(float yOffset);
 	void UpdateCameraVectors();
 
-protected:
 	float zNear, zFar, fovY;
 	int width, height;
 	bool isPerspective;

@@ -11,7 +11,10 @@ struct Vertex
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
 
-	inline Vertex() : position(0.0f), normal(0.0f), texCoords(0.0f), tangent(0.0f), bitangent(0.0f) {}
+	inline Vertex() 
+		: position(0.0f), normal(0.0f), texCoords(0.0f), tangent(0.0f), bitangent(0.0f) {}
+	inline Vertex(float x, float y, float z) 
+		: position(x, y, z), normal(0.0f), texCoords(0.0f), tangent(0.0f), bitangent(0.0f) {}
 
 	inline friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex)
 	{ 

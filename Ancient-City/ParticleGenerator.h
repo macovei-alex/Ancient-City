@@ -1,11 +1,16 @@
 #pragma once
 
 #include "Particle.h"
+#include "Vertex.h"
+#include "Model.h"
 
 class ParticleGenerator
 {
 public:
+	ParticleGenerator();
 	ParticleGenerator(std::shared_ptr<Model> particleModel);
+	void InitMembersDefault();
+
 	void RenderParticles(Shader& particleShader) const;
 	void SpawnParticles(float deltaTime);
 	void MoveParticles(float deltaTime);
@@ -22,5 +27,8 @@ private:
 	float spawnDelay;
 	float speedModifier;
 	float lifeTime;
+
+	static const std::vector<Vertex> DEFAULT_MODEL_VERTICES;
+	static const std::vector<uint> DEFAULT_MODEL_INDICES;
 };
 

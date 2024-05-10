@@ -259,6 +259,7 @@ static void SetupWorld()
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
 	auto generator = ParticleGenerator(sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f);
+	//auto generator = ParticleGenerator().WithSpeedModifier(2.0f).WithLifeTime(2.0f);
 	particleGenerators.push_back(std::make_unique<ParticleGenerator>(generator));
 }
 
