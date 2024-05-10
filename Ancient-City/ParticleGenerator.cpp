@@ -1,25 +1,33 @@
 #include "ParticleGenerator.h"
 
 #include <random>
+#include "Model.h"
 
-ParticleGenerator::ParticleGenerator(const glm::vec3& position, float spawnDelay)
-	: position(position), spawnDelay(spawnDelay)
+ParticleGenerator::ParticleGenerator(std::shared_ptr<Model> particleModel)
+	: particleModel(particleModel),
+	position(glm::vec3(0.0f)),
+	spawnDelay(0.1f),
+	speedModifier(2.0f),
+	lifeTime(2.0f)
 {
-	Particle::InitStaticVAO();
+	// empty
 }
 
 void ParticleGenerator::RenderParticles(Shader& particleShader) const
 {
 	particleShader.SetVec3("ParticleGeneratorPosition", position);
 	for (const auto& particle : particles)
-		particle.Render(particleShader);
+	{
+		particleShader.SetVec3("ParticleOffset", particle.offset);
+		particleModel->Render(particleShader);
+	}
 }
 
 void ParticleGenerator::SpawnParticles(float deltaTime)
 {
 	static std::random_device seed;
 	static std::mt19937 generator(seed());
-	static std::normal_distribution<float> distribution = std::normal_distribution<float>(0.0f, 0.1f);
+	static std::normal_distribution<float> distribution = std::normal_distribution<float>(0.0f, 0.2f);
 
 	static float totalTime = 0.0f;
 	static uint particlesSpawned = 0;
@@ -30,8 +38,9 @@ void ParticleGenerator::SpawnParticles(float deltaTime)
 
 	for (; newParticlesCount > 0; newParticlesCount--)
 	{
-		//particles.emplace_back(Particle(glm::vec3(distribution(generator), 1.0f, distribution(generator))));
-		particles.emplace_back(Particle(glm::vec3(1.0f, 1.0f, 1.0f)));
+		particles.emplace_back(Particle(
+			speedModifier * glm::vec3(distribution(generator), 1.0f, distribution(generator)),
+			lifeTime));
 	}
 }
 

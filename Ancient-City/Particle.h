@@ -2,17 +2,32 @@
 
 #include "Shader.h"
 
-class Particle
+struct Particle
 {
-public:
 	glm::vec3 offset;
 	glm::vec3 velocity;
 	float lifeTime;
 
-	Particle(const glm::vec3& velocity);
-	void Respawn(const glm::vec3& newVelocity);
+	inline Particle(const glm::vec3& velocity, float lifeTime)
+	{
+		Reset(velocity, lifeTime);
+	}
 
-	inline bool IsDead() const { return lifeTime <= 0; }
-	inline void Move(float deltaTime) { offset += velocity * deltaTime; lifeTime -= deltaTime; }
-	void Render(Shader& particleShader) const;
+	inline void Reset(const glm::vec3& newVelocity, float newLifeTime)
+	{
+		offset = glm::vec3(0.0f);
+		velocity = newVelocity;
+		lifeTime = newLifeTime;
+	}
+
+	inline bool IsDead() const
+	{
+		return lifeTime <= 0;
+	}
+
+	inline void Move(float deltaTime)
+	{
+		offset += velocity * deltaTime;
+		lifeTime -= deltaTime;
+	}
 };

@@ -6,8 +6,9 @@ class LightSource
 {
 public:
 	LightSource() = default;
-	inline LightSource(const Model& model) : model(model) {}
-	inline LightSource(Model&& model) : model(model) {}
+	inline LightSource(std::shared_ptr<Model> model) : model(model) {}
+	inline LightSource(const Model& model) : model(std::make_shared<Model>(model)) {}
+	inline LightSource(Model&& model) : model(std::make_shared<Model>(model)) {}
 
 	inline float GetAmbientStrength() const { return ambientStrength; }
 	inline float GetSpecularStrength() const { return specularStrength; }
@@ -26,11 +27,11 @@ public:
 	void AddDiffuseStrength(float difference);
 	void MultiplySpecularExponent(float difference);
 
-	inline glm::vec3 GetPosition() const { return model.GetPosition(); }
-	inline void SetPosition(const glm::vec3& position) { model.SetPosition(position); }
+	inline glm::vec3 GetPosition() const { return model->GetPosition(); }
+	inline void SetPosition(const glm::vec3& position) { model->SetPosition(position); }
 
 public:
-	Model model;
+	std::shared_ptr<Model> model;
 
 private:
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);

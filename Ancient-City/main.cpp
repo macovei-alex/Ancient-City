@@ -32,6 +32,7 @@ LightSource* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<std::unique_ptr<Model>> models;
+// std::vector<std::unique_ptr<LightSource>> lights;
 std::vector<std::unique_ptr<ParticleGenerator>> particleGenerators;
 
 static void DisplayFPS(double currentTime)
@@ -197,10 +198,10 @@ static void RenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetUniforms(camera, nullptr, &sun->model, Shader::Uniforms::ViewMatrix 
+	modelShaders->SetUniforms(camera, nullptr, sun->model.get(), Shader::Uniforms::ViewMatrix
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
-	sun->model.Render(*modelShaders);
+	sun->model->Render(*modelShaders);
 
 	particleShaders->Use();
 	particleShaders->SetUniforms(camera, nullptr, nullptr, 
@@ -247,10 +248,18 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 
 static void SetupWorld()
 {
+	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
+	skybox = new Skybox("Models\\Skybox");
+
 	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
-	particleGenerators.emplace_back(new ParticleGenerator(glm::vec3(1.0f, 1.0f, -1.0f), 1.0f));
+	auto sphere = std::make_shared<Model>(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f));
+	sun = new LightSource(sphere);
+	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
+
+	auto generator = ParticleGenerator(sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f);
+	particleGenerators.push_back(std::make_unique<ParticleGenerator>(generator));
 }
 
 int main(int argc, char* argv[])
@@ -278,14 +287,7 @@ int main(int argc, char* argv[])
 	LoadShader("skybox");
 	LoadShader("particle");
 
-	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
-
 	SetupWorld();
-
-	sun = new LightSource(*ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f));
-	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
-
-	skybox = new Skybox("Models\\Skybox");
 
 	while (!glfwWindowShouldClose(window))
 	{

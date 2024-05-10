@@ -1,7 +1,6 @@
 #version 330 core
 
 layout (location = 0) in vec3 InBufferPoisition;
-layout (location = 1) in vec3 InColor;
 
 out vec3 MidColor;
 
@@ -12,6 +11,6 @@ uniform vec3 ParticleOffset;
 
 void main()
 {
-	MidColor = InColor;
-	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticleGeneratorPosition + InBufferPoisition + ParticleOffset, 1);
+	MidColor = vec3(1.0f, 1.0f, 1.0f);
+	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticleGeneratorPosition + InBufferPoisition + ParticleOffset, 1.0f);
 }
