@@ -9,6 +9,8 @@ class ParticleGenerator
 public:
 	ParticleGenerator();
 	ParticleGenerator(const Model& particleModel);
+	ParticleGenerator(const ParticleGenerator& other) = default;
+	ParticleGenerator& operator=(const ParticleGenerator& other) = default;
 	void InitMembersDefault();
 
 	void RenderParticles(Shader& particleShader) const;
@@ -17,6 +19,7 @@ public:
 
 	inline ParticleGenerator& WithSpawnDelay(float delay) { spawnDelay = delay; return *this; }
 	inline ParticleGenerator& WithPosition(const glm::vec3& pos) { position = pos; return *this; }
+	inline ParticleGenerator& WithPosition(float x, float y, float z) { position = glm::vec3(x, y, z); return *this; }
 	inline ParticleGenerator& WithSpeedModifier(float modifier) { speedModifier = modifier; return *this; }
 	inline ParticleGenerator& WithLifeTime(float time) { lifeTime = time; return *this; }
 	inline ParticleGenerator& WithParticleColor(const glm::vec3& color) { particleColor = color; return *this; }

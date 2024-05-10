@@ -261,9 +261,25 @@ static void SetupWorld()
 	sun = new LightSource(*sphere);
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
-	auto generator = ParticleGenerator(*sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f).WithParticleColor(1.0f, 0.5f, 0.0f);
-	//auto generator = ParticleGenerator().WithSpeedModifier(2.0f).WithLifeTime(2.0f);
-	particleGenerators.push_back(std::make_unique<ParticleGenerator>(generator));
+	auto gen = ParticleGenerator(*sphere)
+		.WithSpeedModifier(2.0f)
+		.WithLifeTime(2.0f)
+		.WithParticleColor(1.0f, 0.5f, 0.0f);
+	particleGenerators.push_back(std::make_unique<ParticleGenerator>(gen));
+
+	auto gen2 = ParticleGenerator(*sphere)
+		.WithSpeedModifier(2.0f)
+		.WithLifeTime(2.0f)
+		.WithParticleColor(1.0f, 0.2f, 0.0f)
+		.WithPosition(2.0f, 0.0f, 0.0f);
+	particleGenerators.push_back(std::make_unique<ParticleGenerator>(gen2));
+
+	auto gen3 = ParticleGenerator()
+		.WithSpeedModifier(2.0f)
+		.WithLifeTime(2.0f)
+		.WithParticleColor(0.0f, 0.5f, 0.7f)
+		.WithPosition(-2.0f, 0.0f, 0.0f);
+	particleGenerators.push_back(std::make_unique<ParticleGenerator>(gen3));
 }
 
 int main(int argc, char* argv[])
