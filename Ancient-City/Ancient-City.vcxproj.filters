@@ -136,5 +136,8 @@
     <ClInclude Include="ParticleGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="names.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

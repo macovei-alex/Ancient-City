@@ -12,6 +12,7 @@
 #include "hotReload.hpp"
 #include "Skybox.h"
 #include "ParticleGenerator.h"
+#include "names.h"
 
 struct Options
 {
@@ -214,19 +215,19 @@ static void RenderFrame()
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
 	Shader** targetedShaderPtr = nullptr;
-	if (shaderFilesIdentifier == "model")
+	if (shaderFilesIdentifier == names::shaders::model)
 		targetedShaderPtr = &modelShaders;
 
-	else if (shaderFilesIdentifier == "lighting")
+	else if (shaderFilesIdentifier == names::shaders::lighting)
 		targetedShaderPtr = &lightingShaders;
 
-	else if (shaderFilesIdentifier == "texture")
+	else if (shaderFilesIdentifier == names::shaders::texture)
 		targetedShaderPtr = &textureShaders;
 
-	else if (shaderFilesIdentifier == "skybox")
+	else if (shaderFilesIdentifier == names::shaders::skybox)
 		targetedShaderPtr = &skyboxShaders;
 
-	else if(shaderFilesIdentifier == "particle")
+	else if(shaderFilesIdentifier == names::shaders::particle)
 		targetedShaderPtr = &particleShaders;
 
 	else
@@ -236,8 +237,8 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 	}
 
 	Shader* newShader = new Shader(
-		std::format("Shaders\\{}VS.glsl", shaderFilesIdentifier),
-		std::format("Shaders\\{}FS.glsl", shaderFilesIdentifier));
+		std::format("{}\\{}{}", names::shaders::dirName, shaderFilesIdentifier, names::shaders::vertex),
+		std::format("{}\\{}{}", names::shaders::dirName, shaderFilesIdentifier, names::shaders::fragment));
 	if (newShader->GetID() != -1)
 	{
 		if (*targetedShaderPtr != nullptr)
@@ -268,11 +269,13 @@ int main(int argc, char* argv[])
 	if (argc > 1)
 	{
 		for (int i = 1; i < argc; i++)
+		{
 			if (std::strcmp(argv[i], "-r") == 0 || std::strcmp(argv[i], "--hotRealoadShaders") == 0)
 			{
 				options.hotReloadShaders = true;
-				AddHotReloadDir("Shaders\\");
+				AddHotReloadDir(names::shaders::dirName + '\\');
 			}
+		}
 	}
 
 	GLFWwindow* window = InitializeWindow();
@@ -282,11 +285,11 @@ int main(int argc, char* argv[])
 	}
 	InitializeGraphics();
 
-	LoadShader("model");
-	LoadShader("lighting");
-	LoadShader("texture");
-	LoadShader("skybox");
-	LoadShader("particle");
+	LoadShader(names::shaders::model);
+	LoadShader(names::shaders::lighting);
+	LoadShader(names::shaders::texture);
+	LoadShader(names::shaders::skybox);
+	LoadShader(names::shaders::particle);
 
 	SetupWorld();
 
@@ -302,8 +305,8 @@ int main(int argc, char* argv[])
 			for (const auto& file : changedFiles)
 			{
 				std::string shaderIdentifier = file[file.size() - 7] == 'V' 
-					? TrimBeginEnd(file, "Shaders\\", "VS.glsl")
-					: TrimBeginEnd(file, "Shaders\\", "FS.glsl");
+					? TrimBeginEnd(file, names::shaders::dirName + '\\', names::shaders::vertex)
+					: TrimBeginEnd(file, names::shaders::dirName + '\\', names::shaders::fragment);
 				LoadShader(shaderIdentifier);
 			}
 		}

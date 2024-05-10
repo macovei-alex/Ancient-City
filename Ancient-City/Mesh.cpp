@@ -1,6 +1,7 @@
 #include "Mesh.h"
 
 #include <vector>
+#include "names.h"
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures) noexcept
 	: vertices(vertices),
@@ -44,19 +45,19 @@ void Mesh::Render(const Shader& shader) const
 	{
 		GLCall(glActiveTexture(GL_TEXTURE0 + i)); // active proper texture unit before binding
 		std::string number;
-		if (textures[i].name == "texture_diffuse")
+		if (textures[i].name == names::textures::diffuse)
 		{
 			number = std::to_string(diffuseNr++);
 		}
-		else if (textures[i].name == "texture_specular")
+		else if (textures[i].name == names::textures::specular)
 		{
 			number = std::to_string(specularNr++);
 		}
-		else if (textures[i].name == "texture_normal")
+		else if (textures[i].name == names::textures::normal)
 		{
 			number = std::to_string(normalNr++);
 		}
-		else if (textures[i].name == "texture_height")
+		else if (textures[i].name == names::textures::height)
 		{
 			number = std::to_string(heightNr++);
 		}
