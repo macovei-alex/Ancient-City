@@ -38,14 +38,16 @@ std::vector<std::unique_ptr<ParticleGenerator>> particleGenerators;
 
 static void DisplayFPS(double currentTime)
 {
-	static int frameCounter = 0;
+	static uint totalFrameCounter = 0;
+	static uint frameCounter = 0;
 	static double lastPrint = glfwGetTime();
 
 	frameCounter++;
 
 	if (currentTime - lastPrint >= 1)
 	{
-		std::cout << "FPS: " << frameCounter << std::endl;
+		totalFrameCounter += frameCounter;
+		std::cout << "FPS: " << frameCounter << "  AVG: " << totalFrameCounter / (uint)currentTime << std::endl;
 		frameCounter = 0;
 		lastPrint = currentTime;
 	}
@@ -259,7 +261,7 @@ static void SetupWorld()
 	sun = new LightSource(*sphere);
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
-	auto generator = ParticleGenerator(*sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f);
+	auto generator = ParticleGenerator(*sphere).WithSpeedModifier(2.0f).WithLifeTime(2.0f).WithParticleColor(1.0f, 0.5f, 0.0f);
 	//auto generator = ParticleGenerator().WithSpeedModifier(2.0f).WithLifeTime(2.0f);
 	particleGenerators.push_back(std::make_unique<ParticleGenerator>(generator));
 }
@@ -299,6 +301,8 @@ int main(int argc, char* argv[])
 		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
 
+		DisplayFPS(currentFrame);
+
 		if (options.hotReloadShaders)
 		{
 			std::vector<std::string> changedFiles = CheckHotReload();
@@ -317,7 +321,6 @@ int main(int argc, char* argv[])
 			particleGenerators->SpawnParticles(deltaTime);
 		}
 
-		DisplayFPS(currentFrame);
 		PerformKeysActions(window);
 		RenderFrame();
 

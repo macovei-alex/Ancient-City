@@ -51,11 +51,13 @@ void ParticleGenerator::InitMembersDefault()
 	spawnDelay = 0.1f;
 	speedModifier = 2.0f;
 	lifeTime = 2.0f;
+	particleColor = glm::vec3(1.0f);
 }
 
 void ParticleGenerator::RenderParticles(Shader& particleShader) const
 {
 	particleShader.SetVec3("ParticleGeneratorPosition", position);
+	particleShader.SetVec3("ParticleColor", particleColor);
 	for (const auto& particle : particles)
 	{
 		particleShader.SetVec3("ParticleOffset", particle.offset);
