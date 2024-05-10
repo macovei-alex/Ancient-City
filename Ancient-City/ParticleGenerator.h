@@ -5,14 +5,15 @@
 class ParticleGenerator
 {
 public:
-	ParticleGenerator(const glm::vec3& position, float spawnDelay = 0.1f);
+	ParticleGenerator(const glm::vec3& position, float spawnDelay = 100.0f);
 	void RenderParticles(Shader& particleShader) const;
 	void SpawnParticles(float deltaTime);
 	void MoveParticles(float deltaTime);
 
 private:
+	std::shared_ptr<Model> particleModel;
 	std::vector<Particle> particles;
 	glm::vec3 position;
-	float spawnDelaySeconds;
+	float spawnDelay;
 };
 

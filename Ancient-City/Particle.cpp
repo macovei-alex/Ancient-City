@@ -58,7 +58,7 @@ void Particle::Respawn(const glm::vec3& newVelocity)
 {
 	offset = glm::vec3(0.0f);
 	velocity = newVelocity;
-	lifeTime = 1.0f;
+	lifeTime = 1000.0f;
 }
 
 void Particle::Render(Shader& particleShader) const
@@ -68,7 +68,7 @@ void Particle::Render(Shader& particleShader) const
 	particleShader.SetVec3("ParticleOffset", offset);
 
 	GLCall(glBindVertexArray(VAO));
-	GLCall(glDrawArrays(GL_TRIANGLES, 0, sizeof(Particle::vertices) / 6 * sizeof(Particle::vertices[0])));
+	GLCall(glDrawArrays(GL_TRIANGLES, 0, 36));
 	GLCall(glBindVertexArray(0));
 }
 
@@ -89,7 +89,7 @@ void Particle::InitStaticVAO()
 	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0));
 
 	GLCall(glEnableVertexAttribArray(1));
-	GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)3));
+	GLCall(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float))));
 
 	GLCall(glBindVertexArray(0));
 }

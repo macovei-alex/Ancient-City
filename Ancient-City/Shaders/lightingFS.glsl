@@ -21,7 +21,7 @@ void main()
 
 	vec3 lightDirection = normalize(LightPosition - MidFragmentPosition);
 	float diffuseValue = max(dot(MidNormal, lightDirection), 0.0);
-	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
+	vec3 diffuse = 1.0f * diffuseValue * LightColor;
 
     vec3 viewDirection = normalize(ViewPosition - MidFragmentPosition);
 	vec3 reflectionDirection = reflect(-lightDirection, MidNormal);

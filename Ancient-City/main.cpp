@@ -13,9 +13,6 @@
 #include "Skybox.h"
 #include "ParticleGenerator.h"
 
-#include <gtc/matrix_transform.hpp>
-#include <thread>
-
 struct Options
 {
 	bool hotReloadShaders = false;
@@ -29,13 +26,13 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
-Shader* modelShaders = nullptr, * lightingShaders = nullptr, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShader = nullptr;
+Shader* modelShaders = nullptr, * lightingShaders = nullptr, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr;
 Camera* camera = nullptr;
 LightSource* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<std::unique_ptr<Model>> models;
-std::vector<ParticleGenerator> particleGenerators;
+std::vector<std::unique_ptr<ParticleGenerator>> particleGenerators;
 
 static void DisplayFPS(double currentTime)
 {
@@ -145,7 +142,7 @@ static GLFWwindow* InitializeWindow()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// glfw window creation
-	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "3D Model Viewer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Ancient City", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -169,21 +166,25 @@ static GLFWwindow* InitializeWindow()
 
 static void Clean()
 {
-	delete modelShaders, lightingShaders;
+	delete modelShaders, lightingShaders, textureShaders, particleShaders, skyboxShaders;
 	delete camera;
 	delete sun;
 
-	glfwTerminate();
+	for(auto& model : models)
+		delete model.release();
 
-	if(options.hotReloadShaders)
+	for(auto& particleGenerator : particleGenerators)
+		delete particleGenerator.release();
+
+	if (options.hotReloadShaders)
 		CleanHotReloadHandles();
+	glfwTerminate();
 }
 
 static void RenderFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	
 	skybox->Render(*skyboxShaders, *camera);
 
 	textureShaders->Use();
@@ -201,12 +202,12 @@ static void RenderFrame()
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
 
-	particleShader->Use();
-	particleShader->SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-	particleShader->SetMat4("ViewMatrix", camera->GetViewMatrix());
+	particleShaders->Use();
+	particleShaders->SetUniforms(camera, nullptr, nullptr, 
+		Shader::Uniforms::ProjectionMatrix | Shader::Uniforms::ViewMatrix);
 	for (const auto& particleGenerator : particleGenerators)
 	{
-		particleGenerator.RenderParticles(*particleShader);
+		particleGenerator->RenderParticles(*particleShaders);
 	}
 }
 static void LoadShader(const std::string& shaderFilesIdentifier)
@@ -225,7 +226,7 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 		targetedShaderPtr = &skyboxShaders;
 
 	else if(shaderFilesIdentifier == "particle")
-		targetedShaderPtr = &particleShader;
+		targetedShaderPtr = &particleShaders;
 
 	else
 	{
@@ -247,9 +248,9 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 static void SetupWorld()
 {
 	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
-		glm::translate(glm::mat4(1), glm::vec3(0, -2, 0))));
+		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
-	particleGenerators.push_back(ParticleGenerator(glm::vec3(1, 0, -1), 0.1f));
+	particleGenerators.emplace_back(new ParticleGenerator(glm::vec3(1.0f, 1.0f, -1.0f), 1.0f));
 }
 
 int main(int argc, char* argv[])
@@ -306,8 +307,8 @@ int main(int argc, char* argv[])
 
 		for (auto& particleGenerators : particleGenerators)
 		{
-			particleGenerators.MoveParticles(deltaTime);
-			particleGenerators.SpawnParticles(deltaTime);
+			particleGenerators->MoveParticles(deltaTime);
+			particleGenerators->SpawnParticles(deltaTime);
 		}
 
 		DisplayFPS(currentFrame);
