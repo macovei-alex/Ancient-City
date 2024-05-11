@@ -24,6 +24,7 @@ public:
 	inline ParticleGenerator& WithLifeTime(float time) { lifeTime = time; return *this; }
 	inline ParticleGenerator& WithParticleColor(const glm::vec3& color) { particleColor = color; return *this; }
 	inline ParticleGenerator& WithParticleColor(float r, float g, float b) { particleColor = glm::vec3(r, g, b); return *this; }
+	inline ParticleGenerator& WithScale(float scale) { this->scale = scale; return *this; }
 
 private:
 	Model particleModel;
@@ -33,6 +34,7 @@ private:
 	float speedModifier;
 	float lifeTime;
 	glm::vec3 particleColor;
+	float scale;
 
 	static const std::vector<Vertex> DEFAULT_MODEL_VERTICES;
 	static const std::vector<uint> DEFAULT_MODEL_INDICES;

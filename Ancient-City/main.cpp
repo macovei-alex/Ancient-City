@@ -32,9 +32,9 @@ Camera* camera = nullptr;
 LightSource* sun = nullptr;
 Skybox* skybox = nullptr;
 
-std::vector<std::unique_ptr<Model>> models;
+std::vector<Model*> models;
 // std::vector<std::unique_ptr<LightSource>> lights;
-std::vector<std::unique_ptr<ParticleGenerator>> particleGenerators;
+std::vector<ParticleGenerator*> particleGenerators;
 
 static void DisplayFPS(double currentTime)
 {
@@ -174,11 +174,11 @@ static void Clean()
 	delete camera;
 	delete sun;
 
-	for(auto& model : models)
-		delete model.release();
+	for (auto& model : models)
+		delete model;
 
-	for(auto& particleGenerator : particleGenerators)
-		delete particleGenerator.release();
+	for (auto& particleGenerator : particleGenerators)
+		delete particleGenerator;
 
 	if (options.hotReloadShaders)
 		CleanHotReloadHandles();
@@ -196,7 +196,7 @@ static void RenderFrame()
 
 	for (const auto& model : models)
 	{
-		textureShaders->SetUniforms(nullptr, nullptr, model.get(), Shader::Uniforms::ModelMatrix);
+		textureShaders->SetUniforms(nullptr, nullptr, model, Shader::Uniforms::ModelMatrix);
 		model->Render(*textureShaders);
 	}
 
@@ -254,32 +254,33 @@ static void SetupWorld()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
 	skybox = new Skybox("Models\\Skybox");
 
-	models.emplace_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
+	models.push_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new LightSource(*sphere);
 	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
 
-	auto gen = ParticleGenerator(*sphere)
-		.WithSpeedModifier(2.0f)
+	auto gen = &(new ParticleGenerator(*sphere))
+		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
 		.WithParticleColor(1.0f, 0.5f, 0.0f);
-	particleGenerators.push_back(std::make_unique<ParticleGenerator>(gen));
+	particleGenerators.push_back(gen);
 
-	auto gen2 = ParticleGenerator(*sphere)
-		.WithSpeedModifier(2.0f)
+	gen = &(new ParticleGenerator(*sphere))
+		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
 		.WithParticleColor(1.0f, 0.2f, 0.0f)
 		.WithPosition(2.0f, 0.0f, 0.0f);
-	particleGenerators.push_back(std::make_unique<ParticleGenerator>(gen2));
+	particleGenerators.push_back(gen);
 
-	auto gen3 = ParticleGenerator()
-		.WithSpeedModifier(2.0f)
+	gen = &(new ParticleGenerator())
+		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
 		.WithParticleColor(0.0f, 0.5f, 0.7f)
-		.WithPosition(-2.0f, 0.0f, 0.0f);
-	particleGenerators.push_back(std::make_unique<ParticleGenerator>(gen3));
+		.WithPosition(-2.0f, 0.0f, 0.0f)
+		.WithScale(0.5f);
+	particleGenerators.push_back(gen);
 }
 
 int main(int argc, char* argv[])
