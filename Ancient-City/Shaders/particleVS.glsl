@@ -8,11 +8,13 @@ uniform mat4 ViewMatrix;
 uniform mat4 ProjectionMatrix;
 uniform vec3 ParticleGeneratorPosition;
 uniform vec3 ParticleOffset;
-uniform vec3 ParticleColor;
+uniform vec3 ParticleColorStart;
+uniform vec3 ParticleColorEnd;
+uniform float ParticleColorBlendPercent;
 uniform float ParticleScale;
 
 void main()
 {
-	MidColor = ParticleColor;
+	MidColor = mix(ParticleColorStart, ParticleColorEnd, ParticleColorBlendPercent);
 	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticleGeneratorPosition + ParticleScale * InBufferPosition + ParticleOffset, 1.0f);
 }

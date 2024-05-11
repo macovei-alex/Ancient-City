@@ -264,20 +264,24 @@ static void SetupWorld()
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
-		.WithParticleColor(1.0f, 0.5f, 0.0f);
+		.WithParticleColor(1.0f, 0.5f, 0.0f)
+		.WithParticleAlphaFade(true);
 	particleGenerators.push_back(gen);
 
 	gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
-		.WithParticleColor(1.0f, 0.2f, 0.0f)
-		.WithPosition(2.0f, 0.0f, 0.0f);
+		.WithStartingParticleColor(1.0f, 0.2f, 0.0f)
+		.WithEndingParticleColor(0.0f, 0.5f, 0.7f)
+		.WithPosition(2.0f, 0.0f, 0.0f)
+		.WithScale(2.0f);
 	particleGenerators.push_back(gen);
 
 	gen = &(new ParticleGenerator())
 		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
-		.WithParticleColor(0.0f, 0.5f, 0.7f)
+		.WithStartingParticleColor(0.0f, 0.5f, 0.7f)
+		.WithEndingParticleColor(1.0f, 0.2f, 0.0f)
 		.WithPosition(-2.0f, 0.0f, 0.0f)
 		.WithScale(0.5f);
 	particleGenerators.push_back(gen);

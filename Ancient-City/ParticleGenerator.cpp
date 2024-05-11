@@ -51,20 +51,37 @@ void ParticleGenerator::InitMembersDefault()
 	spawnDelay = 0.1f;
 	speedModifier = 2.0f;
 	lifeTime = 2.0f;
-	particleColor = glm::vec3(1.0f);
+	particleColorStart = glm::vec3(1.0f);
+	particleColorEnd = glm::vec3(1.0f);
 	scale = 1.0f;
+	doParticleAlphaFade = false;
 }
 
 void ParticleGenerator::RenderParticles(Shader& particleShader) const
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	particleShader.SetVec3("ParticleGeneratorPosition", position);
-	particleShader.SetVec3("ParticleColor", particleColor);
+	particleShader.SetVec3("ParticleColorStart", particleColorStart);
+	particleShader.SetVec3("ParticleColorEnd", particleColorEnd);
 	particleShader.SetFloat("ParticleScale", scale);
 	for (const auto& particle : particles)
 	{
+		float lifePercent = particle.lifeTime / lifeTime;
+
 		particleShader.SetVec3("ParticleOffset", particle.offset);
+		particleShader.SetFloat("ParticleColorBlendPercent", 1 - lifePercent);
+
+		if (doParticleAlphaFade)
+		{
+			particleShader.SetFloat("ParticleAlpha", lifePercent);
+		}
+
 		particleModel.Render(particleShader);
 	}
+
+	glDisable(GL_BLEND);
 }
 
 void ParticleGenerator::SpawnParticles(float deltaTime)
