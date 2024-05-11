@@ -5,8 +5,8 @@
 class Camera
 {
 public:
-	Camera(int width, int height, const glm::vec3& position = START_POSITION);
-	void Set(int width, int height, const glm::vec3& position = START_POSITION);
+	Camera(int width, int height, const glm::vec3& position);
+	void Set(int width, int height, const glm::vec3& position);
 
 	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;

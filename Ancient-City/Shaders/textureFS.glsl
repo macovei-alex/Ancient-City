@@ -26,10 +26,7 @@ void main()
 
 	vec3 lightDirection = normalize(LightPosition - MidPosition);
 	float diffuseValue = max(dot(normal, lightDirection), 0.0);
-	if(diffuseValue == 0.0f)
-		diffuseValue = 1.0f;
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
-	//vec3 diffuse = vec3(1, 0, 0);
 
 	vec3 viewDirection = normalize(ViewPosition - MidPosition);
 	vec3 reflectionDirection = reflect(-lightDirection, normal);
@@ -43,6 +40,6 @@ void main()
 
 
 	// Without lighting
-
+	
 	// OutColor = texture(texture_diffuse1, MidTexCoords);
 }

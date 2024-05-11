@@ -83,7 +83,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	{
 		int width, height;
 		glfwGetWindowSize(window, &width, &height);
-		camera->Set(width, height);
+		camera->Set(width, height, Camera::START_POSITION);
 	}
 
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
@@ -109,20 +109,20 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 
 static void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
-	camera->Set(width, height);
+	camera->Set(width, height, camera->GetPosition());
 }
 
 static void MouseCallback(GLFWwindow* window, double deltaX, double deltaY)
 {
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-		camera->HandleMouseMovement(static_cast<float>(deltaX), static_cast<float>(deltaY));
+		camera->HandleMouseMovement((float)deltaX, (float)deltaY);
 	else
-		camera->SetLastMousePos(static_cast<float>(deltaX), static_cast<float>(deltaY));
+		camera->SetLastMousePos((float)deltaX, (float)deltaY);
 }
 
 static void ScrollCallback(GLFWwindow* window, double xoffset, double yOffset)
 {
-	camera->HandleMouseScroll(static_cast<float>(yOffset));
+	camera->HandleMouseScroll((float)yOffset);
 }
 
 static void InitializeGraphics()
@@ -251,7 +251,7 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 
 static void SetupWorld()
 {
-	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT);
+	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT, Camera::START_POSITION);
 	skybox = new Skybox("Models\\Skybox");
 
 	models.push_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",

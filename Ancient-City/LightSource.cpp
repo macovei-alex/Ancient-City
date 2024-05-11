@@ -21,5 +21,5 @@ void LightSource::AddDiffuseStrength(float difference)
 void LightSource::MultiplySpecularExponent(float difference)
 {
 	if (IsBetween(this->specularExponent * difference, 0.0f, 256.0f))
-		this->specularExponent = static_cast<int>(this->specularExponent * difference);
+		this->specularExponent = int(this->specularExponent * difference);
 }

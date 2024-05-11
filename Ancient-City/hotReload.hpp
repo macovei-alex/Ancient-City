@@ -42,7 +42,7 @@ extern std::vector<std::string> CheckHotReload()
 				{
 					std::wstring fileNameUTF16(fileInfo->FileName, fileInfo->FileNameLength / sizeof(wchar_t));
 					char* fileName = new char[fileNameUTF16.size() + 1];
-					WideCharToMultiByte(CP_ACP, 0, fileNameUTF16.c_str(), -1, fileName, static_cast<int>(fileNameUTF16.size() + 1), NULL, NULL);
+					WideCharToMultiByte(CP_ACP, 0, fileNameUTF16.c_str(), -1, fileName, int(fileNameUTF16.size() + 1), NULL, NULL);
 					filesToReload.push_back(dirHandle.first + fileName);
 
 					if (fileInfo->NextEntryOffset == 0)
