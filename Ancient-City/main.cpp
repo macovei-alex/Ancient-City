@@ -113,7 +113,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
 		sun->AddSpecularStrength(-0.1f);
 	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-		sun->MultiplySpecularExponent(2);
+		sun->MultiplySpecularExponent(2.0f);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(0.5f);
 
@@ -232,9 +232,11 @@ static void RenderFrame()
 		| Shader::Uniforms::ViewMatrix);
 	
 	particleShaders->SetFloat("AmbientStrength", 
-		ParticleGenerator::GetBetterAmbientStrength(sun->GetAmbientStrength()));
+		ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
 	for (const auto& particleGenerator : particleGenerators)
 	{
+		particleShaders->SetFloat("DiffuseStrength",
+			particleGenerator->CalculateDiffuseStrength(sun->GetDiffuseStrength(), sun->GetPosition()));
 		particleGenerator->RenderParticles(*particleShaders);
 	}
 }

@@ -65,6 +65,7 @@ void ParticleGenerator::RenderParticles(Shader& particleShader) const
 	particleShader.SetVec3("ParticleColorStart", particleColorStart);
 	particleShader.SetVec3("ParticleColorEnd", particleColorEnd);
 	particleShader.SetFloat("ParticleScale", scale);
+
 	for (const auto& particle : particles)
 	{
 		float lifePercent = particle.lifeTime / lifeTime;
@@ -134,9 +135,9 @@ void ParticleGenerator::MoveParticles(float deltaTime)
 	*/
 }
 
-float ParticleGenerator::GetBetterAmbientStrength(float ambient)
+float ParticleGenerator::CalculateAmbientStrength(float ambient)
 {
-	return std::min(std::max(0.3f, 5 * ambient), 1.0f);
+	return std::min(std::max(0.2f, 5 * ambient), 1.0f);
 
 	// Old code
 	/*
@@ -147,4 +148,10 @@ float ParticleGenerator::GetBetterAmbientStrength(float ambient)
 	else
 		return 1.0f;
 	*/
+}
+
+float ParticleGenerator::CalculateDiffuseStrength(float baseDiffuseStrength, const glm::vec3& lightPosition) const
+{
+	float distance = glm::distance(lightPosition, position);
+	return std::min(std::max(0.3f, 5 * baseDiffuseStrength / std::sqrt(distance)), 1.0f);
 }
