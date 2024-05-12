@@ -120,7 +120,7 @@ void ParticleGenerator::MoveParticles(float deltaTime)
 			}), 
 		particles.end());
 
-
+	// Old code
 	/*
 	for (int i = 0; i < particles.size(); i++)
 	{
@@ -131,5 +131,20 @@ void ParticleGenerator::MoveParticles(float deltaTime)
 			i--;
 		}
 	}
+	*/
+}
+
+float ParticleGenerator::GetBetterAmbientStrength(float ambient)
+{
+	return std::min(std::max(0.3f, 5 * ambient), 1.0f);
+
+	// Old code
+	/*
+	if (ambient == 0)
+		return 0.3f;
+	else if (ambient <= 0.2f)
+		return 5 * ambient;
+	else
+		return 1.0f;
 	*/
 }

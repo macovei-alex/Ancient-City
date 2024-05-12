@@ -220,14 +220,19 @@ static void RenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetUniforms(camera, nullptr, &sun->model, Shader::Uniforms::ViewMatrix
+	modelShaders->SetUniforms(camera, nullptr, &sun->model,
+		Shader::Uniforms::ViewMatrix
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
 
 	particleShaders->Use();
 	particleShaders->SetUniforms(camera, nullptr, nullptr,
-		Shader::Uniforms::ProjectionMatrix | Shader::Uniforms::ViewMatrix);
+		Shader::Uniforms::ProjectionMatrix
+		| Shader::Uniforms::ViewMatrix);
+	
+	particleShaders->SetFloat("AmbientStrength", 
+		ParticleGenerator::GetBetterAmbientStrength(sun->GetAmbientStrength()));
 	for (const auto& particleGenerator : particleGenerators)
 	{
 		particleGenerator->RenderParticles(*particleShaders);

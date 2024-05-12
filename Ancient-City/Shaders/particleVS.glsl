@@ -14,8 +14,11 @@ uniform vec3 ParticleColorStart;
 uniform vec3 ParticleColorEnd;
 uniform float ParticleColorBlendPercent;
 
+uniform float AmbientStrength;
+uniform vec3 LightPosition;
+
 void main()
 {
-	MidColor = mix(ParticleColorStart, ParticleColorEnd, ParticleColorBlendPercent);
-	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticlePosition + ParticleScale * InVertexPos, 1.0f);
+	MidColor = AmbientStrength * mix(ParticleColorStart, ParticleColorEnd, ParticleColorBlendPercent);
+	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticlePosition + ParticleScale * InVertexPos, 1.0);
 }

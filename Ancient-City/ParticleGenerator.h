@@ -28,6 +28,8 @@ public:
 	inline ParticleGenerator& WithScale(float scale) { this->scale = scale; return *this; }
 	inline ParticleGenerator& WithParticleAlphaFade(bool doAlphaFade) { doParticleAlphaFade = doAlphaFade; return *this; }
 
+	static float GetBetterAmbientStrength(float ambientStrength);
+
 private:
 	Model particleModel;
 	std::vector<Particle> particles;
