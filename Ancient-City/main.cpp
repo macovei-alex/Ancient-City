@@ -33,7 +33,6 @@ LightSource* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<Model*> models;
-// std::vector<std::unique_ptr<LightSource>> lights;
 std::vector<ParticleGenerator*> particleGenerators;
 
 static void DisplayFPS(double currentTime)
@@ -74,6 +73,19 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveUp(time);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		camera->MoveDown(time);
+
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		sun->model.Translate(0.0f, 1.0f * time * 10, 0.0f);
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		sun->model.Translate(0.0f, -1.0f * time * 10, 0.0f);
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		sun->model.Translate(-1.0f * time * 10, 0.0f, 0.0f);
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		sun->model.Translate(1.0f * time * 10, 0.0f, 0.0f);
+	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+		sun->model.Translate(0.0f, 0.0f, -1.0f * time * 10);
+	if (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
+		sun->model.Translate(0.0f, 0.0f, 1.0f * time * 10);
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -103,7 +115,10 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(2);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
-		sun->MultiplySpecularExponent(1.0f / 2);
+		sun->MultiplySpecularExponent(0.5f);
+
+	else if(key == GLFW_KEY_UP && action == GLFW_PRESS)
+
 
 	if (action == GLFW_PRESS)
 		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
@@ -141,13 +156,11 @@ static void InitializeGraphics()
 
 static GLFWwindow* InitializeWindow()
 {
-	// glfw: initialize and configure
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	// glfw window creation
 	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Ancient City", NULL, NULL);
 	if (window == NULL)
 	{
@@ -192,7 +205,7 @@ static void RenderFrame()
 	sun->CreateShadowMap(*depthMapShaders, models);
 
 	camera->SetViewPort();
-	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	skybox->Render(*skyboxShaders, *camera);
 
@@ -278,7 +291,7 @@ static void SetupWorld()
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new LightSource(*sphere);
-	sun->SetPosition(camera->GetPosition() + glm::vec3(0.0f, 0.0f, -2.0f));
+	sun->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)

@@ -25,7 +25,7 @@ void main()
 	vec3 normal = normalize(MidNormal);
 
 	vec3 lightDirection = normalize(LightPosition - MidPosition);
-	float diffuseValue = max(dot(normal, lightDirection), 0.0);
+	float diffuseValue = abs(dot(normal, lightDirection));
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
 
 	vec3 viewDirection = normalize(ViewPosition - MidPosition);

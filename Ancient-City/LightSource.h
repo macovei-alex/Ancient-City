@@ -57,7 +57,7 @@ private:
 	int specularExponent = 32;
 
 	float nearPlaneDistance = 0.1f;
-	float farPlaneDistance = 7.5f;
+	float farPlaneDistance = 10.0f;
 	glm::vec3 lightDirection = glm::vec3(0.0f, 0.0f, 0.0f);
 	uint depthMap = 0;
 	uint depthMapFBO = 0;

@@ -22,7 +22,7 @@ public:
 	void SetScale(const glm::vec3& scale);
 	void SetRotation(const glm::vec3& rotation);
 
-	inline void Translate(float x, float y = 0, float z = 0) { Translate(glm::vec3(x, y, z)); }
+	inline void Translate(float x, float y, float z) { Translate(glm::vec3(x, y, z)); }
 	inline void Translate(const glm::vec3& translation) { modelMatrix = glm::translate(modelMatrix, translation); }
 
 	inline void Scale(float scale) { Scale(glm::vec3(scale, scale, scale)); }
