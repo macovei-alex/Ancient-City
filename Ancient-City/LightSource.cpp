@@ -63,7 +63,6 @@ void LightSource::CreateShadowMap(Shader& shadowShaders, const std::vector<Model
 
 	shadowShaders.Use();
 	shadowShaders.SetMat4("LightSpaceMatrix", lightSpaceMatrix);
-	shadowShaders.SetInt("ShadowMap", 15);
 
 	GLCall(glViewport(0, 0, LightSource::SHADOW_WIDTH, LightSource::SHADOW_HEIGHT));
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));

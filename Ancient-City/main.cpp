@@ -197,6 +197,7 @@ static void RenderFrame()
 	skybox->Render(*skyboxShaders, *camera);
 
 	shadowShaders->Use();
+	shadowShaders->SetInt("ShadowMap", 15);
 	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
 
 	for (const auto& model : models)
@@ -212,7 +213,7 @@ static void RenderFrame()
 	sun->model.Render(*modelShaders);
 
 	particleShaders->Use();
-	particleShaders->SetUniforms(camera, nullptr, nullptr, 
+	particleShaders->SetUniforms(camera, nullptr, nullptr,
 		Shader::Uniforms::ProjectionMatrix | Shader::Uniforms::ViewMatrix);
 	for (const auto& particleGenerator : particleGenerators)
 	{
@@ -220,26 +221,26 @@ static void RenderFrame()
 	}
 }
 
-static void LoadShader(const std::string& shaderFilesIdentifier)
+static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompile)
 {
 	Shader** targetedShaderPtr = nullptr;
 
-	if(shaderFilesIdentifier == names::shaders::model)
+	if (shaderFilesIdentifier == names::shaders::model)
 		targetedShaderPtr = &modelShaders;
 	else if (shaderFilesIdentifier == names::shaders::texture)
 		targetedShaderPtr = &textureShaders;
 	else if (shaderFilesIdentifier == names::shaders::skybox)
 		targetedShaderPtr = &skyboxShaders;
-	else if(shaderFilesIdentifier == names::shaders::particle)
+	else if (shaderFilesIdentifier == names::shaders::particle)
 		targetedShaderPtr = &particleShaders;
-	else if(shaderFilesIdentifier == names::shaders::shadow)
+	else if (shaderFilesIdentifier == names::shaders::shadow)
 		targetedShaderPtr = &shadowShaders;
-	else if(shaderFilesIdentifier == names::shaders::depthMap)
+	else if (shaderFilesIdentifier == names::shaders::depthMap)
 		targetedShaderPtr = &depthMapShaders;
 
 	else
 	{
-		std::cout << "Unknown shader identifier: " << shaderFilesIdentifier << std::endl;
+		LOG(std::format("Unknown shader identifier: {}", shaderFilesIdentifier), Logger::Level::Warning);
 		return;
 	}
 
@@ -251,6 +252,19 @@ static void LoadShader(const std::string& shaderFilesIdentifier)
 		if (*targetedShaderPtr != nullptr)
 			delete* targetedShaderPtr;
 		*targetedShaderPtr = newShader;
+	}
+	else
+	{
+		std::string errorString = std::format("Shader ( {} ) could not compile", shaderFilesIdentifier);
+		if (mustCompile)
+		{
+			LOG(errorString, Logger::Level::Error);
+			throw std::runtime_error(errorString);
+		}
+		else
+		{
+			LOG(errorString, Logger::Level::Warning);
+		}
 	}
 }
 
@@ -314,12 +328,12 @@ int main(int argc, char* argv[])
 	}
 	InitializeGraphics();
 
-	LoadShader(names::shaders::model);
-	LoadShader(names::shaders::texture);
-	LoadShader(names::shaders::skybox);
-	LoadShader(names::shaders::particle);
-	LoadShader(names::shaders::depthMap);
-	LoadShader(names::shaders::shadow);
+	LoadShader(names::shaders::model, true);
+	LoadShader(names::shaders::texture, true);
+	LoadShader(names::shaders::skybox, true);
+	LoadShader(names::shaders::particle, true);
+	LoadShader(names::shaders::depthMap, true);
+	LoadShader(names::shaders::shadow, true);
 
 	SetupWorld();
 
@@ -334,10 +348,10 @@ int main(int argc, char* argv[])
 			std::vector<std::string> changedFiles = CheckHotReload();
 			for (const auto& file : changedFiles)
 			{
-				std::string shaderIdentifier = file[file.size() - 7] == 'V' 
+				std::string shaderIdentifier = file[file.size() - 7] == 'V'
 					? TrimBeginEnd(file, names::shaders::dirName + '\\', names::shaders::vertex)
 					: TrimBeginEnd(file, names::shaders::dirName + '\\', names::shaders::fragment);
-				LoadShader(shaderIdentifier);
+				LoadShader(shaderIdentifier, false);
 			}
 		}
 
