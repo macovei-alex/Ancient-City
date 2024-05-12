@@ -27,7 +27,7 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 
-Shader* modelShaders = nullptr, * lightingShaders = nullptr, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr;
+Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr;
 Camera* camera = nullptr;
 LightSource* sun = nullptr;
 Skybox* skybox = nullptr;
@@ -41,13 +41,15 @@ static void DisplayFPS(double currentTime)
 	static uint totalFrameCounter = 0;
 	static uint frameCounter = 0;
 	static double lastPrint = glfwGetTime();
+	static uint printCount = 0;
 
 	frameCounter++;
 
 	if (currentTime - lastPrint >= 1)
 	{
+		printCount++;
 		totalFrameCounter += frameCounter;
-		std::cout << "FPS: " << frameCounter << "  AVG: " << totalFrameCounter / (uint)currentTime << std::endl;
+		std::cout << "FPS: " << frameCounter << "  AVG: " << totalFrameCounter / printCount << std::endl;
 		frameCounter = 0;
 		lastPrint = currentTime;
 	}
@@ -170,7 +172,7 @@ static GLFWwindow* InitializeWindow()
 
 static void Clean()
 {
-	delete modelShaders, lightingShaders, textureShaders, particleShaders, skyboxShaders;
+	delete modelShaders, textureShaders, particleShaders, skyboxShaders, shadowShaders, depthMapShaders;
 	delete camera;
 	delete sun;
 
@@ -187,17 +189,20 @@ static void Clean()
 
 static void RenderFrame()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	sun->CreateShadowMap(*depthMapShaders, models);
+
+	camera->SetViewPort();
+	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
 	skybox->Render(*skyboxShaders, *camera);
 
-	textureShaders->Use();
-	textureShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
+	shadowShaders->Use();
+	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
 
 	for (const auto& model : models)
 	{
-		textureShaders->SetUniforms(nullptr, nullptr, model, Shader::Uniforms::ModelMatrix);
-		model->Render(*textureShaders);
+		shadowShaders->SetUniforms(nullptr, nullptr, model, Shader::Uniforms::ModelMatrix);
+		model->Render(*shadowShaders);
 	}
 
 	modelShaders->Use();
@@ -218,20 +223,19 @@ static void RenderFrame()
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
 	Shader** targetedShaderPtr = nullptr;
-	if (shaderFilesIdentifier == names::shaders::model)
+
+	if(shaderFilesIdentifier == names::shaders::model)
 		targetedShaderPtr = &modelShaders;
-
-	else if (shaderFilesIdentifier == names::shaders::lighting)
-		targetedShaderPtr = &lightingShaders;
-
 	else if (shaderFilesIdentifier == names::shaders::texture)
 		targetedShaderPtr = &textureShaders;
-
 	else if (shaderFilesIdentifier == names::shaders::skybox)
 		targetedShaderPtr = &skyboxShaders;
-
 	else if(shaderFilesIdentifier == names::shaders::particle)
 		targetedShaderPtr = &particleShaders;
+	else if(shaderFilesIdentifier == names::shaders::shadow)
+		targetedShaderPtr = &shadowShaders;
+	else if(shaderFilesIdentifier == names::shaders::depthMap)
+		targetedShaderPtr = &depthMapShaders;
 
 	else
 	{
@@ -311,10 +315,11 @@ int main(int argc, char* argv[])
 	InitializeGraphics();
 
 	LoadShader(names::shaders::model);
-	LoadShader(names::shaders::lighting);
 	LoadShader(names::shaders::texture);
 	LoadShader(names::shaders::skybox);
 	LoadShader(names::shaders::particle);
+	LoadShader(names::shaders::depthMap);
+	LoadShader(names::shaders::shadow);
 
 	SetupWorld();
 
@@ -323,8 +328,6 @@ int main(int argc, char* argv[])
 		double currentFrame = glfwGetTime();
 		deltaTime = (float)(currentFrame - lastFrame);
 		lastFrame = currentFrame;
-
-		DisplayFPS(currentFrame);
 
 		if (options.hotReloadShaders)
 		{
@@ -346,6 +349,7 @@ int main(int argc, char* argv[])
 
 		PerformKeysActions(window);
 		RenderFrame();
+		DisplayFPS(currentFrame);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

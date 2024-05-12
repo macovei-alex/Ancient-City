@@ -13,6 +13,7 @@ public:
 	Model(Model&& model) = default;
 
 	void Render(const Shader& shader) const;
+	void DepthRender() const;
 
 	inline glm::mat4 GetModelMatrix() const { return modelMatrix; }
 	inline glm::vec3 GetPosition() const { return glm::vec3(modelMatrix[3]); }

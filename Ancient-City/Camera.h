@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils.h"
 #include <glm.hpp>
 
 class Camera
@@ -25,6 +26,7 @@ public:
 	void HandleMouseScroll(float yOffset);
 
 	inline void SetLastMousePos(float x, float y) { lastX = x; lastY = y; }
+	inline void SetViewPort() { GLCall(glViewport(0, 0, screenWidth, screenHeight)); }
 
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
@@ -32,7 +34,7 @@ private:
 	void UpdateCameraVectors();
 
 	float zNear, zFar, fovY;
-	int width, height;
+	int screenWidth, screenHeight;
 	bool isPerspective;
 
 	glm::vec3 position, forward, right, up, worldUp;

@@ -79,6 +79,13 @@ void Mesh::Render(const Shader& shader) const
 	GLCall(glActiveTexture(GL_TEXTURE0));
 }
 
+void Mesh::DepthRender() const
+{
+	GLCall(glBindVertexArray(VAO));
+	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, 0));
+	GLCall(glBindVertexArray(0));
+}
+
 void Mesh::InitBuffers()
 {
 	GLCall(glGenVertexArrays(1, &VAO));

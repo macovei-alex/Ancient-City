@@ -10,10 +10,11 @@ namespace names
 		inline const std::string vertex = "VS.glsl";
 		inline const std::string fragment = "FS.glsl";
 		inline const std::string model = "model";
-		inline const std::string lighting = "lighting";
 		inline const std::string texture = "texture";
 		inline const std::string particle = "particle";
 		inline const std::string skybox = "skybox";
+		inline const std::string shadow = "shadow";
+		inline const std::string depthMap = "depthMap";
 	}
 
 	namespace textures

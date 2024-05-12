@@ -135,7 +135,9 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,12 +166,15 @@
     <None Include="KeyBinder.tpp" />
     <None Include="OpenGL-errors.html" />
     <None Include="postbuild.bat" />
-    <None Include="Shaders\lightingFS.glsl" />
-    <None Include="Shaders\lightingVS.glsl" />
+    <None Include="Shaders\depthMapFS.glsl" />
+    <None Include="Shaders\depthMapVS.glsl" />
     <None Include="Shaders\modelFS.glsl" />
     <None Include="Shaders\modelVS.glsl" />
     <None Include="Shaders\particleFS.glsl" />
     <None Include="Shaders\particleVS.glsl" />
+    <None Include="Shaders\shadowFS.glsl" />
+    <None Include="Shaders\shadowFSLab.glsl" />
+    <None Include="Shaders\shadowVS.glsl" />
     <None Include="Shaders\skyboxFS.glsl" />
     <None Include="Shaders\skyboxVS.glsl" />
     <None Include="Shaders\textureFS.glsl" />

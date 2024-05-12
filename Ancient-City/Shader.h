@@ -23,6 +23,8 @@ public:
 		ViewMatrix =			0b1000000000,
 		ProjectionMatrix =		0b10000000000,
 		TextureDiffuse =		0b100000000000,
+		LightSpaceMatrix =      0b1000000000000,
+		DepthMap = 				0b10000000000000,
 
 		DefaultOptions = LightColor | LightPosition | ViewPosition | AmbientStrength | DiffuseStrength | SpecularStrength | SpecularExponent | ViewMatrix | ProjectionMatrix,
 	};

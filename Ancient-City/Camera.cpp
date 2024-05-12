@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include "utils.h"
-
 #include <gtc/matrix_transform.hpp>
 
 const float Camera::Z_NEAR = 0.1f;
@@ -40,8 +38,8 @@ void Camera::Set(int width, int height, const glm::vec3& position)
 	zNear = Camera::Z_NEAR;
 	zFar = Camera::Z_FAR;
 
-	this->width = width;
-	this->height = height;
+	this->screenWidth = width;
+	this->screenHeight = height;
 	this->position = position;
 
 	if (lastX == INT_MAX && lastY == INT_MAX)
@@ -51,8 +49,7 @@ void Camera::Set(int width, int height, const glm::vec3& position)
 	}
 	isFirstMouseMove = true;
 
-	glViewport(0, 0, width, height);
-
+	SetViewPort();
 	UpdateCameraVectors();
 }
 
@@ -65,14 +62,14 @@ glm::mat4 Camera::GetProjectionMatrix() const
 {
 	if (isPerspective)
 	{
-		float aspectRatio = (float)width / height;
+		float aspectRatio = (float)screenWidth / screenHeight;
 		return glm::perspective(glm::radians(fovY), aspectRatio, zNear, zFar);
 	}
 
 	float scaleFactor = 1000.0f;
 	return glm::ortho(
-		-width / scaleFactor, width / scaleFactor,
-		-height / scaleFactor, height / scaleFactor, -zFar, zFar);
+		-screenWidth / scaleFactor, screenWidth / scaleFactor,
+		-screenHeight / scaleFactor, screenHeight / scaleFactor, -zFar, zFar);
 }
 
 glm::vec3 Camera::GetPosition() const

@@ -13,8 +13,7 @@
 #define LOG(message, level) Logger::cout(std::format("{}:{} - {}", fs::path(__FILE__).filename().string(), __LINE__, message), level)
 #define ASSERT(cond) if (!(cond)) __debugbreak();
 
-#define DEBUG
-#ifdef DEBUG
+#ifdef _DEBUG
 #define GLCall(func) GLClearError(); func; ASSERT(GLLogCall(#func, __FILE__, __LINE__));
 #else
 #define GLCall(func) func;

@@ -65,6 +65,8 @@ void Shader::SetUniforms(Camera* camera, LightSource* lightSource, Model* model,
 		SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
 	if(bits & Uniforms::ModelMatrix)
 		SetMat4("ModelMatrix", model->GetModelMatrix());
+	if(bits & Uniforms::LightSpaceMatrix)
+		SetMat4("LightSpaceMatrix", lightSource->GetLightSpaceMatrix());
 }
 
 bool Shader::Init(const std::string& vertexPath, const std::string& fragmentPath)

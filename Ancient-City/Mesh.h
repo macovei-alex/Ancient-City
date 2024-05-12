@@ -15,6 +15,7 @@ public:
     ~Mesh();
 
     void Render(const Shader& shader) const;
+    void DepthRender() const;
 
 public:
     std::vector<Vertex> vertices;

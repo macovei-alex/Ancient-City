@@ -59,18 +59,6 @@
     <None Include="KeyBinder.tpp">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="Shaders\lightingFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\lightingVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\modelFS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="Shaders\modelVS.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="OpenGL-errors.html">
       <Filter>Resource Files\Other</Filter>
     </None>
@@ -93,6 +81,27 @@
       <Filter>Resource Files\Shaders</Filter>
     </None>
     <None Include="Shaders\particleVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\shadowFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\shadowVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\depthMapFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\depthMapVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\modelFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\modelVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\shadowFSLab.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
