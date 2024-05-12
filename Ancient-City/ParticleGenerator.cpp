@@ -6,14 +6,14 @@
 
 const std::vector<Vertex> ParticleGenerator::DEFAULT_MODEL_VERTICES = 
 {
-	Vertex(-0.25f, -0.25f,  0.25f),
-	Vertex( 0.25f, -0.25f,  0.25f),
-	Vertex( 0.25f,  0.25f,  0.25f),
-	Vertex(-0.25f,  0.25f,  0.25f),
-	Vertex(-0.25f, -0.25f, -0.25f),
-	Vertex( 0.25f, -0.25f, -0.25f),
-	Vertex( 0.25f,  0.25f, -0.25f),
-	Vertex(-0.25f,  0.25f, -0.25f)
+	Vertex(-0.5f, -0.5f,  0.5f),
+	Vertex( 0.5f, -0.5f,  0.5f),
+	Vertex( 0.5f,  0.5f,  0.5f),
+	Vertex(-0.5f,  0.5f,  0.5f),
+	Vertex(-0.5f, -0.5f, -0.5f),
+	Vertex( 0.5f, -0.5f, -0.5f),
+	Vertex( 0.5f,  0.5f, -0.5f),
+	Vertex(-0.5f,  0.5f, -0.5f)
 };
 
 const std::vector<uint> ParticleGenerator::DEFAULT_MODEL_INDICES = 
@@ -62,7 +62,6 @@ void ParticleGenerator::RenderParticles(Shader& particleShader) const
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	particleShader.SetVec3("ParticleGeneratorPosition", position);
 	particleShader.SetVec3("ParticleColorStart", particleColorStart);
 	particleShader.SetVec3("ParticleColorEnd", particleColorEnd);
 	particleShader.SetFloat("ParticleScale", scale);
@@ -70,7 +69,7 @@ void ParticleGenerator::RenderParticles(Shader& particleShader) const
 	{
 		float lifePercent = particle.lifeTime / lifeTime;
 
-		particleShader.SetVec3("ParticleOffset", particle.offset);
+		particleShader.SetVec3("ParticlePosition", particle.position);
 		particleShader.SetFloat("ParticleColorBlendPercent", 1 - lifePercent);
 
 		if (doParticleAlphaFade)
@@ -100,6 +99,7 @@ void ParticleGenerator::SpawnParticles(float deltaTime)
 	for (; newParticlesCount > 0; newParticlesCount--)
 	{
 		particles.emplace_back(Particle(
+			position, 
 			speedModifier * glm::vec3(distribution(generator), 1.0f, distribution(generator)),
 			lifeTime));
 	}
@@ -107,25 +107,21 @@ void ParticleGenerator::SpawnParticles(float deltaTime)
 
 void ParticleGenerator::MoveParticles(float deltaTime)
 {
-	/*
+	std::for_each(particles.begin(),
+		particles.end(), 
+		[&deltaTime](Particle& particle) { particle.Move(deltaTime); });
+
 	particles.erase(
-		std::remove_if(particles.begin(), particles.end(),
-		[&deadParticles](const Particle& particle) {
-			if (particle.IsDead())
-			{
-				deadParticles++;
-				return true;
-			}
-			return false;
-		}), 
+		std::remove_if(
+			particles.begin(),
+			particles.end(),
+			[](const Particle& particle) { 
+				return particle.IsDead();
+			}), 
 		particles.end());
 
-	for (; deadParticles > 0; deadParticles--)
-	{
-		particles.emplace_back(Particle(glm::vec3(1, 1, 1)));
-	}
-	*/
 
+	/*
 	for (int i = 0; i < particles.size(); i++)
 	{
 		particles[i].Move(deltaTime);
@@ -135,4 +131,5 @@ void ParticleGenerator::MoveParticles(float deltaTime)
 			i--;
 		}
 	}
+	*/
 }

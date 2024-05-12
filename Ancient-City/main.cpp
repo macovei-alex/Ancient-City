@@ -214,6 +214,7 @@ static void RenderFrame()
 		particleGenerator->RenderParticles(*particleShaders);
 	}
 }
+
 static void LoadShader(const std::string& shaderFilesIdentifier)
 {
 	Shader** targetedShaderPtr = nullptr;
@@ -264,6 +265,7 @@ static void SetupWorld()
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
 		.WithLifeTime(2.0f)
+		.WithPosition(-2.0f, 0.0f, 0.0f)
 		.WithParticleColor(1.0f, 0.5f, 0.0f)
 		.WithParticleAlphaFade(true);
 	particleGenerators.push_back(gen);
@@ -273,7 +275,6 @@ static void SetupWorld()
 		.WithLifeTime(2.0f)
 		.WithStartingParticleColor(1.0f, 0.2f, 0.0f)
 		.WithEndingParticleColor(0.0f, 0.5f, 0.7f)
-		.WithPosition(2.0f, 0.0f, 0.0f)
 		.WithScale(2.0f);
 	particleGenerators.push_back(gen);
 
@@ -282,8 +283,9 @@ static void SetupWorld()
 		.WithLifeTime(2.0f)
 		.WithStartingParticleColor(0.0f, 0.5f, 0.7f)
 		.WithEndingParticleColor(1.0f, 0.2f, 0.0f)
-		.WithPosition(-2.0f, 0.0f, 0.0f)
-		.WithScale(0.5f);
+		.WithPosition(2.0f, 0.0f, 0.0f)
+		.WithParticleAlphaFade(true)
+		.WithScale(0.2f);
 	particleGenerators.push_back(gen);
 }
 
@@ -293,7 +295,7 @@ int main(int argc, char* argv[])
 	{
 		for (int i = 1; i < argc; i++)
 		{
-			if (std::strcmp(argv[i], "-r") == 0 || std::strcmp(argv[i], "--hotRealoadShaders") == 0)
+			if (strcmp(argv[i], "-r") == 0 || strcmp(argv[i], "--hotRealoadShaders") == 0)
 			{
 				options.hotReloadShaders = true;
 				AddHotReloadDir(names::shaders::dirName + '\\');

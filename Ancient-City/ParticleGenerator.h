@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Particle.h"
+#include "particle.hpp"
 #include "Vertex.h"
 #include "Model.h"
 

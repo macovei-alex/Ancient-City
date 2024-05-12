@@ -1,7 +1,8 @@
 #include "utils.h"
 
 #include <sstream>
-#include <unordered_map>
+#include <array>
+#include <algorithm>
 
 glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other)
 {
@@ -72,17 +73,31 @@ bool GLLogCall(const char* function, const char* file, int line)
 
 std::string_view GetKeyPressed(int key)
 {
-	static const std::unordered_map<int, std::string_view> keyMap =
+	static bool isSorted = false;
+	static std::array<std::pair<int, std::string_view>, 58> keys =
 	{
-		{GLFW_KEY_UNKNOWN, "UNKNOWN"},
+		std::pair<int, std::string_view>{GLFW_KEY_UNKNOWN, "UNKNOWN"},
 		{GLFW_KEY_ESCAPE, "ESCAPE"},
+		{GLFW_KEY_BACKSPACE, "BACKSPACE"},
+		{GLFW_KEY_TAB, "TAB"},
+		{GLFW_KEY_ENTER, "ENTER"},
+		{GLFW_KEY_LEFT_SHIFT, "LEFT_SHIFT"},
+		{GLFW_KEY_RIGHT_SHIFT, "RIGHT_SHIFT"},
+		{GLFW_KEY_LEFT_CONTROL, "LEFT_CONTROL"},
+		{GLFW_KEY_RIGHT_CONTROL, "RIGHT_CONTROL"},
 		{GLFW_KEY_SPACE, "SPACE"},
-		{GLFW_KEY_APOSTROPHE, "APOSTROPHE"},
-		{GLFW_KEY_COMMA, "+"},
+		{GLFW_KEY_CAPS_LOCK, "CAPS_LOCK"},
+		{GLFW_KEY_LEFT, "LEFT"},
+		{GLFW_KEY_UP, "UP"},
+		{GLFW_KEY_RIGHT, "RIGHT"},
+		{GLFW_KEY_DOWN, "DOWN"},
+		{GLFW_KEY_APOSTROPHE, "'"},
+		{GLFW_KEY_EQUAL, "="},
 		{GLFW_KEY_MINUS, "-"},
 		{GLFW_KEY_PERIOD, "."},
 		{GLFW_KEY_SLASH, "/"},
 		{GLFW_KEY_BACKSLASH, "\\"},
+		{GLFW_KEY_SEMICOLON, "SEMICOLON"},
 		{GLFW_KEY_0, "0"},
 		{GLFW_KEY_1, "1"},
 		{GLFW_KEY_2, "2"},
@@ -93,8 +108,6 @@ std::string_view GetKeyPressed(int key)
 		{GLFW_KEY_7, "7"},
 		{GLFW_KEY_8, "8"},
 		{GLFW_KEY_9, "9"},
-		{GLFW_KEY_SEMICOLON, "SEMICOLON"},
-		{GLFW_KEY_EQUAL, "EQUAL"},
 		{GLFW_KEY_A, "A"},
 		{GLFW_KEY_B, "B"},
 		{GLFW_KEY_C, "C"},
@@ -123,8 +136,16 @@ std::string_view GetKeyPressed(int key)
 		{GLFW_KEY_Z, "Z"},
 	};
 
-	auto it = keyMap.find(key);
-	return it != keyMap.end() ? it->second : "INVALID";
+	if (!isSorted)
+	{
+		std::sort(keys.begin(), keys.end(),
+			[](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
+		isSorted = true;
+	}
+
+	auto it = std::lower_bound(keys.begin(), keys.end(), key,
+		[](const auto& pair, int key) { return pair.first < key; });
+	return it != keys.end() ? it->second : "INVALID";
 }
 
 std::string TrimBeginEnd(const std::string& str, const std::string& begin, const std::string& end)
@@ -132,7 +153,7 @@ std::string TrimBeginEnd(const std::string& str, const std::string& begin, const
 	size_t startPos = str.find(begin);
 	size_t endPos = str.rfind(end);
 
-	if (startPos == std::string::npos || endPos == std::string::npos)
+	if (startPos == std::string::npos || endPos == std::string::npos || startPos > endPos)
 		return str;
 
 	size_t length = endPos - startPos - begin.length();
