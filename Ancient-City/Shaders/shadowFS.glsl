@@ -51,9 +51,9 @@ void main()
 	vec3 specular = SpecularStrength * specularPower * LightColor;
 
 	vec4 texColor = texture(texture_diffuse1, MidTexCoords);
-	// float shadow = ShadowCalculation(MidLightSpacePosition);
-	// vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor.rgb;
-	vec3 result = (ambient + diffuse + specular) * texColor.rgb;
+	float shadow = ShadowCalculation(MidLightSpacePosition);
+	vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor.rgb;
+	// vec3 result = (ambient + diffuse + specular) * texColor.rgb;
 
 	OutColor = vec4(result, texColor.a);
 }

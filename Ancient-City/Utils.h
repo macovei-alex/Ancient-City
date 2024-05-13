@@ -21,7 +21,7 @@
 
 namespace fs = std::filesystem;
 
-constexpr float PI = 3.14159265359f;
+inline constexpr float PI = 3.14159265359f;
 
 glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other);
 glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other);
@@ -35,6 +35,4 @@ std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
 std::string_view GetKeyPressed(int key);
-template<typename T>
-inline bool IsBetween(const T& val, const T& low, const T& high) { return val >= low && val <= high; }
 std::string TrimBeginEnd(const std::string& str, const std::string& beginning, const std::string& end);

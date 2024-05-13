@@ -5,6 +5,15 @@
 
 #include <gtc/matrix_transform.hpp>
 
+const uint DirectionalLightSource::SHADOW_WIDTH = 1024;
+const uint DirectionalLightSource::SHADOW_HEIGHT = 1024;
+
+DirectionalLightSource::DirectionalLightSource()
+	: shadowMap(DirectionalLightSource::SHADOW_WIDTH, DirectionalLightSource::SHADOW_HEIGHT)
+{
+	// empty
+}
+
 void DirectionalLightSource::AddAmbientStrength(float difference)
 {
 	float total = ambientStrength + difference;
@@ -35,7 +44,7 @@ void DirectionalLightSource::MultiplySpecularExponent(float difference)
 
 glm::mat4 DirectionalLightSource::GetLightViewMatrix() const
 {
-	return glm::lookAt(glm::vec3(0), lightDirection, glm::vec3(0.0f, 1.0f, 0.0f));
+	return glm::lookAt(glm::vec3(0.0f), lightDirection, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 glm::mat4 DirectionalLightSource::GetLightProjectionMatrix() const
@@ -63,36 +72,7 @@ void DirectionalLightSource::RotateDirection(const glm::vec3& rotation)
 	RotateDirection(rotation.x, rotation.y, rotation.z);
 }
 
-/*
-
-void DirectionalLightSource::InitShadowMap()
-{
-	GLCall(glGenFramebuffers(1, &depthMapFBO));
-	GLCall(glGenTextures(1, &depthMap));
-
-	GLCall(glActiveTexture(GL_TEXTURE15));
-	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, DirectionalLightSource::SHADOW_WIDTH, DirectionalLightSource::SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
-
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
-
-	static const float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
-
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-	GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
-
-	GLCall(glDrawBuffer(GL_NONE));
-	GLCall(glReadBuffer(GL_NONE));
-
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-	GLCall(glActiveTexture(GL_TEXTURE0));
-}
-
-void DirectionalLightSource::CreateShadowMap(Shader& shadowShaders, const std::vector<Model*>& models) const
+void DirectionalLightSource::WriteToShadowMap(const Shader& shadowShaders, const std::vector<Model*>& models) const
 {
 	glm::mat4 lightSpaceMatrix = GetLightSpaceMatrix();
 
@@ -100,9 +80,10 @@ void DirectionalLightSource::CreateShadowMap(Shader& shadowShaders, const std::v
 	shadowShaders.SetMat4("LightSpaceMatrix", lightSpaceMatrix);
 
 	GLCall(glViewport(0, 0, DirectionalLightSource::SHADOW_WIDTH, DirectionalLightSource::SHADOW_HEIGHT));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
 	GLCall(glClear(GL_DEPTH_BUFFER_BIT));
 	GLCall(glCullFace(GL_FRONT));
+
+	shadowMap.BindForWrite();
 
 	for (const auto& model : models)
 	{
@@ -110,8 +91,6 @@ void DirectionalLightSource::CreateShadowMap(Shader& shadowShaders, const std::v
 		model->DepthRender();
 	}
 
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+	shadowMap.UnbindForWrite();
 	GLCall(glCullFace(GL_BACK));
 }
-
-*/

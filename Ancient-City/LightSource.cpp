@@ -8,26 +8,30 @@ LightSource::LightSource(const Model& model)
 
 void LightSource::AddAmbientStrength(float difference)
 {
-	if(IsBetween(this->ambientStrength + difference, 0.0f, 1.0f))
-		this->ambientStrength += difference;
-}
-
-void LightSource::AddSpecularStrength(float difference)
-{
-	if(IsBetween(this->specularStrength + difference, 0.0f, 1.0f))
-		this->specularStrength += difference;
+	float total = ambientStrength + difference;
+	if(0.0f <= total && total <= 1.0f)
+		ambientStrength += difference;
 }
 
 void LightSource::AddDiffuseStrength(float difference)
 {
-	if (IsBetween(this->diffuseStrength + difference, 0.0f, 1.0f))
-		this->diffuseStrength += difference;
+	float total = diffuseStrength + difference;
+	if (0.0f <= total && total <= 1.0f)
+		diffuseStrength += difference;
+}
+
+void LightSource::AddSpecularStrength(float difference)
+{
+	float total = specularStrength + difference;
+	if (0.0f <= total && total <= 1.0f)
+		specularStrength += difference;
 }
 
 void LightSource::MultiplySpecularExponent(float difference)
 {
-	if (IsBetween(this->specularExponent * difference, 0.0f, 256.0f))
-		this->specularExponent = int(this->specularExponent * difference);
+	float total = specularExponent * difference;
+	if (1.0f <= total && total <= 256.0f)
+		this->specularExponent = (int)total;
 }
 
 void LightSource::InitShadowMap()

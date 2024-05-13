@@ -198,7 +198,7 @@ static void Clean()
 
 static void RenderFrame()
 {
-	// sun->CreateShadowMap(*depthMapShaders, models);
+	sun->WriteToShadowMap(*depthMapShaders, models);
 
 	camera->SetViewPort();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -206,7 +206,7 @@ static void RenderFrame()
 	skybox->Render(*skyboxShaders, *camera);
 
 	shadowShaders->Use();
-	shadowShaders->SetInt("ShadowMap", 15);
+	sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
 
 	for (const auto& model : models)

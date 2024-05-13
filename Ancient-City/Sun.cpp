@@ -3,7 +3,8 @@
 const float Sun::MODEL_POSITION_MULTIPLIER = 1000.0f;
 
 Sun::Sun(const Model& model)
-	: model(model)
+	: DirectionalLightSource(),
+	model(model)
 {
 	this->model.SetPosition(-lightDirection * MODEL_POSITION_MULTIPLIER);
 }
