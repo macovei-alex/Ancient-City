@@ -216,7 +216,7 @@ static void RenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetUniforms(camera, nullptr, &sun->model,
+	modelShaders->SetUniforms(camera, nullptr, &sun->GetModel(),
 		Shader::Uniforms::ViewMatrix
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
@@ -226,7 +226,6 @@ static void RenderFrame()
 	particleShaders->SetUniforms(camera, nullptr, nullptr,
 		Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ViewMatrix);
-	
 	particleShaders->SetFloat("AmbientStrength", 
 		ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
 	for (const auto& particleGenerator : particleGenerators)
@@ -292,7 +291,7 @@ static void SetupWorld()
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new Sun(*sphere);
-	sun->model.Scale(100);
+	sun->GetModel().Scale(100.0f);
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
@@ -374,6 +373,8 @@ int main(int argc, char* argv[])
 			particleGenerators->MoveParticles(deltaTime);
 			particleGenerators->SpawnParticles(deltaTime);
 		}
+
+		sun->PassTime((float)deltaTime);
 
 		PerformKeysActions(window);
 		RenderFrame();

@@ -6,7 +6,7 @@ const float Camera::Z_NEAR = 0.1f;
 const float Camera::Z_FAR = 2000.0f;
 const float Camera::YAW = -90.0f;
 const float Camera::PITCH = 0.0f;
-const float Camera::FOV = 45.0f;
+const float Camera::FOV = 70.0f;
 const float Camera::SPEED_FACTOR = 20.0f;
 const float Camera::MOUSE_SENSITIVITY = 0.1f;
 const float Camera::SPEED_BOOST_MULTIPLIER = 10.0f;
@@ -126,8 +126,8 @@ void Camera::ProcessMouseScroll(float yOffset)
 
 	if (fovY <= 1.0f)
 		fovY = 1.0f;
-	else if (fovY >= 45.0f)
-		fovY = 45.0f;
+	else if (fovY >= 70.0f)
+		fovY = 70.0f;
 }
 
 void Camera::UpdateCameraVectors()

@@ -19,6 +19,22 @@ void Sun::Rotate(const glm::vec3& rotation)
 	Rotate(rotation.x, rotation.y, rotation.z);
 }
 
+void Sun::PassTime(float time)
+{
+	float angle = time * secondToHoursConversionRate * (360.0f / 24.0f);
+	Rotate(0.0f, 0.0f, angle);
+}
+
+void Sun::SetSecondToHoursConversionRate(float nHoursPerSecond)
+{
+	secondToHoursConversionRate = nHoursPerSecond;
+}
+
+Model& Sun::GetModel()
+{
+	return model;
+}
+
 void Sun::Render(const Shader& shader) const
 {
 	model.Render(shader);
