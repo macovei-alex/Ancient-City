@@ -8,7 +8,7 @@ in vec4 MidLightSpacePosition;
 out vec4 OutColor;
 
 uniform vec3 LightColor;
-uniform vec3 LightPosition;
+uniform vec3 LightDirection;
 uniform vec3 ViewPosition;
 
 uniform float AmbientStrength;
@@ -41,13 +41,12 @@ void main()
 	vec3 normal = normalize(MidNormal);
 
 	// diffuse
-	vec3 lightDirection = normalize(LightPosition - MidPosition);
-	float diffuseValue = abs(dot(lightDirection, normal));
+	float diffuseValue = abs(dot(LightDirection, normal));
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
 
 	// specular
 	vec3 viewDirection = normalize(ViewPosition - MidPosition);
-	vec3 reflectionDirection = reflect(-lightDirection, normal);
+	vec3 reflectionDirection = reflect(-LightDirection, normal);
 	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
 	vec3 specular = SpecularStrength * specularPower * LightColor;
 

@@ -4,7 +4,7 @@
 #include "Camera.h"
 
 class Model;
-class LightSource;
+class DirectionalLightSource;
 
 class Shader
 {
@@ -25,8 +25,9 @@ public:
 		TextureDiffuse =		0b100000000000,
 		LightSpaceMatrix =      0b1000000000000,
 		DepthMap = 				0b10000000000000,
+		LightDurection =		0b100000000000000,
 
-		DefaultOptions = LightColor | LightPosition | ViewPosition | AmbientStrength | DiffuseStrength | SpecularStrength | SpecularExponent | ViewMatrix | ProjectionMatrix,
+		DefaultOptions = LightColor | LightDirection | ViewPosition | AmbientStrength | DiffuseStrength | SpecularStrength | SpecularExponent | ViewMatrix | ProjectionMatrix,
 	};
 
 public:
@@ -41,7 +42,7 @@ public:
 	void SetFloat(const std::string& locationName, float value) const;
 	void SetVec3(const std::string& locationName, const glm::vec3& value) const;
 	void SetMat4(const std::string& locationName, const glm::mat4& mat) const;
-	void SetUniforms(Camera* camera, LightSource* lightSource, Model* model, uint bits) const;
+	void SetUniforms(Camera* camera, DirectionalLightSource* lightSource, Model* model, uint bits) const;
 
 private:
 	bool Init(const std::string& vertexPath, const std::string& fragmentPath);

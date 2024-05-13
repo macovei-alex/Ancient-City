@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "LightSource.h"
+#include "DirectionalLightSource.h"
 #include "ModelLoader.h"
 #include "hotReload.hpp"
 #include "Skybox.h"
@@ -29,7 +30,7 @@ double lastFrame = 0.0f;
 
 Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr;
 Camera* camera = nullptr;
-LightSource* sun = nullptr;
+DirectionalLightSource* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<Model*> models;
@@ -75,17 +76,13 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveDown(time);
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		sun->model.Translate(0.0f, 1.0f * time * 10, 0.0f);
+		sun->RotateDirection(10 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		sun->model.Translate(0.0f, -1.0f * time * 10, 0.0f);
+		sun->RotateDirection(-10 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		sun->model.Translate(-1.0f * time * 10, 0.0f, 0.0f);
+		sun->RotateDirection(0, 0, 10 * time);
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		sun->model.Translate(1.0f * time * 10, 0.0f, 0.0f);
-	if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
-		sun->model.Translate(0.0f, 0.0f, -1.0f * time * 10);
-	if (glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS)
-		sun->model.Translate(0.0f, 0.0f, 1.0f * time * 10);
+		sun->RotateDirection(0, 0, -10 * time);
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -116,9 +113,6 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 		sun->MultiplySpecularExponent(2.0f);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(0.5f);
-
-	else if(key == GLFW_KEY_UP && action == GLFW_PRESS)
-
 
 	if (action == GLFW_PRESS)
 		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
@@ -219,12 +213,14 @@ static void RenderFrame()
 		model->Render(*shadowShaders);
 	}
 
+	/*
 	modelShaders->Use();
 	modelShaders->SetUniforms(camera, nullptr, &sun->model,
 		Shader::Uniforms::ViewMatrix
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
 	sun->model.Render(*modelShaders);
+	*/
 
 	particleShaders->Use();
 	particleShaders->SetUniforms(camera, nullptr, nullptr,
@@ -235,8 +231,6 @@ static void RenderFrame()
 		ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
 	for (const auto& particleGenerator : particleGenerators)
 	{
-		particleShaders->SetFloat("DiffuseStrength",
-			particleGenerator->CalculateDiffuseStrength(sun->GetDiffuseStrength(), sun->GetPosition()));
 		particleGenerator->RenderParticles(*particleShaders);
 	}
 }
@@ -297,8 +291,9 @@ static void SetupWorld()
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
-	sun = new LightSource(*sphere);
-	sun->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+	//sun = new LightSource(*sphere);
+	//sun->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+	sun = new DirectionalLightSource();
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)

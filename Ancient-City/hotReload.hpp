@@ -1,9 +1,6 @@
 #pragma once
 
 #include <vector>
-#ifdef APIENTRY
-#undef APIENTRY
-#endif
 #include <windows.h>
 
 #include "utils.h"

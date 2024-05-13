@@ -1,8 +1,9 @@
 #include "Shader.h"
 
-#include <sstream>
+#include "DirectionalLightSource.h"
+#include "Model.h"
 
-#include "LightSource.h"
+#include <sstream>
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
@@ -41,23 +42,23 @@ void Shader::SetMat4(const std::string& locationName, const glm::mat4& mat) cons
 	GLCall(glUniformMatrix4fv(glGetUniformLocation(ID, locationName.c_str()), 1, GL_FALSE, &mat[0][0]));
 }
 
-void Shader::SetUniforms(Camera* camera, LightSource* lightSource, Model* model, uint bits) const
+void Shader::SetUniforms(Camera* camera, DirectionalLightSource* light, Model* model, uint bits) const
 {
 	if (bits & Uniforms::LightColor)
-		SetVec3("LightColor", lightSource->GetColor());
-	if (bits & Uniforms::LightPosition)
-		SetVec3("LightPosition", lightSource->GetPosition());
+		SetVec3("LightColor", light->GetColor());
+	if (bits & Uniforms::LightDirection)
+		SetVec3("LightDirection", light->GetDirection());
 	if (bits & Uniforms::ViewPosition)
 		SetVec3("ViewPosition", camera->GetPosition());
 
 	if (bits & Uniforms::AmbientStrength)
-		SetFloat("AmbientStrength", lightSource->GetAmbientStrength());
+		SetFloat("AmbientStrength", light->GetAmbientStrength());
 	if (bits & Uniforms::DiffuseStrength)
-		SetFloat("DiffuseStrength", lightSource->GetDiffuseStrength());
+		SetFloat("DiffuseStrength", light->GetDiffuseStrength());
 	if (bits & Uniforms::SpecularStrength)
-		SetFloat("SpecularStrength", lightSource->GetSpecularStrength());
+		SetFloat("SpecularStrength", light->GetSpecularStrength());
 	if (bits & Uniforms::SpecularExponent)
-		SetInt("SpecularExponent", lightSource->GetSpecularExponent());
+		SetInt("SpecularExponent", light->GetSpecularExponent());
 
 	if (bits & Uniforms::ViewMatrix)
 		SetMat4("ViewMatrix", camera->GetViewMatrix());
@@ -66,7 +67,7 @@ void Shader::SetUniforms(Camera* camera, LightSource* lightSource, Model* model,
 	if(bits & Uniforms::ModelMatrix)
 		SetMat4("ModelMatrix", model->GetModelMatrix());
 	if(bits & Uniforms::LightSpaceMatrix)
-		SetMat4("LightSpaceMatrix", lightSource->GetLightSpaceMatrix());
+		SetMat4("LightSpaceMatrix", light->GetLightSpaceMatrix());
 }
 
 bool Shader::Init(const std::string& vertexPath, const std::string& fragmentPath)
