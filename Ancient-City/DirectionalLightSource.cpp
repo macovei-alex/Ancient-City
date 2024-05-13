@@ -63,6 +63,8 @@ void DirectionalLightSource::RotateDirection(const glm::vec3& rotation)
 	RotateDirection(rotation.x, rotation.y, rotation.z);
 }
 
+/*
+
 void DirectionalLightSource::InitShadowMap()
 {
 	GLCall(glGenFramebuffers(1, &depthMapFBO));
@@ -112,3 +114,4 @@ void DirectionalLightSource::CreateShadowMap(Shader& shadowShaders, const std::v
 	GLCall(glCullFace(GL_BACK));
 }
 
+*/

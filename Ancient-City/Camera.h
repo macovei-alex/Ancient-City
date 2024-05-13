@@ -53,6 +53,7 @@ public:
 	static const float SPEED_FACTOR;
 	static const float MOUSE_SENSITIVITY;
 	static const float SPEED_BOOST_MULTIPLIER;
+	static const float SPEED_SLOW_MULTIPLIER;
 	static const glm::vec3 START_POSITION;
 	static const glm::vec3 START_FACING;
 	static const float MOUSE_SCROLL_MULTIPLIER;

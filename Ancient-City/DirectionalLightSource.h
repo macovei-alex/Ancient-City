@@ -37,15 +37,9 @@ public:
 	glm::mat4 GetLightProjectionMatrix() const;
 	glm::mat4 GetLightSpaceMatrix() const;
 
-	void CreateShadowMap(Shader& shadowShaders, const std::vector<Model*>& models) const;
+	//void CreateShadowMap(Shader& shadowShaders, const std::vector<Model*>& models) const;
 
-private:
-	void InitShadowMap();
-
-public:
-	static inline const uint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
-
-private:
+protected:
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	float ambientStrength = 0.3f;
 	float specularStrength = 0.5f;
@@ -55,6 +49,4 @@ private:
 	float nearPlaneDistance = 0.1f;
 	float farPlaneDistance = 10.0f;
 	glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f));
-	uint depthMap = 0;
-	uint depthMapFBO = 0;
 };

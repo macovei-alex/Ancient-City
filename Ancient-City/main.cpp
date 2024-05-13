@@ -8,7 +8,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "LightSource.h"
-#include "DirectionalLightSource.h"
+#include "Sun.h"
 #include "ModelLoader.h"
 #include "hotReload.hpp"
 #include "Skybox.h"
@@ -30,7 +30,7 @@ double lastFrame = 0.0f;
 
 Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr;
 Camera* camera = nullptr;
-DirectionalLightSource* sun = nullptr;
+Sun* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<Model*> models;
@@ -59,8 +59,10 @@ static void PerformKeysActions(GLFWwindow* window)
 {
 	float time = deltaTime;
 
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 		time *= Camera::SPEED_BOOST_MULTIPLIER;
+	if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+		time *= Camera::SPEED_SLOW_MULTIPLIER;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera->MoveForward(time);
@@ -76,13 +78,13 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveDown(time);
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		sun->RotateDirection(10 * time, 0, 0);
+		sun->Rotate(10 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		sun->RotateDirection(-10 * time, 0, 0);
+		sun->Rotate(-10 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		sun->RotateDirection(0, 0, 10 * time);
+		sun->Rotate(0, 0, 10 * time);
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		sun->RotateDirection(0, 0, -10 * time);
+		sun->Rotate(0, 0, -10 * time);
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -196,7 +198,7 @@ static void Clean()
 
 static void RenderFrame()
 {
-	sun->CreateShadowMap(*depthMapShaders, models);
+	// sun->CreateShadowMap(*depthMapShaders, models);
 
 	camera->SetViewPort();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -213,14 +215,12 @@ static void RenderFrame()
 		model->Render(*shadowShaders);
 	}
 
-	/*
 	modelShaders->Use();
 	modelShaders->SetUniforms(camera, nullptr, &sun->model,
 		Shader::Uniforms::ViewMatrix
 		| Shader::Uniforms::ProjectionMatrix
 		| Shader::Uniforms::ModelMatrix);
-	sun->model.Render(*modelShaders);
-	*/
+	sun->Render(*modelShaders);
 
 	particleShaders->Use();
 	particleShaders->SetUniforms(camera, nullptr, nullptr,
@@ -291,9 +291,8 @@ static void SetupWorld()
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
-	//sun = new LightSource(*sphere);
-	//sun->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-	sun = new DirectionalLightSource();
+	sun = new Sun(*sphere);
+	sun->model.Scale(100);
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)

@@ -41,7 +41,7 @@ void main()
 	vec3 normal = normalize(MidNormal);
 
 	// diffuse
-	float diffuseValue = abs(dot(LightDirection, normal));
+	float diffuseValue = max(dot(LightDirection, normal), 0);
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
 
 	// specular

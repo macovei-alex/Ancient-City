@@ -24,7 +24,7 @@ public:
 
 	inline void Translate(float x, float y, float z) { Translate(glm::vec3(x, y, z)); }
 	inline void Translate(const glm::vec3& translation) { modelMatrix = glm::translate(modelMatrix, translation); }
-
+	
 	inline void Scale(float scale) { Scale(glm::vec3(scale, scale, scale)); }
 	inline void Scale(const glm::vec3& scale) { modelMatrix = glm::scale(modelMatrix, scale); }
 

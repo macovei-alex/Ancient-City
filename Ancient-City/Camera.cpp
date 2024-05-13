@@ -3,13 +3,14 @@
 #include <gtc/matrix_transform.hpp>
 
 const float Camera::Z_NEAR = 0.1f;
-const float Camera::Z_FAR = 500.0f;
+const float Camera::Z_FAR = 2000.0f;
 const float Camera::YAW = -90.0f;
 const float Camera::PITCH = 0.0f;
 const float Camera::FOV = 45.0f;
 const float Camera::SPEED_FACTOR = 20.0f;
 const float Camera::MOUSE_SENSITIVITY = 0.1f;
-const float Camera::SPEED_BOOST_MULTIPLIER = 0.1f;
+const float Camera::SPEED_BOOST_MULTIPLIER = 10.0f;
+const float Camera::SPEED_SLOW_MULTIPLIER = 0.1f;
 const glm::vec3 Camera::START_POSITION = glm::vec3(0.0f, 0.0f, 10.0f);
 const glm::vec3 Camera::START_FACING = glm::vec3(0.0f, 0.0f, -1.0f);
 const float Camera::MOUSE_SCROLL_MULTIPLIER = 2.0f;
