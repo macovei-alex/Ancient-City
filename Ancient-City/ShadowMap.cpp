@@ -3,7 +3,7 @@
 const float ShadowMap::BORDER_COLOR[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 ShadowMap::ShadowMap(uint width, uint height)
-	: width(width), height(height), textureUnitIndex(15)
+	: width(width), height(height), textureUnitIndex(7)
 {
 	GLCall(glGenFramebuffers(1, &FBO));
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, FBO));
@@ -46,6 +46,5 @@ void ShadowMap::BindForRead(const Shader& shader) const
 
 void ShadowMap::UnbindForRead() const
 {
-	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 	GLCall(glActiveTexture(GL_TEXTURE0));
 }

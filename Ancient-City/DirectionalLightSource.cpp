@@ -21,13 +21,6 @@ void DirectionalLightSource::AddAmbientStrength(float difference)
 		ambientStrength += difference;
 }
 
-void DirectionalLightSource::AddSpecularStrength(float difference)
-{
-	float total = specularStrength + difference;
-	if (0.0f <= total && total <= 1.0f)
-		specularStrength += difference;
-}
-
 void DirectionalLightSource::AddDiffuseStrength(float difference)
 {
 	float total = diffuseStrength + difference;
@@ -35,21 +28,28 @@ void DirectionalLightSource::AddDiffuseStrength(float difference)
 		diffuseStrength += difference;
 }
 
+void DirectionalLightSource::AddSpecularStrength(float difference)
+{
+	float total = specularStrength + difference;
+	if (0.0f <= total && total <= 1.0f)
+		specularStrength += difference;
+}
+
 void DirectionalLightSource::MultiplySpecularExponent(float difference)
 {
 	float total = specularExponent * difference;
 	if (0.0f <= total && total <= 256.0f)
-		specularExponent = (int)(this->specularExponent * difference);
+		specularExponent = (int)(specularExponent * difference);
 }
 
 glm::mat4 DirectionalLightSource::GetLightViewMatrix() const
 {
-	return glm::lookAt(glm::vec3(0.0f), lightDirection, glm::vec3(0.0f, 1.0f, 0.0f));
+	return glm::lookAt(glm::vec3(0.0f), -lightDirection, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 glm::mat4 DirectionalLightSource::GetLightProjectionMatrix() const
 {
-	return glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, nearPlaneDistance, farPlaneDistance);
+	return glm::ortho(-80.0f, 80.0f, -60.0f, 60.0f, nearPlaneDistance, farPlaneDistance);
 }
 
 glm::mat4 DirectionalLightSource::GetLightSpaceMatrix() const
@@ -63,7 +63,7 @@ void DirectionalLightSource::RotateDirection(float x, float y, float z)
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(x), glm::vec3(1.0f, 0.0f, 0.0f));
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(y), glm::vec3(0.0f, 1.0f, 0.0f));
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(z), glm::vec3(0.0f, 0.0f, 1.0f));
-
+	
 	lightDirection = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(lightDirection, 1.0f)));
 }
 

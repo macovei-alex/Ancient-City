@@ -17,7 +17,7 @@ uniform mat4 LightSpaceMatrix;
 void main()
 {
     MidPosition = vec3(ModelMatrix * vec4(InPosition, 1.0));
-    MidNormal = mat3(transpose(inverse(ModelMatrix))) * InNormal;
+    MidNormal = transpose(inverse(mat3(ModelMatrix))) * InNormal;
     MidTexCoords = InTexCoords;
     MidLightSpacePosition = LightSpaceMatrix * vec4(MidPosition, 1.0);
 
