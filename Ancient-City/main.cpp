@@ -286,7 +286,9 @@ static void SetupWorld()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT, Camera::START_POSITION);
 	skybox = new Skybox("Models\\Skybox");
 
-	models.push_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
+	/*/models.push_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
+		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f)))); */
+	models.push_back(ModelLoader::LoadModel("Models\\Chinese-Town\\chinese town.obj",
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
