@@ -15,7 +15,7 @@ uniform float DiffuseStrength;
 uniform float SpecularStrength;
 uniform int SpecularExponent;
 
-uniform sampler2D texture_diffuse1;
+uniform sampler2D DiffuseTexture;
 
 void main()
 {
@@ -33,7 +33,7 @@ void main()
 	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
 	vec3 specular = SpecularStrength * specularPower * LightColor;
 
-	vec4 texColor = texture(texture_diffuse1, MidTexCoords);
+	vec4 texColor = texture(DiffuseTexture, MidTexCoords);
 	vec3 result = (ambient + diffuse + specular) * texColor.rgb;
 
 	OutColor = vec4(result, texColor.a);
@@ -41,5 +41,5 @@ void main()
 
 	// Without lighting
 	
-	// OutColor = texture(texture_diffuse1, MidTexCoords);
+	// OutColor = texture(DiffuseTexture1, MidTexCoords);
 }

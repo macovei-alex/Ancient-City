@@ -74,6 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;..\_external\objLoader;..\_external\stb;..\_external\Assimp\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\_external\glew-2.1.0-win32\lib\Release\x64;..\_external\glfw-3.4.bin.WIN64\lib-vc2022;..\_external\Assimp\lib\x64;$(LibraryPath)</LibraryPath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\_external\glew-2.1.0-win32\include\GL;..\_external\glfw-3.4.bin.WIN64\include\GLFW;..\_external\glm;..\Logger;..\_external\objLoader;..\_external\stb;..\_external\Assimp\include;$(IncludePath)</IncludePath>
@@ -114,7 +115,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
@@ -123,7 +124,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>postbuild.bat</Command>
+      <Command>"postbuild Debug".bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +148,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>postbuild.bat</Command>
+      <Command>"postbuild Release".bat</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -170,7 +171,8 @@
   <ItemGroup>
     <None Include="KeyBinder.tpp" />
     <None Include="OpenGL-errors.html" />
-    <None Include="postbuild.bat" />
+    <None Include="postbuild Release.bat" />
+    <None Include="postbuild Debug.bat" />
     <None Include="Shaders\cubeFS.glsl" />
     <None Include="Shaders\cubeVS.glsl" />
     <None Include="Shaders\depthMapFS.glsl" />
@@ -200,7 +202,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelLoader.h" />
-    <ClInclude Include="names.h" />
+    <ClInclude Include="constants.h" />
     <ClInclude Include="particle.hpp" />
     <ClInclude Include="ParticleGenerator.h" />
     <ClInclude Include="Shader.h" />
@@ -211,6 +213,7 @@
     <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="old code.txt" />
     <Text Include="simple cube.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

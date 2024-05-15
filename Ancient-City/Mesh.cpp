@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 #include <vector>
-#include "names.h"
+#include "constants.h"
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures) noexcept
 	: vertices(vertices),
@@ -28,47 +28,16 @@ Mesh::Mesh(Mesh&& mesh) noexcept
 	mesh.VAO = 0;
 }
 
-Mesh::~Mesh()
-{
-	if(VAO != 0)
-		GLCall(glDeleteVertexArrays(1, &VAO));
-}
-
 void Mesh::Render(const Shader& shader) const
 {
-	// bind appropriate textures
-	uint diffuseNr = 1;
-	uint specularNr = 1;
-	uint normalNr = 1;
-	uint heightNr = 1;
 	for (uint i = 0; i < (uint)textures.size(); i++)
 	{
-		GLCall(glActiveTexture(GL_TEXTURE0 + i)); // active proper texture unit before binding
-		std::string number;
 		if (textures[i].name == names::textures::diffuse)
 		{
-			number = std::to_string(diffuseNr++);
+			GLCall(glActiveTexture(GL_TEXTURE0 + i));
+			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
+			shader.SetDiffuseTexture(i);
 		}
-		else if (textures[i].name == names::textures::specular)
-		{
-			number = std::to_string(specularNr++);
-		}
-		else if (textures[i].name == names::textures::normal)
-		{
-			number = std::to_string(normalNr++);
-		}
-		else if (textures[i].name == names::textures::height)
-		{
-			number = std::to_string(heightNr++);
-		}
-
-		std::string textureName = textures[i].name + number;
-
-		// now set the sampler to the correct texture unit
-		shader.SetInt(textureName, i);
-
-		// and finally bind the texture
-		GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
 	}
 
 	// draw mesh

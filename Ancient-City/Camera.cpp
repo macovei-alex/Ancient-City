@@ -54,11 +54,6 @@ void Camera::Set(int width, int height, const glm::vec3& position)
 	UpdateCameraVectors();
 }
 
-glm::mat4 Camera::GetViewMatrix() const
-{
-	return glm::lookAt(position, position + forward, up);
-}
-
 glm::mat4 Camera::GetProjectionMatrix() const
 {
 	if (isPerspective)
@@ -72,11 +67,6 @@ glm::mat4 Camera::GetProjectionMatrix() const
 		-screenWidth / scaleFactor, screenWidth / scaleFactor,
 		-screenHeight / scaleFactor, screenHeight / scaleFactor, 
 		-zFar, zFar);
-}
-
-glm::vec3 Camera::GetPosition() const
-{
-	return position;
 }
 
 void Camera::MoveCamera(float xOffset, float yOffset, float zOffset)

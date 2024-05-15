@@ -9,9 +9,9 @@ out vec3 MidNormal;
 out vec2 MidTexCoords;
 out vec4 MidLightSpacePosition;
 
-uniform mat4 ProjectionMatrix;
-uniform mat4 ViewMatrix;
 uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ProjectionMatrix;
 uniform mat4 LightSpaceMatrix;
 
 void main()

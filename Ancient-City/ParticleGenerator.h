@@ -13,7 +13,7 @@ public:
 	ParticleGenerator& operator=(const ParticleGenerator& other) = default;
 	void InitMembersDefault();
 
-	void RenderParticles(Shader& particleShader) const;
+	void RenderParticles(const Shader& particleShader) const;
 	void SpawnParticles(float deltaTime);
 	void MoveParticles(float deltaTime);
 
@@ -22,9 +22,9 @@ public:
 	inline ParticleGenerator& WithPosition(float x, float y, float z) { position = glm::vec3(x, y, z); return *this; }
 	inline ParticleGenerator& WithSpeedModifier(float modifier) { speedModifier = modifier; return *this; }
 	inline ParticleGenerator& WithLifeTime(float time) { lifeTime = time; return *this; }
-	inline ParticleGenerator& WithParticleColor(float r, float g, float b) { particleColorStart = particleColorEnd = glm::vec3(r, g, b); return *this; }
-	inline ParticleGenerator& WithStartingParticleColor(float r, float g, float b) { particleColorStart = glm::vec3(r, g, b); return *this; }
-	inline ParticleGenerator& WithEndingParticleColor(float r, float g, float b) { particleColorEnd = glm::vec3(r, g, b); return *this; }
+	inline ParticleGenerator& WithParticleColor(float r, float g, float b) { particleStartColor = particleEndColor = glm::vec3(r, g, b); return *this; }
+	inline ParticleGenerator& WithStartingParticleColor(float r, float g, float b) { particleStartColor = glm::vec3(r, g, b); return *this; }
+	inline ParticleGenerator& WithEndingParticleColor(float r, float g, float b) { particleEndColor = glm::vec3(r, g, b); return *this; }
 	inline ParticleGenerator& WithScale(float scale) { this->scale = scale; return *this; }
 	inline ParticleGenerator& WithParticleAlphaFade(bool doAlphaFade) { doParticleAlphaFade = doAlphaFade; return *this; }
 
@@ -38,8 +38,8 @@ private:
 	float spawnDelay;
 	float speedModifier;
 	float lifeTime;
-	glm::vec3 particleColorStart;
-	glm::vec3 particleColorEnd;
+	glm::vec3 particleStartColor;
+	glm::vec3 particleEndColor;
 	float scale;
 	bool doParticleAlphaFade;
 

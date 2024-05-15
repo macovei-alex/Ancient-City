@@ -10,14 +10,14 @@ uniform mat4 ProjectionMatrix;
 uniform vec3 ParticlePosition;
 uniform float ParticleScale;
 
-uniform vec3 ParticleColorStart;
-uniform vec3 ParticleColorEnd;
+uniform vec3 ParticleStartColor;
+uniform vec3 ParticleEndColor;
 uniform float ParticleColorBlendPercent;
 
 uniform float AmbientStrength;
 
 void main()
 {
-	MidColor = AmbientStrength * mix(ParticleColorStart, ParticleColorEnd, ParticleColorBlendPercent);
+	MidColor = AmbientStrength * mix(ParticleStartColor, ParticleEndColor, ParticleColorBlendPercent);
 	gl_Position = ProjectionMatrix * ViewMatrix * vec4(ParticlePosition + ParticleScale * InVertexPos, 1.0);
 }

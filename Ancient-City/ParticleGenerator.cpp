@@ -51,31 +51,31 @@ void ParticleGenerator::InitMembersDefault()
 	spawnDelay = 0.1f;
 	speedModifier = 2.0f;
 	lifeTime = 2.0f;
-	particleColorStart = glm::vec3(1.0f);
-	particleColorEnd = glm::vec3(1.0f);
+	particleStartColor = glm::vec3(1.0f);
+	particleEndColor = glm::vec3(1.0f);
 	scale = 1.0f;
 	doParticleAlphaFade = false;
 }
 
-void ParticleGenerator::RenderParticles(Shader& particleShader) const
+void ParticleGenerator::RenderParticles(const Shader& particleShader) const
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	particleShader.SetVec3("ParticleColorStart", particleColorStart);
-	particleShader.SetVec3("ParticleColorEnd", particleColorEnd);
-	particleShader.SetFloat("ParticleScale", scale);
+	particleShader.SetParticleStartColor(particleStartColor);
+	particleShader.SetParticleEndColor(particleEndColor);
+	particleShader.SetParticleScale(scale);
 
 	for (const auto& particle : particles)
 	{
 		float lifePercent = particle.lifeTime / lifeTime;
 
-		particleShader.SetVec3("ParticlePosition", particle.position);
-		particleShader.SetFloat("ParticleColorBlendPercent", 1 - lifePercent);
+		particleShader.SetParticlePosition(particle.position);
+		particleShader.SetParticleBlendPercent(1 - lifePercent);
 
 		if (doParticleAlphaFade)
 		{
-			particleShader.SetFloat("ParticleAlpha", lifePercent);
+			particleShader.SetParticleAlpha(lifePercent);
 		}
 
 		particleModel.Render(particleShader);
@@ -120,34 +120,11 @@ void ParticleGenerator::MoveParticles(float deltaTime)
 				return particle.IsDead();
 			}), 
 		particles.end());
-
-	// Old code
-	/*
-	for (int i = 0; i < particles.size(); i++)
-	{
-		particles[i].Move(deltaTime);
-		if (particles[i].IsDead())
-		{
-			particles.erase(particles.begin() + i);
-			i--;
-		}
-	}
-	*/
 }
 
 float ParticleGenerator::CalculateAmbientStrength(float ambient)
 {
 	return std::min(std::max(0.2f, 5 * ambient), 1.0f);
-
-	// Old code
-	/*
-	if (ambient == 0)
-		return 0.3f;
-	else if (ambient <= 0.2f)
-		return 5 * ambient;
-	else
-		return 1.0f;
-	*/
 }
 
 float ParticleGenerator::CalculateDiffuseStrength(float baseDiffuseStrength, const glm::vec3& lightPosition) const

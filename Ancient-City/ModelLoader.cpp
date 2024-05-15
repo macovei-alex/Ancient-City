@@ -5,7 +5,7 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
-#include "names.h"
+#include "constants.h"
 
 std::vector<Texture> ModelLoader::loadedTextures;
 fs::path ModelLoader::currentDirectory;
@@ -39,7 +39,7 @@ Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLo
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 	{
 		LOG(importer.GetErrorString(), Logger::Level::Error);
-		throw std::exception("Failed to load model");
+		throw std::runtime_error("Failed to load model");
 	}
 
 	SetCurrentDirectory(fileName);
@@ -55,39 +55,34 @@ Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLo
 
 void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::mat4& onLoadTransforms)
 {
-	// process each mesh located at the current node
 	for (uint i = 0; i < node->mNumMeshes; i++)
 	{
-		// the node object only contains indices to index the actual objects in the scene.
-		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		model.meshes->push_back(ProcessMesh(mesh, scene, onLoadTransforms));
 	}
 
 	for (uint i = 0; i < node->mNumChildren; i++)
+	{
 		ProcessNode(model, node->mChildren[i], scene, onLoadTransforms);
+	}
 }
 
-Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& preloadTranforms)
+Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& onLoadTransforms)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
 	std::vector<Texture> textures;
 
-	// walk through each of the mesh's vertices
 	for (uint i = 0; i < mesh->mNumVertices; i++)
 	{
 		Vertex vertex;
-		vertex.position += preloadTranforms * mesh->mVertices[i];
-		// normals
+		vertex.position += onLoadTransforms * mesh->mVertices[i];
 		if (mesh->HasNormals())
 		{
 			vertex.normal += mesh->mNormals[i];
 		}
-		// texture coordinates
-		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		if (mesh->mTextureCoords[0])
 		{
-			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
 			vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
 
@@ -103,18 +98,16 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat
 
 		vertices.push_back(vertex);
 	}
-	// now walk through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
+
 	for (uint i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
-		// retrieve all indices of the face and store them in the indices vector
 		for (uint j = 0; j < face.mNumIndices; j++)
 		{
 			indices.push_back(face.mIndices[j]);
 		}
 	}
 
-	// process materials
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 	std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, names::textures::diffuse);

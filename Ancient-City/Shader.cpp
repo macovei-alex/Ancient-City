@@ -2,83 +2,20 @@
 
 #include "DirectionalLightSource.h"
 #include "Model.h"
+#include "constants.h"
 
 #include <sstream>
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)
 {
 	if (!Init(vertexPath, fragmentPath))
-		ID = -1;
+		programID = -1;
 }
 
 Shader::~Shader()
 {
-	if (ID != -1)
-		GLCall(glDeleteProgram(ID));
-}
-
-void Shader::Use() const
-{
-	GLCall(glUseProgram(ID));
-}
-
-void Shader::SetInt(const std::string& locationName, int value) const
-{
-	GLCall(glUniform1i(glGetUniformLocation(ID, locationName.c_str()), value));
-}
-
-void Shader::SetFloat(const std::string& locationName, float value) const
-{
-	GLCall(glUniform1f(glGetUniformLocation(ID, locationName.c_str()), value));
-}
-
-void Shader::SetVec3(const std::string& locationName, const glm::vec3& value) const
-{
-	GLCall(glUniform3fv(glGetUniformLocation(ID, locationName.c_str()), 1, &value[0]));
-}
-
-void Shader::SetMat4(const std::string& locationName, const glm::mat4& mat) const
-{
-	GLCall(glUniformMatrix4fv(glGetUniformLocation(ID, locationName.c_str()), 1, GL_FALSE, &mat[0][0]));
-}
-
-void Shader::SetUniforms(Camera* camera, DirectionalLightSource* light, Model* model, uint bits) const
-{
-	static glm::vec3 lastDirection = glm::vec3(0.0f);
-
-	if (bits & Uniforms::LightColor)
-		SetVec3("LightColor", light->GetColor());
-	if (bits & Uniforms::LightDirection)
-	{
-		auto dir = light->GetDirection();
-		auto newDirection = glm::vec3(dir.x, dir.y, dir.z);
-		if (lastDirection != newDirection)
-		{
-			lastDirection = newDirection;
-			std::cout << newDirection << std::endl;
-		}
-		SetVec3("LightDirection", glm::normalize(lastDirection));
-	}
-	if (bits & Uniforms::ViewPosition)
-		SetVec3("ViewPosition", camera->GetPosition());
-
-	if (bits & Uniforms::AmbientStrength)
-		SetFloat("AmbientStrength", light->GetAmbientStrength());
-	if (bits & Uniforms::DiffuseStrength)
-		SetFloat("DiffuseStrength", light->GetDiffuseStrength());
-	if (bits & Uniforms::SpecularStrength)
-		SetFloat("SpecularStrength", light->GetSpecularStrength());
-	if (bits & Uniforms::SpecularExponent)
-		SetInt("SpecularExponent", light->GetSpecularExponent());
-
-	if (bits & Uniforms::ViewMatrix)
-		SetMat4("ViewMatrix", camera->GetViewMatrix());
-	if (bits & Uniforms::ProjectionMatrix)
-		SetMat4("ProjectionMatrix", camera->GetProjectionMatrix());
-	if(bits & Uniforms::ModelMatrix)
-		SetMat4("ModelMatrix", model->GetModelMatrix());
-	if(bits & Uniforms::LightSpaceMatrix)
-		SetMat4("LightSpaceMatrix", light->GetLightSpaceMatrix());
+	if (programID != -1)
+		GLCall(glDeleteProgram(programID));
 }
 
 bool Shader::Init(const std::string& vertexPath, const std::string& fragmentPath)
@@ -117,26 +54,28 @@ bool Shader::Init(const std::string& vertexPath, const std::string& fragmentPath
 	const GLchar* fShaderCode = fragmentCode.c_str();
 
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex, 1, &vShaderCode, NULL);
-	glCompileShader(vertex);
+	GLCall(glShaderSource(vertex, 1, &vShaderCode, NULL));
+	GLCall(glCompileShader(vertex));
 	if (CheckCompileErrors(vertex, "VERTEX"))
 		return false;
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment, 1, &fShaderCode, NULL);
-	glCompileShader(fragment);
+	GLCall(glShaderSource(fragment, 1, &fShaderCode, NULL));
+	GLCall(glCompileShader(fragment));
 	if (CheckCompileErrors(fragment, "FRAGMENT"))
 		return false;
 
-	ID = glCreateProgram();
-	glAttachShader(ID, vertex);
-	glAttachShader(ID, fragment);
-	glLinkProgram(ID);
-	if (CheckCompileErrors(ID, "PROGRAM"))
+	programID = glCreateProgram();
+	GLCall(glAttachShader(programID, vertex));
+	GLCall(glAttachShader(programID, fragment));
+	GLCall(glLinkProgram(programID));
+	if (CheckCompileErrors(programID, "PROGRAM"))
 		return false;
 
-	glDeleteShader(vertex);
-	glDeleteShader(fragment);
+	GLCall(glDeleteShader(vertex));
+	GLCall(glDeleteShader(fragment));
+
+	InitUniformLocations();
 
 	return true;
 }
@@ -148,24 +87,50 @@ bool Shader::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& 
 
 	if (type != "PROGRAM")
 	{
-		glGetShaderiv(shaderStencilTesting, GL_COMPILE_STATUS, &success);
+		GLCall(glGetShaderiv(shaderStencilTesting, GL_COMPILE_STATUS, &success));
 		if (!success)
 		{
-			glGetShaderInfoLog(shaderStencilTesting, 1024, NULL, infoLog);
-			std::cout << "ERROR when compiling shader of type: " << type << '\n' << infoLog << "\n---------------------------------------------------\n";
+			GLCall(glGetShaderInfoLog(shaderStencilTesting, 1024, NULL, infoLog));
+			std::cout << "ERROR when compiling shader of type: " << type << '\n' << infoLog << "---------------------------------------------------\n";
 			return true;
 		}
 	}
 	else
 	{
-		glGetProgramiv(shaderStencilTesting, GL_LINK_STATUS, &success);
+		GLCall(glGetProgramiv(shaderStencilTesting, GL_LINK_STATUS, &success));
 		if (!success)
 		{
-			glGetProgramInfoLog(shaderStencilTesting, 1024, NULL, infoLog);
-			std::cout << "ERROR when linking program of type: " << type << '\n' << infoLog << "\n---------------------------------------------------\n";
+			GLCall(glGetProgramInfoLog(shaderStencilTesting, 1024, NULL, infoLog));
+			std::cout << "ERROR when linking program of type: " << type << '\n' << infoLog << "---------------------------------------------------\n";
 			return true;
 		}
 	}
 
 	return false;
+}
+
+void Shader::InitUniformLocations()
+{
+	ModelMatrix = glGetUniformLocation(programID, names::locations::ModelMatrix);
+	ViewMatrix = glGetUniformLocation(programID, names::locations::ViewMatrix);
+	ProjectionMatrix = glGetUniformLocation(programID, names::locations::ProjectionMatrix);
+	VP = glGetUniformLocation(programID, names::locations::VP);
+	LightSpaceMatrix = glGetUniformLocation(programID, names::locations::LightSpaceMatrix);
+	LightColor = glGetUniformLocation(programID, names::locations::LightColor);
+	LightDirection = glGetUniformLocation(programID, names::locations::LightDirection);
+	LightPosition = glGetUniformLocation(programID, names::locations::LightPosition);
+	ViewPosition = glGetUniformLocation(programID, names::locations::ViewPosition);
+	AmbientStrength = glGetUniformLocation(programID, names::locations::AmbientStrength);
+	DiffuseStrength = glGetUniformLocation(programID, names::locations::DiffuseStrength);
+	SpecularStrength = glGetUniformLocation(programID, names::locations::SpecularStrength);
+	SpecularExponent = glGetUniformLocation(programID, names::locations::SpecularExponent);
+	DiffuseTexture = glGetUniformLocation(programID, names::locations::DiffuseTexture);
+	ShadowMap = glGetUniformLocation(programID, names::locations::ShadowMap);
+	ParticleStartColor = glGetUniformLocation(programID, names::locations::ParticleStartColor);
+	ParticleEndColor = glGetUniformLocation(programID, names::locations::ParticleEndColor);
+	ParticleScale = glGetUniformLocation(programID, names::locations::ParticleScale);
+	ParticlePosition = glGetUniformLocation(programID, names::locations::ParticlePosition);
+	ParticleColorBlendPercent = glGetUniformLocation(programID, names::locations::ParticleColorBlendPercent);
+	ParticleAlpha = glGetUniformLocation(programID, names::locations::ParticleAlpha);
+	ObjectColor = glGetUniformLocation(programID, names::locations::ObjectColor);
 }

@@ -12,7 +12,7 @@ public:
     Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures) noexcept;
     Mesh(const Mesh& mesh) noexcept;
     Mesh(Mesh&& mesh) noexcept;
-    ~Mesh();
+    inline ~Mesh() { if(VAO != 0) glDeleteVertexArrays(1, &VAO); }
 
     void Render(const Shader& shader) const;
     void DepthRender() const;

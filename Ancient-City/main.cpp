@@ -13,7 +13,7 @@
 #include "hotReload.hpp"
 #include "Skybox.h"
 #include "ParticleGenerator.h"
-#include "names.h"
+#include "constants.h"
 
 #define TEMP
 
@@ -271,8 +271,9 @@ static void SetupWorld()
 
 	/*/models.push_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
 		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f)))); */
-	models.push_back(ModelLoader::LoadModel("Models\\Chinese-Town\\chinese town.obj",
-		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f))));
+	glm::mat4 matrix = glm::mat4(1.0f);
+	matrix = glm::scale(matrix, glm::vec3(10.0f, 10.0f, 10.0f));
+	models.push_back(ModelLoader::LoadModel("Models\\Chinese-Town\\chinese town.obj", matrix));
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new Sun(*sphere);
@@ -322,7 +323,7 @@ static void RenderFrame()
 
 	// render scene from light's point of view
 	depthMapShaders->Use();
-	depthMapShaders->SetMat4("LightSpaceMatrix", lightSpaceMatrix);
+	depthMapShaders->SetShadowMap(15);
 
 	GLCall(glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT));
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
@@ -351,8 +352,14 @@ static void RenderFrame()
 
 	shadowShaders->Use();
 	sun->GetShadowMap().BindForRead(*shadowShaders);
- 	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
-	shadowShaders->SetMat4("LightSpaceMatrix", lightSpaceMatrix);
+	shadowShaders->SetViewMatrix(camera->GetViewMatrix());
+	shadowShaders->SetProjectionMatrix(camera->GetProjectionMatrix());
+	shadowShaders->SetLightColor(sun->GetColor());
+	shadowShaders->SetAmbientStrength(sun->GetAmbientStrength());
+	shadowShaders->SetDiffuseStrength(sun->GetDiffuseStrength());
+	shadowShaders->SetSpecularStrength(sun->GetSpecularStrength());
+	shadowShaders->SetSpecularExponent(sun->GetSpecularExponent());
+	shadowShaders->SetViewPosition(camera->GetPosition());
 
 	for (const auto& model : models)
 	{
@@ -361,18 +368,13 @@ static void RenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetUniforms(camera, nullptr, &sun->GetModel(),
-		Shader::Uniforms::ViewMatrix
-		| Shader::Uniforms::ProjectionMatrix
-		| Shader::Uniforms::ModelMatrix);
+	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->GetModel().GetModelMatrix());
 	sun->Render(*modelShaders);
 
 	particleShaders->Use();
-	particleShaders->SetUniforms(camera, nullptr, nullptr,
-		Shader::Uniforms::ProjectionMatrix
-		| Shader::Uniforms::ViewMatrix);
-	particleShaders->SetFloat("AmbientStrength",
-		ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
+	particleShaders->SetProjectionMatrix(camera->GetProjectionMatrix());
+	particleShaders->SetViewMatrix(camera->GetViewMatrix());
+	particleShaders->SetAmbientStrength(ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
 	for (const auto& particleGenerator : particleGenerators)
 	{
 		particleGenerator->RenderParticles(*particleShaders);
@@ -406,7 +408,7 @@ int main(int argc, char* argv[])
 	LoadShader(names::shaders::particle, true);
 	LoadShader(names::shaders::depthMap, true);
 	LoadShader(names::shaders::shadow, true);
-	LoadShader("cube", true);
+	LoadShader(names::shaders::cube, true);
 
 	SetupWorld();
 
@@ -431,9 +433,9 @@ int main(int argc, char* argv[])
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
 
 	shadowShaders->Use();
-	shadowShaders->SetInt("texture_diffuse1", 0);
+	shadowShaders->SetDiffuseTexture(0);
 
-	shadowShaders->SetInt("ShadowMap", 15);
+	shadowShaders->SetShadowMap(15);
 	GLCall(glActiveTexture(GL_TEXTURE15));
 	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
 
@@ -457,13 +459,11 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		/*
 		for (auto& particleGenerators : particleGenerators)
 		{
 			particleGenerators->MoveParticles(deltaTime);
 			particleGenerators->SpawnParticles(deltaTime);
 		}
-		*/
 
 		if (!sunStop)
 		{

@@ -2,6 +2,7 @@
 
 #include "utils.h"
 #include <glm.hpp>
+#include "gtc/matrix_transform.hpp"
 
 class Camera
 {
@@ -9,9 +10,9 @@ public:
 	Camera(int width, int height, const glm::vec3& position);
 	void Set(int width, int height, const glm::vec3& position);
 
-	glm::mat4 GetViewMatrix() const;
 	glm::mat4 GetProjectionMatrix() const;
-	glm::vec3 GetPosition() const;
+	inline glm::mat4 GetViewMatrix() const { return glm::lookAt(position, position + forward, up); }
+	inline glm::vec3 GetPosition() const { return position; }
 
 	inline void SetPosition(const glm::vec3& position) { this->position = position; }
 	inline void SetForward(const glm::vec3& forward) { this->forward = glm::normalize(forward); }

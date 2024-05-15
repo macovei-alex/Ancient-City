@@ -4,7 +4,7 @@ in vec2 MidTexCoords;
 
 out vec4 OutColor;
 
-uniform sampler2D texture_diffuse1;
+uniform sampler2D DiffuseTexture;
 
 void main()
 {
