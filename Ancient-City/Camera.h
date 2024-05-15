@@ -13,6 +13,11 @@ public:
 	glm::mat4 GetProjectionMatrix() const;
 	glm::vec3 GetPosition() const;
 
+	inline void SetPosition(const glm::vec3& position) { this->position = position; }
+	inline void SetForward(const glm::vec3& forward) { this->forward = glm::normalize(forward); }
+	inline void SetLastMousePos(float x, float y) { lastX = x; lastY = y; }
+	inline void SetViewPort() { glViewport(0, 0, screenWidth, screenHeight); }
+
 	void MoveCamera(float xOffset, float yOffset, float zOffset);
 
 	inline void MoveForward(float distance) { MoveCamera(0, 0, distance); }
@@ -24,9 +29,6 @@ public:
 
 	void HandleMouseMovement(float xPos, float yPos);
 	void HandleMouseScroll(float yOffset);
-
-	inline void SetLastMousePos(float x, float y) { lastX = x; lastY = y; }
-	inline void SetViewPort() { GLCall(glViewport(0, 0, screenWidth, screenHeight)); }
 
 private:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);

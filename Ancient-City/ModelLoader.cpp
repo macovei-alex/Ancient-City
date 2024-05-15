@@ -82,7 +82,7 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat
 		// normals
 		if (mesh->HasNormals())
 		{
-			vertex.normal += preloadTranforms * mesh->mNormals[i];
+			vertex.normal += mesh->mNormals[i];
 		}
 		// texture coordinates
 		if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?

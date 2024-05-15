@@ -15,6 +15,14 @@
 #include "ParticleGenerator.h"
 #include "names.h"
 
+#define TEMP
+
+#ifdef TEMP
+
+uint depthMapFBO, depthMap;
+
+#endif
+
 struct Options
 {
 	bool hotReloadShaders = false;
@@ -24,12 +32,13 @@ Options options;
 
 constexpr unsigned int SCREEN_WIDTH = 800;
 constexpr unsigned int SCREEN_HEIGHT = 600;
+const uint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
 bool sunStop = false;
 
-Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr;
+Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr, *cubeShaders = nullptr;
 Camera* camera = nullptr;
 Sun* sun = nullptr;
 Skybox* skybox = nullptr;
@@ -78,14 +87,16 @@ static void PerformKeysActions(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		camera->MoveDown(time);
 
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		sun->Rotate(20 * time, 0, 0);
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		sun->Rotate(-20 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		sun->Rotate(0, 0, 20 * time);
+	{
+		sun->PassTime(time);
+		std::cout << sun->GetDirection() << std::endl;
+	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		sun->Rotate(0, 0, -20 * time);
+	{
+		sun->PassTime(-time);
+		std::cout << sun->GetDirection() << std::endl;
+	}
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -203,44 +214,6 @@ static void Clean()
 	glfwTerminate();
 }
 
-static void RenderFrame()
-{
-	sun->WriteToShadowMap(*depthMapShaders, models);
-
-	camera->SetViewPort();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	skybox->Render(*skyboxShaders, *camera);
-
-	shadowShaders->Use();
-	sun->GetShadowMap().BindForRead(*shadowShaders);
-	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
-
-	for (const auto& model : models)
-	{
-		shadowShaders->SetUniforms(nullptr, nullptr, model, Shader::Uniforms::ModelMatrix);
-		model->Render(*shadowShaders);
-	}
-
-	modelShaders->Use();
-	modelShaders->SetUniforms(camera, nullptr, &sun->GetModel(),
-		Shader::Uniforms::ViewMatrix
-		| Shader::Uniforms::ProjectionMatrix
-		| Shader::Uniforms::ModelMatrix);
-	sun->Render(*modelShaders);
-
-	particleShaders->Use();
-	particleShaders->SetUniforms(camera, nullptr, nullptr,
-		Shader::Uniforms::ProjectionMatrix
-		| Shader::Uniforms::ViewMatrix);
-	particleShaders->SetFloat("AmbientStrength", 
-		ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
-	for (const auto& particleGenerator : particleGenerators)
-	{
-		particleGenerator->RenderParticles(*particleShaders);
-	}
-}
-
 static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompile)
 {
 	Shader** targetedShaderPtr = nullptr;
@@ -257,6 +230,8 @@ static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompil
 		targetedShaderPtr = &shadowShaders;
 	else if (shaderFilesIdentifier == names::shaders::depthMap)
 		targetedShaderPtr = &depthMapShaders;
+	else if(shaderFilesIdentifier == "cube")
+		targetedShaderPtr = &cubeShaders;
 
 	else
 	{
@@ -272,6 +247,7 @@ static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompil
 		if (*targetedShaderPtr != nullptr)
 			delete* targetedShaderPtr;
 		*targetedShaderPtr = newShader;
+		LOG(std::format("Shader ( {} ) successfuly compiled", shaderFilesIdentifier), Logger::Level::Info);
 	}
 	else
 	{
@@ -327,6 +303,80 @@ static void SetupWorld()
 	particleGenerators.push_back(gen);
 }
 
+static void RenderFrame()
+{
+
+#ifdef TEMP ////////////////////////////////////////////////////////////////////////////
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 1000.0f);
+
+	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), sun->GetDirection());
+	glm::vec3 up = glm::cross(right, sun->GetDirection());
+	glm::mat4 lightView = glm::lookAt(sun->GetDirection(), glm::vec3(0.0f), up);
+
+	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
+
+	// render scene from light's point of view
+	depthMapShaders->Use();
+	depthMapShaders->SetMat4("LightSpaceMatrix", lightSpaceMatrix);
+
+	GLCall(glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT));
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
+	GLCall(glClear(GL_DEPTH_BUFFER_BIT));
+	GLCall(glEnable(GL_CULL_FACE));
+	GLCall(glCullFace(GL_FRONT));
+
+	for (const auto& model : models)
+	{
+		model->DepthRender();
+	}
+
+	glCullFace(GL_BACK);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#else
+
+	sun->WriteToShadowMap(*depthMapShaders, models);
+
+#endif /////////////////////////////////////////////////////////////////////////////////
+
+	camera->SetViewPort();
+	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+	skybox->Render(*skyboxShaders, *camera);
+
+	shadowShaders->Use();
+	sun->GetShadowMap().BindForRead(*shadowShaders);
+ 	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
+	shadowShaders->SetMat4("LightSpaceMatrix", lightSpaceMatrix);
+
+	for (const auto& model : models)
+	{
+		shadowShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
+		model->Render(*shadowShaders);
+	}
+
+	modelShaders->Use();
+	modelShaders->SetUniforms(camera, nullptr, &sun->GetModel(),
+		Shader::Uniforms::ViewMatrix
+		| Shader::Uniforms::ProjectionMatrix
+		| Shader::Uniforms::ModelMatrix);
+	sun->Render(*modelShaders);
+
+	particleShaders->Use();
+	particleShaders->SetUniforms(camera, nullptr, nullptr,
+		Shader::Uniforms::ProjectionMatrix
+		| Shader::Uniforms::ViewMatrix);
+	particleShaders->SetFloat("AmbientStrength",
+		ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
+	for (const auto& particleGenerator : particleGenerators)
+	{
+		particleGenerator->RenderParticles(*particleShaders);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	if (argc > 1)
@@ -354,8 +404,38 @@ int main(int argc, char* argv[])
 	LoadShader(names::shaders::particle, true);
 	LoadShader(names::shaders::depthMap, true);
 	LoadShader(names::shaders::shadow, true);
+	LoadShader("cube", true);
 
 	SetupWorld();
+
+#ifdef TEMP ////////////////////////////////////////////////////////////////////////////
+	
+	GLCall(glGenFramebuffers(1, &depthMapFBO));
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
+
+	GLCall(glGenTextures(1, &depthMap));
+	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
+	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER));
+	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER));
+	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
+
+	GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
+	GLCall(glDrawBuffer(GL_NONE));
+	GLCall(glReadBuffer(GL_NONE));
+	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+
+	shadowShaders->Use();
+	shadowShaders->SetInt("texture_diffuse1", 0);
+
+	shadowShaders->SetInt("ShadowMap", 15);
+	GLCall(glActiveTexture(GL_TEXTURE15));
+	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
+
+#endif /////////////////////////////////////////////////////////////////////////////////
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -375,11 +455,13 @@ int main(int argc, char* argv[])
 			}
 		}
 
+		/*
 		for (auto& particleGenerators : particleGenerators)
 		{
 			particleGenerators->MoveParticles(deltaTime);
 			particleGenerators->SpawnParticles(deltaTime);
 		}
+		*/
 
 		if (!sunStop)
 		{

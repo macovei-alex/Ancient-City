@@ -14,8 +14,8 @@ public:
 
 	void SetSecondToHoursConversionRate(float nHoursPerSecond);
 	Model& GetModel();
-
-	glm::mat4 GetLightViewMatrix() const override;
+	glm::vec3 GetDirection() const;
+	glm::vec3 GetPosition() const override;
 
 	void Render(const Shader& shader) const;
 

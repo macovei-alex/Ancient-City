@@ -36,3 +36,4 @@ void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
 std::string_view GetKeyPressed(int key);
 std::string TrimBeginEnd(const std::string& str, const std::string& beginning, const std::string& end);
+glm::vec3 Rotate(const glm::vec3& vec, const glm::vec3& rotation);

@@ -25,7 +25,6 @@ public:
 		TextureDiffuse =		0b100000000000,
 		LightSpaceMatrix =      0b1000000000000,
 		DepthMap = 				0b10000000000000,
-		LightDurection =		0b100000000000000,
 
 		DefaultOptions = LightColor | LightDirection | ViewPosition | AmbientStrength | DiffuseStrength | SpecularStrength | SpecularExponent | ViewMatrix | ProjectionMatrix,
 	};

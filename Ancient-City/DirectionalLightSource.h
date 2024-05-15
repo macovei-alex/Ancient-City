@@ -18,6 +18,7 @@ public:
 	inline glm::vec3 GetColor() const { return lightColor; }
 	inline glm::vec3 GetDirection() const { return lightDirection; }
 	inline const ShadowMap& GetShadowMap() { return shadowMap; }
+	virtual glm::vec3 GetPosition() const = 0;
 
 	inline void SetAmbientStrength(float ambientStrength) { this->ambientStrength = ambientStrength; }
 	inline void SetDiffuseStrength(float diffuseStrength) { this->diffuseStrength = diffuseStrength; }
@@ -44,8 +45,8 @@ public:
 protected:
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	float ambientStrength = 0.3f;
-	float diffuseStrength = 0.5f;
-	float specularStrength = 0.0f;
+	float diffuseStrength = 0.3f;
+	float specularStrength = 0.3f;
 	int specularExponent = 32;
 
 	float nearPlaneDistance = 0.0f;

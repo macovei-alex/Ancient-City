@@ -9,6 +9,7 @@ out vec4 OutColor;
 
 uniform vec3 LightColor;
 uniform vec3 LightDirection;
+uniform vec3 LightPosition;
 uniform vec3 ViewPosition;
 
 uniform float AmbientStrength;
@@ -19,9 +20,9 @@ uniform int SpecularExponent;
 uniform sampler2D texture_diffuse1;
 uniform sampler2D ShadowMap;
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 lightSpacePosition)
 {
-	vec3 projectionCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	vec3 projectionCoords = lightSpacePosition.xyz / lightSpacePosition.w;
 	projectionCoords = projectionCoords * 0.5 + 0.5;
 
 	if(projectionCoords.z > 1.0)
@@ -37,12 +38,13 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 void main()
 {
 	vec3 normal = normalize(MidNormal);
+	// vec3 lightDir = normalize(LightPosition - MidPosition);
 
 	// ambient
 	vec3 ambient = AmbientStrength * LightColor;
 
 	// diffuse
-	float diffuseValue = max(dot(LightDirection, normal), 0.0);
+	float diffuseValue = max(dot(normal, LightDirection), 0.0);
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
 
 	// specular
@@ -52,9 +54,9 @@ void main()
 	vec3 specular = SpecularStrength * specularPower * LightColor;
 
 	vec4 texColor = texture(texture_diffuse1, MidTexCoords);
-	float shadow = ShadowCalculation(MidLightSpacePosition);
-	vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor.rgb;
-	// vec3 result = (ambient + diffuse + specular) * texColor.rgb;
+	// float shadow = ShadowCalculation(MidLightSpacePosition);
+	// vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor.rgb;
+	vec3 result = (ambient + diffuse + specular) * texColor.rgb;
 
 	OutColor = vec4(result, texColor.a);
 }

@@ -122,6 +122,12 @@
     <None Include="Shaders\shadowFSLab.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\cubeFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\cubeVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -172,5 +178,10 @@
     <ClInclude Include="Sun.h">
       <Filter>Header Files\Lighting</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="simple cube.txt">
+      <Filter>Resource Files\Other</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -44,10 +44,21 @@ void Shader::SetMat4(const std::string& locationName, const glm::mat4& mat) cons
 
 void Shader::SetUniforms(Camera* camera, DirectionalLightSource* light, Model* model, uint bits) const
 {
+	static glm::vec3 lastDirection = glm::vec3(0.0f);
+
 	if (bits & Uniforms::LightColor)
 		SetVec3("LightColor", light->GetColor());
 	if (bits & Uniforms::LightDirection)
-		SetVec3("LightDirection", light->GetDirection());
+	{
+		auto dir = light->GetDirection();
+		auto newDirection = glm::vec3(dir.x, dir.y, dir.z);
+		if (lastDirection != newDirection)
+		{
+			lastDirection = newDirection;
+			std::cout << newDirection << std::endl;
+		}
+		SetVec3("LightDirection", glm::normalize(lastDirection));
+	}
 	if (bits & Uniforms::ViewPosition)
 		SetVec3("ViewPosition", camera->GetPosition());
 

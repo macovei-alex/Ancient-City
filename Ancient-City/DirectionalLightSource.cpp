@@ -44,12 +44,14 @@ void DirectionalLightSource::MultiplySpecularExponent(float difference)
 
 glm::mat4 DirectionalLightSource::GetLightViewMatrix() const
 {
-	return glm::lookAt(glm::vec3(0.0f), -lightDirection, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), lightDirection);
+	glm::vec3 up = glm::cross(right, lightDirection);
+	return glm::lookAt(lightDirection, glm::vec3(0.0f), up);
 }
 
 glm::mat4 DirectionalLightSource::GetLightProjectionMatrix() const
 {
-	return glm::ortho(-80.0f, 80.0f, -60.0f, 60.0f, nearPlaneDistance, farPlaneDistance);
+	return glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
 }
 
 glm::mat4 DirectionalLightSource::GetLightSpaceMatrix() const

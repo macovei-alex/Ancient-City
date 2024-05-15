@@ -116,6 +116,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,6 +171,8 @@
     <None Include="KeyBinder.tpp" />
     <None Include="OpenGL-errors.html" />
     <None Include="postbuild.bat" />
+    <None Include="Shaders\cubeFS.glsl" />
+    <None Include="Shaders\cubeVS.glsl" />
     <None Include="Shaders\depthMapFS.glsl" />
     <None Include="Shaders\depthMapVS.glsl" />
     <None Include="Shaders\modelFS.glsl" />
@@ -206,6 +209,9 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="vertex.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="simple cube.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

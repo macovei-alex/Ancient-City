@@ -3,6 +3,7 @@
 #include <sstream>
 #include <array>
 #include <algorithm>
+#include <gtc/matrix_transform.hpp>
 
 glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other)
 {
@@ -158,4 +159,14 @@ std::string TrimBeginEnd(const std::string& str, const std::string& begin, const
 
 	size_t length = endPos - startPos - begin.length();
 	return str.substr(startPos + begin.length(), length);
+}
+
+glm::vec3 Rotate(const glm::vec3& vec, const glm::vec3& rotation)
+{
+	glm::mat4 rotationMatrix = glm::mat4(1.0f);
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+
+	return glm::vec3(rotationMatrix * glm::vec4(vec, 1.0f));
 }
