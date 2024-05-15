@@ -41,7 +41,7 @@ void ShadowMap::BindForRead(const Shader& shader) const
 {
 	GLCall(glActiveTexture(GL_TEXTURE0 + textureUnitIndex));
 	GLCall(glBindTexture(GL_TEXTURE_2D, textureID));
-	shader.SetInt("ShadowMap", textureUnitIndex);
+	shader.SetShadowMap(textureUnitIndex);
 }
 
 void ShadowMap::UnbindForRead() const

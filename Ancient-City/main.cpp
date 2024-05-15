@@ -323,7 +323,7 @@ static void RenderFrame()
 
 	// render scene from light's point of view
 	depthMapShaders->Use();
-	depthMapShaders->SetShadowMap(15);
+	depthMapShaders->SetLightSpaceMatrix(lightSpaceMatrix);
 
 	GLCall(glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT));
 	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
@@ -333,6 +333,7 @@ static void RenderFrame()
 
 	for (const auto& model : models)
 	{
+		depthMapShaders->SetModelMatrix(model->GetModelMatrix());
 		model->DepthRender();
 	}
 
@@ -352,18 +353,18 @@ static void RenderFrame()
 
 	shadowShaders->Use();
 	sun->GetShadowMap().BindForRead(*shadowShaders);
-	shadowShaders->SetViewMatrix(camera->GetViewMatrix());
-	shadowShaders->SetProjectionMatrix(camera->GetProjectionMatrix());
+	shadowShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
+	shadowShaders->SetLightDirection(sun->GetDirection());
 	shadowShaders->SetLightColor(sun->GetColor());
+	shadowShaders->SetViewPosition(camera->GetPosition());
 	shadowShaders->SetAmbientStrength(sun->GetAmbientStrength());
 	shadowShaders->SetDiffuseStrength(sun->GetDiffuseStrength());
 	shadowShaders->SetSpecularStrength(sun->GetSpecularStrength());
 	shadowShaders->SetSpecularExponent(sun->GetSpecularExponent());
-	shadowShaders->SetViewPosition(camera->GetPosition());
 
 	for (const auto& model : models)
 	{
-		shadowShaders->SetMat4("ModelMatrix", model->GetModelMatrix());
+		shadowShaders->SetModelMatrix(model->GetModelMatrix());
 		model->Render(*shadowShaders);
 	}
 

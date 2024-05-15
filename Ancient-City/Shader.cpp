@@ -115,6 +115,7 @@ void Shader::InitUniformLocations()
 	ViewMatrix = glGetUniformLocation(programID, names::locations::ViewMatrix);
 	ProjectionMatrix = glGetUniformLocation(programID, names::locations::ProjectionMatrix);
 	VP = glGetUniformLocation(programID, names::locations::VP);
+	MVP = glGetUniformLocation(programID, names::locations::MVP);
 	LightSpaceMatrix = glGetUniformLocation(programID, names::locations::LightSpaceMatrix);
 	LightColor = glGetUniformLocation(programID, names::locations::LightColor);
 	LightDirection = glGetUniformLocation(programID, names::locations::LightDirection);

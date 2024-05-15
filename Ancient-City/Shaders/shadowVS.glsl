@@ -10,8 +10,7 @@ out vec2 MidTexCoords;
 out vec4 MidLightSpacePosition;
 
 uniform mat4 ModelMatrix;
-uniform mat4 ViewMatrix;
-uniform mat4 ProjectionMatrix;
+uniform mat4 VP;
 uniform mat4 LightSpaceMatrix;
 
 void main()
@@ -21,5 +20,5 @@ void main()
     MidTexCoords = InTexCoords;
     MidLightSpacePosition = LightSpaceMatrix * vec4(MidPosition, 1.0);
 
-    gl_Position = ProjectionMatrix * ViewMatrix * vec4(MidPosition, 1.0);
+    gl_Position = VP * vec4(MidPosition, 1.0);
 }

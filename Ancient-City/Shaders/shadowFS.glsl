@@ -30,8 +30,7 @@ float ShadowCalculation(vec4 lightSpacePosition)
 	float closestDepth = texture(ShadowMap, projectionCoords.xy).r;
     float currentDepth = projectionCoords.z;
 
-	float shadow = currentDepth - 0.005 > closestDepth ? 1.0 : 0.0;
-	return shadow;
+	return currentDepth - 0.005 > closestDepth ? 1.0 : 0.0;
 }
 
 void main()

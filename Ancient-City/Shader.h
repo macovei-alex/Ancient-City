@@ -9,10 +9,45 @@ class DirectionalLightSource;
 class Shader
 {
 public:
-	static inline void SetInt(const uint location, int value) { GLCall(glUniform1i(location, value)); }
-	static inline void SetFloat(const uint location, float value) { GLCall(glUniform1f(location, value)); }
-	static inline void SetVec3(const uint location, const glm::vec3& value) { GLCall(glUniform3fv(location, 1, &value[0])); }
-	static inline void SetMat4(const uint location, const glm::mat4& mat) { GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0])); }
+
+#ifdef _DEBUG
+
+	static inline void SetInt(const GLint location, int value)
+	{
+		if (location == -1)
+			__debugbreak();
+		GLCall(glUniform1i(location, value));
+	}
+
+	static inline void SetFloat(const GLint location, float value)
+	{
+		if (location == -1)
+			__debugbreak();
+		GLCall(glUniform1f(location, value));
+	}
+
+	static inline void SetVec3(const GLint location, const glm::vec3& value)
+	{
+		if (location == -1)
+			__debugbreak();
+		GLCall(glUniform3fv(location, 1, &value[0]));
+	}
+	
+	static inline void SetMat4(const GLint location, const glm::mat4& mat)
+	{
+		if (location == -1)
+			__debugbreak();
+		GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]));
+	}
+
+#else
+
+	static inline void SetInt(const GLint location, int value) { GLCall(glUniform1i(location, value)); }
+	static inline void SetFloat(const GLint location, float value) { GLCall(glUniform1f(location, value)); }
+	static inline void SetVec3(const GLint location, const glm::vec3& value) { GLCall(glUniform3fv(location, 1, &value[0])); }
+	static inline void SetMat4(const GLint location, const glm::mat4& mat) { GLCall(glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0])); }
+
+#endif
 
 public:
 	Shader(const std::string& vertexPath, const std::string& fragmentPath);
@@ -32,7 +67,7 @@ public:
 	inline void SetViewMatrix(const glm::mat4& mat) const { SetMat4(ViewMatrix, mat); }
 	inline void SetProjectionMatrix(const glm::mat4& mat) const { SetMat4(ProjectionMatrix, mat); }
 	inline void SetVP(const glm::mat4& mat) const { SetMat4(VP, mat); }
-	inline void SetMVP(const glm::mat4& mat) const { SetMat4(ModelMatrix, mat); }
+	inline void SetMVP(const glm::mat4& mat) const { SetMat4(MVP, mat); }
 	inline void SetLightSpaceMatrix(const glm::mat4& mat) const { SetMat4(LightSpaceMatrix, mat); }
 	inline void SetLightColor(const glm::vec3& vec) const { SetVec3(LightColor, vec); }
 	inline void SetLightDirection(const glm::vec3& vec) const { SetVec3(LightDirection, vec); }
@@ -59,26 +94,27 @@ private:
 private:
 	GLuint programID;
 
-	GLuint ModelMatrix;
-	GLuint ViewMatrix;
-	GLuint ProjectionMatrix;
-	GLuint VP;
-	GLuint LightSpaceMatrix;
-	GLuint LightColor;
-	GLuint LightDirection;
-	GLuint LightPosition;
-	GLuint ViewPosition;
-	GLuint AmbientStrength;
-	GLuint DiffuseStrength;
-	GLuint SpecularStrength;
-	GLuint SpecularExponent;
-	GLuint DiffuseTexture;
-	GLuint ShadowMap;
-	GLuint ParticleStartColor;
-	GLuint ParticleEndColor;
-	GLuint ParticleScale;
-	GLuint ParticlePosition;
-	GLuint ParticleColorBlendPercent;
-	GLuint ParticleAlpha;
-	GLuint ObjectColor;
+	GLint ModelMatrix;
+	GLint ViewMatrix;
+	GLint ProjectionMatrix;
+	GLint VP;
+	GLint MVP;
+	GLint LightSpaceMatrix;
+	GLint LightColor;
+	GLint LightDirection;
+	GLint LightPosition;
+	GLint ViewPosition;
+	GLint AmbientStrength;
+	GLint DiffuseStrength;
+	GLint SpecularStrength;
+	GLint SpecularExponent;
+	GLint DiffuseTexture;
+	GLint ShadowMap;
+	GLint ParticleStartColor;
+	GLint ParticleEndColor;
+	GLint ParticleScale;
+	GLint ParticlePosition;
+	GLint ParticleColorBlendPercent;
+	GLint ParticleAlpha;
+	GLint ObjectColor;
 };

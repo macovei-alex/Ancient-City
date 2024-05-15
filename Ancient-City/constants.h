@@ -44,6 +44,7 @@ namespace names
 		constexpr char DiffuseTexture[] = "DiffuseTexture";
 		constexpr char LightSpaceMatrix[] = "LightSpaceMatrix";
 		constexpr char VP[] = "VP";
+		constexpr char MVP[] = "MVP";
 		constexpr char ShadowMap[] = "ShadowMap";
 		constexpr char ParticleStartColor[] = "ParticleStartColor";
 		constexpr char ParticleEndColor[] = "ParticleEndColor";
