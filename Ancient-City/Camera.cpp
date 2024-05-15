@@ -67,10 +67,11 @@ glm::mat4 Camera::GetProjectionMatrix() const
 		return glm::perspective(glm::radians(fovY), aspectRatio, zNear, zFar);
 	}
 
-	float scaleFactor = 1000.0f;
+	static const float scaleFactor = 10.0f;
 	return glm::ortho(
 		-screenWidth / scaleFactor, screenWidth / scaleFactor,
-		-screenHeight / scaleFactor, screenHeight / scaleFactor, -zFar, zFar);
+		-screenHeight / scaleFactor, screenHeight / scaleFactor, 
+		-zFar, zFar);
 }
 
 glm::vec3 Camera::GetPosition() const

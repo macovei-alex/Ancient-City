@@ -159,6 +159,8 @@
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="ParticleGenerator.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
+    <ClCompile Include="ShadowMap.h" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Sun.cpp" />

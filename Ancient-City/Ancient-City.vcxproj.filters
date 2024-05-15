@@ -66,6 +66,12 @@
     <ClCompile Include="Sun.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowMap.h">
+      <Filter>Header Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp">

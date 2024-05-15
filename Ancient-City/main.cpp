@@ -27,6 +27,7 @@ constexpr unsigned int SCREEN_HEIGHT = 600;
 
 float deltaTime = 0.0f;
 double lastFrame = 0.0f;
+bool sunStop = false;
 
 Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr;
 Camera* camera = nullptr;
@@ -78,19 +79,22 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveDown(time);
 
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		sun->Rotate(10 * time, 0, 0);
+		sun->Rotate(20 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		sun->Rotate(-10 * time, 0, 0);
+		sun->Rotate(-20 * time, 0, 0);
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		sun->Rotate(0, 0, 10 * time);
+		sun->Rotate(0, 0, 20 * time);
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		sun->Rotate(0, 0, -10 * time);
+		sun->Rotate(0, 0, -20 * time);
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
 		glfwSetWindowShouldClose(window, true);
+		return;
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
@@ -115,6 +119,9 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 		sun->MultiplySpecularExponent(2.0f);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(0.5f);
+
+	else if (key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
+		sunStop = !sunStop;
 
 	if (action == GLFW_PRESS)
 		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
@@ -198,7 +205,7 @@ static void Clean()
 
 static void RenderFrame()
 {
-	// sun->CreateShadowMap(*depthMapShaders, models);
+	sun->WriteToShadowMap(*depthMapShaders, models);
 
 	camera->SetViewPort();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -206,7 +213,7 @@ static void RenderFrame()
 	skybox->Render(*skyboxShaders, *camera);
 
 	shadowShaders->Use();
-	shadowShaders->SetInt("ShadowMap", 15);
+	sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetUniforms(camera, sun, nullptr, Shader::Uniforms::DefaultOptions);
 
 	for (const auto& model : models)
@@ -293,7 +300,7 @@ static void SetupWorld()
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new Sun(*sphere);
-	sun->GetModel().Scale(100.0f);
+	sun->GetModel().Scale(20.0f);
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
@@ -376,7 +383,10 @@ int main(int argc, char* argv[])
 			particleGenerators->SpawnParticles(deltaTime);
 		}
 
-		sun->PassTime((float)deltaTime);
+		if (!sunStop)
+		{
+			sun->PassTime((float)deltaTime);
+		}
 
 		PerformKeysActions(window);
 		RenderFrame();
