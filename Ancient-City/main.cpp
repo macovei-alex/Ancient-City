@@ -342,7 +342,7 @@ int main(int argc, char* argv[])
 	InitializeGraphics();
 
 	LoadShader(names::shaders::model, true);
-	LoadShader(names::shaders::texture, true);
+	LoadShader(names::shaders::texture, false);
 	LoadShader(names::shaders::skybox, true);
 	LoadShader(names::shaders::particle, true);
 	LoadShader(names::shaders::depthMap, true);
