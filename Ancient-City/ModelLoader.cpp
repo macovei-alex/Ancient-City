@@ -139,7 +139,7 @@ std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiT
 		{
 			Texture texture;
 			texture.id = TextureFromFile(texturePath.C_Str());
-			texture.name = textureName;
+			texture.type = textureName;
 			texture.path = texturePath.C_Str();
 
 			textures.push_back(texture);

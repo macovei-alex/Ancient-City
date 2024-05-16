@@ -37,9 +37,9 @@ namespace names
 		constexpr char LightColor[] = "LightColor";
 		constexpr char LightDirection[] = "LightDirection";
 		constexpr char LightPosition[] = "LightPosition";
-		constexpr char AmbientStrength[] = "AmbientStrength";
-		constexpr char DiffuseStrength[] = "DiffuseStrength";
-		constexpr char SpecularStrength[] = "SpecularStrength";
+		constexpr char AmbientIntensity[] = "AmbientIntensity";
+		constexpr char DiffuseIntensity[] = "DiffuseIntensity";
+		constexpr char SpecularIntensity[] = "SpecularIntensity";
 		constexpr char SpecularExponent[] = "SpecularExponent";
 		constexpr char DiffuseTexture[] = "DiffuseTexture";
 		constexpr char LightSpaceMatrix[] = "LightSpaceMatrix";

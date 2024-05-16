@@ -14,7 +14,6 @@ public:
 	void Render(const Shader& shader) const;
 	void DepthRender() const;
 
-	inline glm::mat4 GetModelMatrix() const { return modelMatrix; }
 	inline glm::vec3 GetPosition() const { return glm::vec3(modelMatrix[3]); }
 
 	void SetPosition(const glm::vec3& position);
@@ -33,7 +32,5 @@ public:
 public:
 	std::shared_ptr<std::vector<Mesh>> meshes;
 	std::shared_ptr<std::vector<Texture>> textures;
-
-private:
 	glm::mat4 modelMatrix;
 };

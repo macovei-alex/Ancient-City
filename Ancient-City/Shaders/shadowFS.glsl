@@ -11,9 +11,9 @@ uniform vec3 LightColor;
 uniform vec3 LightDirection;
 uniform vec3 ViewPosition;
 
-uniform float AmbientStrength;
-uniform float DiffuseStrength;
-uniform float SpecularStrength;
+uniform float AmbientIntensity;
+uniform float DiffuseIntensity;
+uniform float SpecularIntensity;
 uniform int SpecularExponent;
 
 uniform sampler2D DiffuseTexture;
@@ -39,17 +39,17 @@ void main()
 	vec3 normal = normalize(MidNormal);
 
 	// ambient
-	vec3 ambient = AmbientStrength * LightColor;
+	vec3 ambient = AmbientIntensity * LightColor;
 
 	// diffuse
 	float diffuseValue = max(dot(LightDirection, normal), 0.0);
-	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
+	vec3 diffuse = DiffuseIntensity * diffuseValue * LightColor;
 
 	// specular
 	vec3 viewDirection = normalize(ViewPosition - MidPosition);
 	vec3 reflectionDirection = reflect(-LightDirection, normal);
 	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
-	vec3 specular = SpecularStrength * specularPower * LightColor;
+	vec3 specular = SpecularIntensity * specularPower * LightColor;
 
 	vec4 texColor = texture(DiffuseTexture, MidTexCoords);
 	// float shadow = ShadowCalculation(MidLightSpacePosition);

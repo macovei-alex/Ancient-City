@@ -60,9 +60,6 @@
     <ClCompile Include="DirectionalLightSource.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="LightSource.cpp">
-      <Filter>Source Files\Lighting</Filter>
-    </ClCompile>
     <ClCompile Include="Sun.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
@@ -175,13 +172,16 @@
     <ClInclude Include="DirectionalLightSource.h">
       <Filter>Header Files\Lighting</Filter>
     </ClInclude>
-    <ClInclude Include="LightSource.h">
-      <Filter>Header Files\Lighting</Filter>
-    </ClInclude>
     <ClInclude Include="Sun.h">
       <Filter>Header Files\Lighting</Filter>
     </ClInclude>
     <ClInclude Include="Batch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightAttributes.hpp">
+      <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="material.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

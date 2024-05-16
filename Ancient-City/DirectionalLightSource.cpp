@@ -14,39 +14,39 @@ DirectionalLightSource::DirectionalLightSource()
 	// empty
 }
 
-void DirectionalLightSource::AddAmbientStrength(float difference)
+void DirectionalLightSource::AddAmbientIntensity(float difference)
 {
-	float total = ambientStrength + difference;
+	float total = light.ambientIntensity + difference;
 	if (0.0f <= total && total <= 1.0f)
-		ambientStrength += difference;
+		light.ambientIntensity += difference;
 }
 
-void DirectionalLightSource::AddDiffuseStrength(float difference)
+void DirectionalLightSource::AddDiffuseIntensity(float difference)
 {
-	float total = diffuseStrength + difference;
+	float total = light.diffuseIntensity + difference;
 	if (0.0f <= total && total <= 1.0f)
-		diffuseStrength += difference;
+		light.diffuseIntensity += difference;
 }
 
-void DirectionalLightSource::AddSpecularStrength(float difference)
+void DirectionalLightSource::AddSpecularIntensity(float difference)
 {
-	float total = specularStrength + difference;
+	float total = light.specularIntensity + difference;
 	if (0.0f <= total && total <= 1.0f)
-		specularStrength += difference;
+		light.specularIntensity += difference;
 }
 
 void DirectionalLightSource::MultiplySpecularExponent(float difference)
 {
-	float total = specularExponent * difference;
+	float total = light.specularExponent * difference;
 	if (0.0f <= total && total <= 256.0f)
-		specularExponent = (int)(specularExponent * difference);
+		light.specularExponent = (int)(light.specularExponent * difference);
 }
 
 glm::mat4 DirectionalLightSource::GetLightViewMatrix() const
 {
-	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), lightDirection);
-	glm::vec3 up = glm::cross(right, lightDirection);
-	return glm::lookAt(lightDirection, glm::vec3(0.0f), up);
+	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), light.direction);
+	glm::vec3 up = glm::cross(right, light.direction);
+	return glm::lookAt(light.direction, glm::vec3(0.0f), up);
 }
 
 glm::mat4 DirectionalLightSource::GetLightProjectionMatrix() const
@@ -66,7 +66,7 @@ void DirectionalLightSource::RotateDirection(float x, float y, float z)
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(y), glm::vec3(0.0f, 1.0f, 0.0f));
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(z), glm::vec3(0.0f, 0.0f, 1.0f));
 	
-	lightDirection = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(lightDirection, 1.0f)));
+	light.direction = glm::normalize(glm::vec3(rotationMatrix * glm::vec4(light.direction, 1.0f)));
 }
 
 void DirectionalLightSource::RotateDirection(const glm::vec3& rotation)
@@ -89,7 +89,7 @@ void DirectionalLightSource::WriteToShadowMap(const Shader& shadowShaders, const
 
 	for (const auto& model : models)
 	{
-		shadowShaders.SetMat4("ModelMatrix", model->GetModelMatrix());
+		shadowShaders.SetMat4("ModelMatrix", model->modelMatrix);
 		model->DepthRender();
 	}
 

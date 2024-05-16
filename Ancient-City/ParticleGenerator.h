@@ -28,7 +28,7 @@ public:
 	inline ParticleGenerator& WithScale(float scale) { this->scale = scale; return *this; }
 	inline ParticleGenerator& WithParticleAlphaFade(bool doAlphaFade) { doParticleAlphaFade = doAlphaFade; return *this; }
 
-	static float CalculateAmbientStrength(float ambientStrength);
+	static float CalculateAmbientIntensity(float ambientStrength);
 	float CalculateDiffuseStrength(float baseDiffuseStrength, const glm::vec3& lightPosition) const;
 
 private:

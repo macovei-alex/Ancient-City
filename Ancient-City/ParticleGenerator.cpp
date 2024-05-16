@@ -122,7 +122,7 @@ void ParticleGenerator::MoveParticles(float deltaTime)
 		particles.end());
 }
 
-float ParticleGenerator::CalculateAmbientStrength(float ambient)
+float ParticleGenerator::CalculateAmbientIntensity(float ambient)
 {
 	return std::min(std::max(0.2f, 5 * ambient), 1.0f);
 }

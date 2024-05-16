@@ -91,7 +91,7 @@ bool Shader::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& 
 		if (!success)
 		{
 			GLCall(glGetShaderInfoLog(shaderStencilTesting, 1024, NULL, infoLog));
-			std::cout << "ERROR when compiling shader of type: " << type << '\n' << infoLog << "---------------------------------------------------\n";
+			std::cout << "ERROR when compiling shader of type: " << type << '\n' << infoLog << std::endl;
 			return true;
 		}
 	}
@@ -101,7 +101,7 @@ bool Shader::CheckCompileErrors(GLuint shaderStencilTesting, const std::string& 
 		if (!success)
 		{
 			GLCall(glGetProgramInfoLog(shaderStencilTesting, 1024, NULL, infoLog));
-			std::cout << "ERROR when linking program of type: " << type << '\n' << infoLog << "---------------------------------------------------\n";
+			std::cout << "ERROR when linking program of type: " << type << '\n' << infoLog << std::endl;
 			return true;
 		}
 	}
@@ -121,9 +121,9 @@ void Shader::InitUniformLocations()
 	LightDirection = glGetUniformLocation(programID, names::locations::LightDirection);
 	LightPosition = glGetUniformLocation(programID, names::locations::LightPosition);
 	ViewPosition = glGetUniformLocation(programID, names::locations::ViewPosition);
-	AmbientStrength = glGetUniformLocation(programID, names::locations::AmbientStrength);
-	DiffuseStrength = glGetUniformLocation(programID, names::locations::DiffuseStrength);
-	SpecularStrength = glGetUniformLocation(programID, names::locations::SpecularStrength);
+	AmbientStrength = glGetUniformLocation(programID, names::locations::AmbientIntensity);
+	DiffuseStrength = glGetUniformLocation(programID, names::locations::DiffuseIntensity);
+	SpecularStrength = glGetUniformLocation(programID, names::locations::SpecularIntensity);
 	SpecularExponent = glGetUniformLocation(programID, names::locations::SpecularExponent);
 	DiffuseTexture = glGetUniformLocation(programID, names::locations::DiffuseTexture);
 	ShadowMap = glGetUniformLocation(programID, names::locations::ShadowMap);

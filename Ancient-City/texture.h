@@ -5,6 +5,6 @@
 struct Texture
 {
 	uint id;
-	std::string name;
+	std::string type;
 	std::string path;
 };

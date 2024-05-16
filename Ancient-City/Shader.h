@@ -72,9 +72,9 @@ public:
 	inline void SetLightColor(const glm::vec3& vec) const { SetVec3(LightColor, vec); }
 	inline void SetLightDirection(const glm::vec3& vec) const { SetVec3(LightDirection, vec); }
 	inline void SetViewPosition(const glm::vec3& vec) const { SetVec3(ViewPosition, vec); }
-	inline void SetAmbientStrength(float val) const { SetFloat(AmbientStrength, val); }
-	inline void SetDiffuseStrength(float val) const { SetFloat(DiffuseStrength, val); }
-	inline void SetSpecularStrength(float val) const { SetFloat(SpecularStrength, val); }
+	inline void SetAmbientIntensity(float val) const { SetFloat(AmbientStrength, val); }
+	inline void SetDiffuseIntensity(float val) const { SetFloat(DiffuseStrength, val); }
+	inline void SetSpecularIntensity(float val) const { SetFloat(SpecularStrength, val); }
 	inline void SetSpecularExponent(int val) const { SetInt(SpecularExponent, val); }
 	inline void SetDiffuseTexture(int val) const { SetInt(DiffuseTexture, val); }
 	inline void SetShadowMap(int val) const { SetInt(DiffuseTexture, val); }

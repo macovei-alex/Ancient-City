@@ -23,7 +23,7 @@ std::vector<Batch> Batch::SplitToBatches(const std::vector<Model*>& models)
 
 			auto& [meshes, matrices] = splitMeshes.at(textureId);
 			meshes.push_back(mesh);
-			matrices.push_back(model->GetModelMatrix());
+			matrices.push_back(model->modelMatrix);
 		}
 	}
 
@@ -39,7 +39,6 @@ std::vector<Batch> Batch::SplitToBatches(const std::vector<Model*>& models)
 
 Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& matrices)
 {
-	size_t indexOffset = 0;
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
 
@@ -52,6 +51,7 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 
 	vertices.reserve(vertexCounter);
 	indices.reserve(indexCounter);
+	uint indexOffset = 0;
 
 	for (size_t i = 0; i < meshes.size(); i++)
 	{
@@ -68,11 +68,11 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 			indices.push_back(index + indexOffset);
 		}
 		
-		indexOffset += meshes[i]->vertices.size();
+		indexOffset += (uint)meshes[i]->vertices.size();
 	}
 
 	textures = meshes[0]->textures;
-	indexCount = indices.size();
+	indexCount = (uint)indices.size();
 	InitBuffers(vertices, indices, meshes[0]->textures);
 }
 
@@ -80,7 +80,7 @@ void Batch::Render(const Shader& shader) const
 {
 	for (uint i = 0; i < (uint)textures.size(); i++)
 	{
-		if (textures[i].name == names::textures::diffuse)
+		if (textures[i].type == names::textures::diffuse)
 		{
 			GLCall(glActiveTexture(GL_TEXTURE0 + i));
 			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));

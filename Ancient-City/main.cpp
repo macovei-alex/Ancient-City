@@ -7,7 +7,6 @@
 #include "KeyBinder.tpp"
 #include "Camera.h"
 #include "Shader.h"
-#include "LightSource.h"
 #include "Sun.h"
 #include "ModelLoader.h"
 #include "hotReload.hpp"
@@ -71,7 +70,7 @@ static void PerformKeysActions(GLFWwindow* window)
 {
 	float time = deltaTime;
 
-	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 		time *= Camera::SPEED_BOOST_MULTIPLIER;
 	if(glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
 		time *= Camera::SPEED_SLOW_MULTIPLIER;
@@ -86,18 +85,18 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveRight(time);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera->MoveUp(time);
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		camera->MoveDown(time);
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
 	{
 		sun->PassTime(time);
-		std::cout << sun->GetDirection() << std::endl;
+		std::cout << sun->light.direction << std::endl;
 	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
 	{
 		sun->PassTime(-time);
-		std::cout << sun->GetDirection() << std::endl;
+		std::cout << sun->light.direction << std::endl;
 	}
 }
 
@@ -117,17 +116,17 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	}
 
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-		sun->AddAmbientStrength(0.1f);
+		sun->AddAmbientIntensity(0.1f);
 	else if (key == GLFW_KEY_X && action == GLFW_PRESS)
-		sun->AddAmbientStrength(-0.1f);
+		sun->AddAmbientIntensity(-0.1f);
 	else if (key == GLFW_KEY_C && action == GLFW_PRESS)
-		sun->AddDiffuseStrength(0.1f);
+		sun->AddDiffuseIntensity(0.1f);
 	else if (key == GLFW_KEY_V && action == GLFW_PRESS)
-		sun->AddDiffuseStrength(-0.1f);
+		sun->AddDiffuseIntensity(-0.1f);
 	else if (key == GLFW_KEY_B && action == GLFW_PRESS)
-		sun->AddSpecularStrength(0.1f);
+		sun->AddSpecularIntensity(0.1f);
 	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
-		sun->AddSpecularStrength(-0.1f);
+		sun->AddSpecularIntensity(-0.1f);
 	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
 		sun->MultiplySpecularExponent(2.0f);
 	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
@@ -278,7 +277,7 @@ static void SetupWorld()
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new Sun(*sphere);
-	sun->GetModel().Scale(200.0f);
+	sun->model.Scale(200.0f);
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
@@ -306,7 +305,9 @@ static void SetupWorld()
 		.WithScale(0.2f);
 	particleGenerators.push_back(gen);
 
+	LOG("Loading meshes into batches...", Logger::Level::Info);
 	batches = Batch::SplitToBatches(models);
+	LOG("Loaded meshes into batches", Logger::Level::Info);
 }
 
 static void RenderFrame()
@@ -318,9 +319,9 @@ static void RenderFrame()
 
 	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 1000.0f);
 
-	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), sun->GetDirection());
-	glm::vec3 up = glm::cross(right, sun->GetDirection());
-	glm::mat4 lightView = glm::lookAt(sun->GetDirection(), glm::vec3(0.0f), up);
+	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), sun->light.direction);
+	glm::vec3 up = glm::cross(right, sun->light.direction);
+	glm::mat4 lightView = glm::lookAt(sun->light.direction, glm::vec3(0.0f), up);
 
 	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
 
@@ -336,7 +337,7 @@ static void RenderFrame()
 
 	for (const auto& model : models)
 	{
-		depthMapShaders->SetModelMatrix(model->GetModelMatrix());
+		depthMapShaders->SetModelMatrix(model->modelMatrix);
 		model->DepthRender();
 	}
 
@@ -357,20 +358,20 @@ static void RenderFrame()
 	shadowShaders->Use();
 	sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
-	shadowShaders->SetLightColor(sun->GetColor());
+	shadowShaders->SetLightColor(sun->light.color);
 	shadowShaders->SetViewPosition(camera->GetPosition());
-	shadowShaders->SetAmbientStrength(sun->GetAmbientStrength());
-	shadowShaders->SetDiffuseStrength(sun->GetDiffuseStrength());
-	shadowShaders->SetSpecularStrength(sun->GetSpecularStrength());
-	shadowShaders->SetSpecularExponent(sun->GetSpecularExponent());
+	shadowShaders->SetAmbientIntensity(sun->light.ambientIntensity);
+	shadowShaders->SetDiffuseIntensity(sun->light.diffuseIntensity);
+	shadowShaders->SetSpecularIntensity(sun->light.specularIntensity);
+	shadowShaders->SetSpecularExponent(sun->light.specularExponent);
 
 	for (const auto& model : models)
 	{
-		glm::mat4 modelMatrix = model->GetModelMatrix();
+		glm::mat4 modelMatrix = model->modelMatrix;
 		glm::mat3 lightTransformation = glm::mat3(modelMatrix);
 		lightTransformation = glm::transpose(lightTransformation);
 
-		glm::vec3 lightDirection = lightTransformation * sun->GetDirection();
+		glm::vec3 lightDirection = lightTransformation * sun->light.direction;
 		lightDirection = glm::normalize(lightDirection);
 
 		shadowShaders->SetLightDirection(lightDirection);
@@ -380,12 +381,12 @@ static void RenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->GetModel().GetModelMatrix());
+	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->model.modelMatrix);
 	sun->Render(*modelShaders);
 
 	particleShaders->Use();
 	particleShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
-	particleShaders->SetAmbientStrength(ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
+	particleShaders->SetAmbientIntensity(ParticleGenerator::CalculateAmbientIntensity(sun->light.ambientIntensity));
 	for (const auto& particleGenerator : particleGenerators)
 	{
 		particleGenerator->RenderParticles(*particleShaders);
@@ -402,28 +403,27 @@ static void BatchRenderFrame()
 	shadowShaders->Use();
 	sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
-	shadowShaders->SetLightColor(sun->GetColor());
+	shadowShaders->SetLightColor(sun->light.color);
 	shadowShaders->SetViewPosition(camera->GetPosition());
-	shadowShaders->SetAmbientStrength(sun->GetAmbientStrength());
-	shadowShaders->SetDiffuseStrength(sun->GetDiffuseStrength());
-	shadowShaders->SetSpecularStrength(sun->GetSpecularStrength());
-	shadowShaders->SetSpecularExponent(sun->GetSpecularExponent());
+	shadowShaders->SetAmbientIntensity(sun->light.ambientIntensity);
+	shadowShaders->SetDiffuseIntensity(sun->light.diffuseIntensity);
+	shadowShaders->SetSpecularIntensity(sun->light.specularIntensity);
+	shadowShaders->SetSpecularExponent(sun->light.specularExponent);
 
 	for (const auto& batch : batches)
 	{
-		shadowShaders->SetLightDirection(sun->GetDirection());
+		shadowShaders->SetLightDirection(sun->light.direction);
 		shadowShaders->SetModelMatrix(glm::mat4(1.0f));
-
 		batch.Render(*shadowShaders);
 	}
 
 	modelShaders->Use();
-	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->GetModel().GetModelMatrix());
+	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->model.modelMatrix);
 	sun->Render(*modelShaders);
 
 	particleShaders->Use();
 	particleShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
-	particleShaders->SetAmbientStrength(ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
+	particleShaders->SetAmbientIntensity(ParticleGenerator::CalculateAmbientIntensity(sun->light.ambientIntensity));
 	for (const auto& particleGenerator : particleGenerators)
 	{
 		particleGenerator->RenderParticles(*particleShaders);
@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
 	InitializeGraphics();
 
 	LoadShader(names::shaders::model, true);
-	LoadShader(names::shaders::texture, false);
+	LoadShader(names::shaders::texture, true);
 	LoadShader(names::shaders::skybox, true);
 	LoadShader(names::shaders::particle, true);
 	LoadShader(names::shaders::depthMap, true);

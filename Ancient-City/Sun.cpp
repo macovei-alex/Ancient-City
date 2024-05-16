@@ -6,13 +6,13 @@ Sun::Sun(const Model& model)
 	: DirectionalLightSource(),
 	model(model)
 {
-	this->model.SetPosition(lightDirection * MODEL_POSITION_MULTIPLIER);
+	this->model.SetPosition(light.direction * MODEL_POSITION_MULTIPLIER);
 }
 
 void Sun::Rotate(float x, float y, float z)
 {
 	DirectionalLightSource::RotateDirection(x, y, z);
-	model.SetPosition(lightDirection * MODEL_POSITION_MULTIPLIER);
+	model.SetPosition(light.direction * MODEL_POSITION_MULTIPLIER);
 }
 
 void Sun::Rotate(const glm::vec3& rotation)
@@ -32,29 +32,4 @@ void Sun::PassTime(float time)
 
 	lightDirection = glm::normalize(model.GetPosition());
 	*/
-}
-
-void Sun::SetSecondToHoursConversionRate(float nHoursPerSecond)
-{
-	secondToHoursConversionRate = nHoursPerSecond;
-}
-
-Model& Sun::GetModel()
-{
-	return model;
-}
-
-glm::vec3 Sun::GetDirection() const
-{
-	return lightDirection;
-}
-
-glm::vec3 Sun::GetPosition() const
-{
-	return model.GetPosition();
-}
-
-void Sun::Render(const Shader& shader) const
-{
-	model.Render(shader);
 }

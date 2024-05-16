@@ -12,18 +12,18 @@ public:
 	void Rotate(const glm::vec3& rotation);
 	void PassTime(float time);
 
-	void SetSecondToHoursConversionRate(float nHoursPerSecond);
-	Model& GetModel();
-	glm::vec3 GetDirection() const;
-	glm::vec3 GetPosition() const override;
+	inline void SetSecondToHoursConversionRate(float nHoursPerSecond) { secondToHoursConversionRate = nHoursPerSecond; }
+	inline glm::vec3 GetPosition() const override { return model.GetPosition(); }
 
-	void Render(const Shader& shader) const;
+	inline void Render(const Shader& shader) const { model.Render(shader); }
 
 public:
 	static const float MODEL_POSITION_MULTIPLIER;
 
-private:
+public:
 	Model model;
+
+private:
 	float secondToHoursConversionRate = 1.0f;
 };
 

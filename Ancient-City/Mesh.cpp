@@ -32,7 +32,7 @@ void Mesh::Render(const Shader& shader) const
 {
 	for (uint i = 0; i < (uint)textures.size(); i++)
 	{
-		if (textures[i].name == names::textures::diffuse)
+		if (textures[i].type == names::textures::diffuse)
 		{
 			GLCall(glActiveTexture(GL_TEXTURE0 + i));
 			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
