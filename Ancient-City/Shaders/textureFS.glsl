@@ -7,7 +7,7 @@ in vec2 MidTexCoords;
 out vec4 OutColor;
 
 uniform vec3 LightColor;
-uniform vec3 LightPosition;
+uniform vec3 LightDirection;
 uniform vec3 ViewPosition;
 
 uniform float AmbientStrength;
@@ -19,17 +19,19 @@ uniform sampler2D DiffuseTexture;
 
 void main()
 {
-	// With lighting
-	
-	vec3 ambient = AmbientStrength * LightColor;
+	// when the rasterizer is applied there is no guarantee that the normal is a unit vector
 	vec3 normal = normalize(MidNormal);
 
-	vec3 lightDirection = normalize(LightPosition - MidPosition);
-	float diffuseValue = abs(dot(normal, lightDirection));
+	// ambient
+	vec3 ambient = AmbientStrength * LightColor;
+
+	// diffuse
+	float diffuseValue = max(dot(LightDirection, normal), 0.0);
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
 
+	// specular
 	vec3 viewDirection = normalize(ViewPosition - MidPosition);
-	vec3 reflectionDirection = reflect(-lightDirection, normal);
+	vec3 reflectionDirection = reflect(-LightDirection, normal);
 	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
 	vec3 specular = SpecularStrength * specularPower * LightColor;
 
@@ -38,8 +40,6 @@ void main()
 
 	OutColor = vec4(result, texColor.a);
 
-
 	// Without lighting
-	
 	// OutColor = texture(DiffuseTexture1, MidTexCoords);
 }

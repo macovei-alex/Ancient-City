@@ -1,8 +1,8 @@
 #include "Model.h"
 
 #include "utils.h"
-
-#include <gtc/matrix_transform.hpp>
+#include <thread>
+#include <array>
 
 void Model::SetPosition(const glm::vec3& position)
 {

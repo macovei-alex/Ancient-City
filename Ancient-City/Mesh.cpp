@@ -40,12 +40,9 @@ void Mesh::Render(const Shader& shader) const
 		}
 	}
 
-	// draw mesh
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, 0));
 	GLCall(glBindVertexArray(0));
-		
-	GLCall(glActiveTexture(GL_TEXTURE0));
 }
 
 void Mesh::DepthRender() const

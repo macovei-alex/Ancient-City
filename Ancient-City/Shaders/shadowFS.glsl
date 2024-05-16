@@ -35,13 +35,14 @@ float ShadowCalculation(vec4 lightSpacePosition)
 
 void main()
 {
+	// when the rasterizer is applied there is no guarantee that the normal is a unit vector
 	vec3 normal = normalize(MidNormal);
 
 	// ambient
 	vec3 ambient = AmbientStrength * LightColor;
 
 	// diffuse
-	float diffuseValue = max(dot(normal, LightDirection), 0.0);
+	float diffuseValue = max(dot(LightDirection, normal), 0.0);
 	vec3 diffuse = DiffuseStrength * diffuseValue * LightColor;
 
 	// specular

@@ -3,7 +3,6 @@
 #include "Mesh.h"
 #include <gtc/matrix_transform.hpp>
 #include <vector>
-#include <memory>
 
 class Model
 {

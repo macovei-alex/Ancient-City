@@ -182,7 +182,6 @@
     <None Include="Shaders\particleFS.glsl" />
     <None Include="Shaders\particleVS.glsl" />
     <None Include="Shaders\shadowFS.glsl" />
-    <None Include="Shaders\shadowFSLab.glsl" />
     <None Include="Shaders\shadowVS.glsl" />
     <None Include="Shaders\skyboxFS.glsl" />
     <None Include="Shaders\skyboxVS.glsl" />

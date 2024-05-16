@@ -269,15 +269,14 @@ static void SetupWorld()
 	camera = new Camera(SCREEN_WIDTH, SCREEN_HEIGHT, Camera::START_POSITION);
 	skybox = new Skybox("Models\\Skybox");
 
-	/*/models.push_back(ModelLoader::LoadModel("Models\\Castle\\Castle OBJ.obj",
-		glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -2.0f, 0.0f)))); */
 	glm::mat4 matrix = glm::mat4(1.0f);
+	matrix = glm::translate(matrix, glm::vec3(-205.0f, -5.0f, 0.0f));
 	matrix = glm::scale(matrix, glm::vec3(10.0f, 10.0f, 10.0f));
 	models.push_back(ModelLoader::LoadModel("Models\\Chinese-Town\\chinese town.obj", matrix));
 
 	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
 	sun = new Sun(*sphere);
-	sun->GetModel().Scale(20.0f);
+	sun->GetModel().Scale(200.0f);
 
 	auto gen = &(new ParticleGenerator(*sphere))
 		->WithSpeedModifier(2.0f)
@@ -354,7 +353,6 @@ static void RenderFrame()
 	shadowShaders->Use();
 	sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
-	shadowShaders->SetLightDirection(sun->GetDirection());
 	shadowShaders->SetLightColor(sun->GetColor());
 	shadowShaders->SetViewPosition(camera->GetPosition());
 	shadowShaders->SetAmbientStrength(sun->GetAmbientStrength());
@@ -364,7 +362,16 @@ static void RenderFrame()
 
 	for (const auto& model : models)
 	{
-		shadowShaders->SetModelMatrix(model->GetModelMatrix());
+		glm::mat4 modelMatrix = model->GetModelMatrix();
+		glm::mat3 lightTransformation = glm::mat3(modelMatrix);
+		lightTransformation = glm::transpose(lightTransformation);
+
+		glm::vec3 lightDirection = lightTransformation * sun->GetDirection();
+		lightDirection = glm::normalize(lightDirection);
+
+		shadowShaders->SetLightDirection(lightDirection);
+		shadowShaders->SetModelMatrix(modelMatrix);
+
 		model->Render(*shadowShaders);
 	}
 
@@ -373,8 +380,7 @@ static void RenderFrame()
 	sun->Render(*modelShaders);
 
 	particleShaders->Use();
-	particleShaders->SetProjectionMatrix(camera->GetProjectionMatrix());
-	particleShaders->SetViewMatrix(camera->GetViewMatrix());
+	particleShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
 	particleShaders->SetAmbientStrength(ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
 	for (const auto& particleGenerator : particleGenerators)
 	{

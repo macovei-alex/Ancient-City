@@ -35,8 +35,7 @@ Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLo
 		| aiProcess_CalcTangentSpace
 		| (smoothNormals ? aiProcess_GenSmoothNormals : aiProcess_GenNormals));
 
-	// check for errors
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
+	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		LOG(importer.GetErrorString(), Logger::Level::Error);
 		throw std::runtime_error("Failed to load model");
@@ -44,7 +43,6 @@ Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLo
 
 	SetCurrentDirectory(fileName);
 
-	// process ASSIMP's root node recursively
 	Model* model = new Model();
 	ProcessNode(*model, scene->mRootNode, scene, onLoadTransforms);
 
@@ -80,20 +78,13 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat
 		if (mesh->HasNormals())
 		{
 			vertex.normal += mesh->mNormals[i];
+			vertex.normal = glm::normalize(vertex.normal);
 		}
+
 		if (mesh->mTextureCoords[0])
 		{
 			vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
 			vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
-
-			vertex.tangent += mesh->mTangents[i];
-			vertex.bitangent += mesh->mBitangents[i];
-		}
-		else
-		{
-			vertex.texCoords = glm::vec2(0.0f, 0.0f);
-			vertex.tangent = glm::vec3(0.0f, 0.0f, 0.0f);
-			vertex.bitangent = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 
 		vertices.push_back(vertex);
@@ -130,38 +121,40 @@ std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiT
 	std::vector<Texture> textures;
 	for (uint i = 0; i < material->GetTextureCount(type); i++)
 	{
-		aiString str;
-		material->GetTexture(type, i, &str);
-		// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
-		bool skip = false;
+		aiString texturePath;
+		material->GetTexture(type, i, &texturePath);
+
+		bool wasLoaded = false;
 		for (size_t j = 0; j < loadedTextures.size(); j++)
 		{
-			if (std::strcmp(loadedTextures[j].path.data(), str.C_Str()) == 0)
+			if (strcmp(loadedTextures[j].path.data(), texturePath.C_Str()) == 0)
 			{
 				textures.push_back(loadedTextures[j]);
-				skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+				wasLoaded = true;
 				break;
 			}
 		}
-		if (!skip)
-		{   // if texture hasn't been loaded already, load it
+
+		if (!wasLoaded)
+		{
 			Texture texture;
-			texture.id = TextureFromFile(str.C_Str());
+			texture.id = TextureFromFile(texturePath.C_Str());
 			texture.name = textureName;
-			texture.path = str.C_Str();
+			texture.path = texturePath.C_Str();
+
 			textures.push_back(texture);
-			loadedTextures.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+			loadedTextures.push_back(texture);
 		}
 	}
 	return textures;
 }
 
-GLuint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
+uint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
 {
 	std::string filePath = (currentDirectory / fileName).string();
 
-	GLuint textureID;
-	glGenTextures(1, &textureID);
+	uint textureID;
+	GLCall(glGenTextures(1, &textureID));
 
 	int width, height, nrComponents;
 	unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &nrComponents, 0);
@@ -176,14 +169,14 @@ GLuint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
 		else if (nrComponents == 4)
 			format = GL_RGBA;
 
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		GLCall(glBindTexture(GL_TEXTURE_2D, textureID));
+		GLCall(glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data));
+		GLCall(glGenerateMipmap(GL_TEXTURE_2D));
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR));
+		GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
 
 		stbi_image_free(data);
 	}

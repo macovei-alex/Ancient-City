@@ -1,6 +1,6 @@
 #include "Sun.h"
 
-const float Sun::MODEL_POSITION_MULTIPLIER = 100.0f;
+const float Sun::MODEL_POSITION_MULTIPLIER = 1000.0f;
 
 Sun::Sun(const Model& model)
 	: DirectionalLightSource(),
