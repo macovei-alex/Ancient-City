@@ -72,6 +72,9 @@
     <ClCompile Include="ShadowMap.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
+    <ClCompile Include="Batch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="KeyBinder.tpp">
@@ -177,6 +180,9 @@
     </ClInclude>
     <ClInclude Include="Sun.h">
       <Filter>Header Files\Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="Batch.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

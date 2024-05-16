@@ -152,6 +152,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Batch.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DirectionalLightSource.cpp" />
     <ClCompile Include="LightSource.cpp" />
@@ -194,6 +195,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Batch.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DirectionalLightSource.h" />
     <ClInclude Include="hotReload.hpp" />

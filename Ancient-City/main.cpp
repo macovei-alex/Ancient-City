@@ -14,6 +14,7 @@
 #include "Skybox.h"
 #include "ParticleGenerator.h"
 #include "constants.h"
+#include "Batch.h"
 
 #define TEMP
 
@@ -44,6 +45,7 @@ Sun* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<Model*> models;
+std::vector<Batch> batches;
 std::vector<ParticleGenerator*> particleGenerators;
 
 static void DisplayFPS(double currentTime)
@@ -303,6 +305,8 @@ static void SetupWorld()
 		.WithParticleAlphaFade(true)
 		.WithScale(0.2f);
 	particleGenerators.push_back(gen);
+
+	batches = Batch::SplitToBatches(models);
 }
 
 static void RenderFrame()
@@ -373,6 +377,44 @@ static void RenderFrame()
 		shadowShaders->SetModelMatrix(modelMatrix);
 
 		model->Render(*shadowShaders);
+	}
+
+	modelShaders->Use();
+	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->GetModel().GetModelMatrix());
+	sun->Render(*modelShaders);
+
+	particleShaders->Use();
+	particleShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
+	particleShaders->SetAmbientStrength(ParticleGenerator::CalculateAmbientStrength(sun->GetAmbientStrength()));
+	for (const auto& particleGenerator : particleGenerators)
+	{
+		particleGenerator->RenderParticles(*particleShaders);
+	}
+}
+
+static void BatchRenderFrame()
+{
+	camera->SetViewPort();
+	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+	skybox->Render(*skyboxShaders, *camera);
+
+	shadowShaders->Use();
+	sun->GetShadowMap().BindForRead(*shadowShaders);
+	shadowShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
+	shadowShaders->SetLightColor(sun->GetColor());
+	shadowShaders->SetViewPosition(camera->GetPosition());
+	shadowShaders->SetAmbientStrength(sun->GetAmbientStrength());
+	shadowShaders->SetDiffuseStrength(sun->GetDiffuseStrength());
+	shadowShaders->SetSpecularStrength(sun->GetSpecularStrength());
+	shadowShaders->SetSpecularExponent(sun->GetSpecularExponent());
+
+	for (const auto& batch : batches)
+	{
+		shadowShaders->SetLightDirection(sun->GetDirection());
+		shadowShaders->SetModelMatrix(glm::mat4(1.0f));
+
+		batch.Render(*shadowShaders);
 	}
 
 	modelShaders->Use();
@@ -478,7 +520,8 @@ int main(int argc, char* argv[])
 		}
 
 		PerformKeysActions(window);
-		RenderFrame();
+		// RenderFrame();
+		BatchRenderFrame();
 		DisplayFPS(currentFrame);
 
 		glfwSwapBuffers(window);
