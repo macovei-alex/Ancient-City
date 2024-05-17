@@ -7,9 +7,6 @@ namespace fs = std::filesystem;
 
 #include "constants.h"
 
-std::vector<Texture> ModelLoader::loadedTextures;
-fs::path ModelLoader::currentDirectory;
-
 void ModelLoader::SetCurrentDirectory(const std::string& fileName)
 {	
 	fs::path filePath = fs::absolute(fs::canonical(fileName));
@@ -28,6 +25,12 @@ Model* ModelLoader::LoadModel(const std::string& fileName, float scale)
 
 Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLoadTransforms, bool smoothNormals)
 {
+	if (!defaultTexturesLoaded)
+	{
+		LoadDefaultTextures();
+		LOG("Default textures loaded successfully", Logger::Level::Info);
+	}
+
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(fileName,
 		aiProcess_Triangulate
@@ -142,6 +145,8 @@ std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiT
 			texture.type = textureName;
 			texture.path = texturePath.C_Str();
 
+			LOG(std::format("Texture {} loaded successfully with OpenGL ID={}", texture.path, texture.id), Logger::Level::Info);
+
 			textures.push_back(texture);
 			loadedTextures.push_back(texture);
 		}
@@ -187,4 +192,16 @@ uint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
 	}
 
 	return textureID;
+}
+
+void ModelLoader::LoadDefaultTextures()
+{
+	SetCurrentDirectory("Models\\standalone-textures\\default.jpg");
+
+	defaultDiffuseTexture.id = TextureFromFile("default.jpg");
+	defaultDiffuseTexture.type = names::textures::diffuse;
+	defaultDiffuseTexture.path = "default.jpg";
+
+	defaultDiffuseTexture;
+	defaultTexturesLoaded = true;
 }

@@ -6,10 +6,16 @@
 class Batch
 {
 public:
-	static std::vector<Batch> SplitToBatches(const std::vector<Model*>& models);
+	static std::vector<Batch*> SplitToBatches(const std::vector<Model*>& models);
 
 public:
 	Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& matrices);
+	Batch(const Batch& other) = delete;
+	Batch(Batch&& other) noexcept;
+	Batch& operator=(const Batch& other) = delete;
+	Batch& operator=(Batch&& other) noexcept;
+	~Batch();
+
 	void Render(const Shader& shader) const;
 	void DepthRender() const;
 

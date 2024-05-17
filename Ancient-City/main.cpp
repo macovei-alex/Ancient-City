@@ -26,6 +26,7 @@ uint depthMapFBO, depthMap;
 struct Options
 {
 	bool hotReloadShaders = false;
+	bool batchRendering = false;
 };
 
 Options options;
@@ -44,7 +45,7 @@ Sun* sun = nullptr;
 Skybox* skybox = nullptr;
 
 std::vector<Model*> models;
-std::vector<Batch> batches;
+std::vector<Batch*> batches;
 std::vector<ParticleGenerator*> particleGenerators;
 
 static void DisplayFPS(double currentTime)
@@ -210,6 +211,9 @@ static void Clean()
 	for (auto& particleGenerator : particleGenerators)
 		delete particleGenerator;
 
+	for(auto& batch : batches)
+		delete batch;
+
 	if (options.hotReloadShaders)
 		CleanHotReloadHandles();
 	glfwTerminate();
@@ -305,7 +309,6 @@ static void SetupWorld()
 		.WithScale(0.2f);
 	particleGenerators.push_back(gen);
 
-	LOG("Loading meshes into batches...", Logger::Level::Info);
 	batches = Batch::SplitToBatches(models);
 	LOG("Loaded meshes into batches", Logger::Level::Info);
 }
@@ -414,7 +417,7 @@ static void BatchRenderFrame()
 	{
 		shadowShaders->SetLightDirection(sun->light.direction);
 		shadowShaders->SetModelMatrix(glm::mat4(1.0f));
-		batch.Render(*shadowShaders);
+		batch->Render(*shadowShaders);
 	}
 
 	modelShaders->Use();
@@ -440,6 +443,11 @@ int main(int argc, char* argv[])
 			{
 				options.hotReloadShaders = true;
 				AddHotReloadDir(names::shaders::dirName + '\\');
+			}
+
+			if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--batchRendering") == 0)
+			{
+				options.batchRendering = true;
 			}
 		}
 	}
@@ -488,7 +496,7 @@ int main(int argc, char* argv[])
 	GLCall(glActiveTexture(GL_TEXTURE15));
 	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
 
-#endif /////////////////////////////////////////////////////////////////////////////////
+#endif ///////////////////////////////////////////////////////////////////////////////
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -520,8 +528,12 @@ int main(int argc, char* argv[])
 		}
 
 		PerformKeysActions(window);
-		// RenderFrame();
-		BatchRenderFrame();
+
+		if (options.batchRendering)
+			BatchRenderFrame();
+		else
+			RenderFrame();
+
 		DisplayFPS(currentFrame);
 
 		glfwSwapBuffers(window);

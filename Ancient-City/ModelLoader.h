@@ -21,8 +21,11 @@ private:
 	static std::vector<Texture> LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& textureName);
 	static GLuint TextureFromFile(const std::string& fileName, bool gamma = true);
 	static void SetCurrentDirectory(const std::string& fileName);
+	static void LoadDefaultTextures();
 
 private:
-	static std::vector<Texture> loadedTextures;
-	static fs::path currentDirectory;
+	inline static std::vector<Texture> loadedTextures;
+	inline static fs::path currentDirectory;
+	inline static bool defaultTexturesLoaded = false;
+	inline static Texture defaultDiffuseTexture;
 };

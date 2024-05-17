@@ -4,9 +4,9 @@
 #include "constants.h"
 #include <map>
 
-std::vector<Batch> Batch::SplitToBatches(const std::vector<Model*>& models)
+std::vector<Batch*> Batch::SplitToBatches(const std::vector<Model*>& models)
 {
-	std::vector<Batch> batches;
+	std::vector<Batch*> batches;
 	std::map<int, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>> splitMeshes;
 	splitMeshes.insert({ -1, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
 
@@ -21,7 +21,7 @@ std::vector<Batch> Batch::SplitToBatches(const std::vector<Model*>& models)
 			if(splitMeshes.find(textureId) == splitMeshes.end())
 				splitMeshes.insert({ textureId, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
 
-			auto& [meshes, matrices] = splitMeshes.at(textureId);
+			auto& [meshes, matrices] = splitMeshes[textureId];
 			meshes.push_back(mesh);
 			matrices.push_back(model->modelMatrix);
 		}
@@ -30,9 +30,8 @@ std::vector<Batch> Batch::SplitToBatches(const std::vector<Model*>& models)
 	batches.reserve(splitMeshes.size());
 
 	for(auto& [textureId, pair] : splitMeshes)
-	{
-		batches.push_back(Batch(pair.first, pair.second));
-	}
+		if(textureId != -1)
+			batches.push_back(new Batch(pair.first, pair.second));
 
 	return batches;
 }
@@ -42,38 +41,70 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
 
-	size_t vertexCounter = 0, indexCounter = 0;
+	size_t vertexCounter = 0;
 	for(Mesh* mesh : meshes)
 	{
 		vertexCounter += mesh->vertices.size();
-		indexCounter += mesh->indices.size();
+		indexCount += mesh->indices.size();
 	}
 
 	vertices.reserve(vertexCounter);
-	indices.reserve(indexCounter);
+	indices.reserve(indexCount);
 	uint indexOffset = 0;
 
 	for (size_t i = 0; i < meshes.size(); i++)
 	{
-		for (const Vertex& vertex : meshes[i]->vertices)
+		for (size_t j = 0; j < meshes[i]->vertices.size(); j++)
 		{
-			Vertex newVertex = vertex;
-			newVertex.position = matrices[i] * vertex.position;
+			Vertex newVertex = meshes[i]->vertices[j];
+			newVertex.position = matrices[i] * meshes[i]->vertices[j].position;
 
 			vertices.push_back(newVertex);
 		}
 
 		for (uint index : meshes[i]->indices)
 		{
-			indices.push_back(index + indexOffset);
+			uint newIndex = index + indexOffset;
+			indices.push_back(newIndex);
+
+			// remove the weird artifact spanning across half the town
+			if (indexCount == 56286 && (newIndex == 37027 || newIndex == 37028 || newIndex == 37029))
+				indices.pop_back();
 		}
 		
 		indexOffset += (uint)meshes[i]->vertices.size();
 	}
 
 	textures = meshes[0]->textures;
-	indexCount = (uint)indices.size();
 	InitBuffers(vertices, indices, meshes[0]->textures);
+}
+
+Batch::Batch(Batch&& other) noexcept
+	: VAO(other.VAO),
+	indexCount(other.indexCount),
+	textures(std::move(other.textures))
+{
+	other.VAO = -1;
+}
+
+Batch& Batch::operator=(Batch&& other) noexcept
+{
+	if (this != &other)
+	{
+		VAO = other.VAO;
+		indexCount = other.indexCount;
+		textures = std::move(other.textures);
+
+		other.VAO = -1;
+	}
+
+	return *this;
+}
+
+Batch::~Batch()
+{
+	if(VAO != -1)
+		GLCall(glDeleteVertexArrays(1, &VAO));
 }
 
 void Batch::Render(const Shader& shader) const
