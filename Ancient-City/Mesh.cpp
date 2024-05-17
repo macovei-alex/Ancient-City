@@ -3,7 +3,7 @@
 #include <vector>
 #include "constants.h"
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& textures) noexcept
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<std::shared_ptr<Texture>>& textures) noexcept
 	: vertices(vertices),
 	indices(indices),
 	textures(textures)
@@ -32,10 +32,10 @@ void Mesh::Render(const Shader& shader) const
 {
 	for (uint i = 0; i < (uint)textures.size(); i++)
 	{
-		if (textures[i].type == names::textures::diffuse)
+		if (textures[i]->type == names::textures::diffuse)
 		{
 			GLCall(glActiveTexture(GL_TEXTURE0 + i));
-			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
+			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i]->id));
 			shader.SetDiffuseTexture(i);
 		}
 	}

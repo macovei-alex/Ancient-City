@@ -7,7 +7,7 @@
 class Model
 {
 public:
-	inline Model() : modelMatrix(1.0f), meshes(std::make_shared<std::vector<Mesh>>()), textures(std::make_shared<std::vector<Texture>>()) {}
+	inline Model() : modelMatrix(1.0f), meshes(std::vector<std::shared_ptr<Mesh>>()), textures(std::vector<std::shared_ptr<Texture>>()) {}
 	Model(const Model& model) = default;
 	Model(Model&& model) = default;
 
@@ -30,7 +30,7 @@ public:
 	void Rotate(const glm::vec3& rotation);
 
 public:
-	std::shared_ptr<std::vector<Mesh>> meshes;
-	std::shared_ptr<std::vector<Texture>> textures;
+	std::vector<std::shared_ptr<Mesh>> meshes;
+	std::vector<std::shared_ptr<Texture>> textures;
 	glm::mat4 modelMatrix;
 };

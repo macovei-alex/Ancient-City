@@ -1,14 +1,15 @@
 #pragma once
 
 #include "utils.h"
+#include "texture.hpp"
 
 struct Material
 {
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
+	glm::vec3 ambientColor;
+	glm::vec3 diffuseColor;
+	glm::vec3 specularColor;
+	float specularExponent;
 
-	uint textureAmbientID;
-	uint textureDiffuseID;
-	uint textureSpecularID;
+	std::shared_ptr<Texture> diffuseTexture;
+	std::shared_ptr<Texture> specularTexture;
 };

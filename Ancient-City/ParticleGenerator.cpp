@@ -36,7 +36,7 @@ ParticleGenerator::ParticleGenerator()
 	: particleModel()
 {
 	InitMembersDefault();
-	particleModel.meshes->push_back(Mesh(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, std::vector<Texture>()));
+	particleModel.meshes.push_back(std::make_shared<Mesh>(Mesh(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, std::vector<std::shared_ptr<Texture>>())));
 }
 
 ParticleGenerator::ParticleGenerator(const Model& particleModel)

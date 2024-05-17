@@ -1,7 +1,7 @@
 #pragma once
 
 #include "particle.hpp"
-#include "Vertex.h"
+#include "Vertex.hpp"
 #include "Model.h"
 
 class ParticleGenerator

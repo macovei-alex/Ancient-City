@@ -10,15 +10,15 @@ std::vector<Batch*> Batch::SplitToBatches(const std::vector<Model*>& models)
 	std::map<int, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>> splitMeshes;
 	splitMeshes.insert({ -1, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
 
-	for(Model* model : models)
+	for (Model* model : models)
 	{
-		for (size_t i = 0; i < model->meshes->size(); i++)
+		for (size_t i = 0; i < model->meshes.size(); i++)
 		{
-			Mesh* mesh = &model->meshes->at(i);
+			Mesh* mesh = model->meshes[i].get();
 
-			int textureId = mesh->textures.size() == 0 ? -1 : mesh->textures[0].id;
+			int textureId = mesh->textures.size() == 0 ? -1 : mesh->textures[0]->id;
 
-			if(splitMeshes.find(textureId) == splitMeshes.end())
+			if (splitMeshes.find(textureId) == splitMeshes.end())
 				splitMeshes.insert({ textureId, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
 
 			auto& [meshes, matrices] = splitMeshes[textureId];
@@ -29,8 +29,8 @@ std::vector<Batch*> Batch::SplitToBatches(const std::vector<Model*>& models)
 
 	batches.reserve(splitMeshes.size());
 
-	for(auto& [textureId, pair] : splitMeshes)
-		if(textureId != -1)
+	for (auto& [textureId, pair] : splitMeshes)
+		if (textureId != -1)
 			batches.push_back(new Batch(pair.first, pair.second));
 
 	return batches;
@@ -38,26 +38,34 @@ std::vector<Batch*> Batch::SplitToBatches(const std::vector<Model*>& models)
 
 Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& matrices)
 {
+	static size_t totalIndexCount = 0;
+
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
 
-	size_t vertexCounter = 0;
-	for(Mesh* mesh : meshes)
+	size_t vertexCount = 0;
+	for (const Mesh* mesh : meshes)
 	{
-		vertexCounter += mesh->vertices.size();
-		indexCount += mesh->indices.size();
+		vertexCount += mesh->vertices.size();
+		indexCount += (uint)mesh->indices.size();
 	}
 
-	vertices.reserve(vertexCounter);
+	vertices.reserve(vertexCount);
 	indices.reserve(indexCount);
 	uint indexOffset = 0;
 
 	for (size_t i = 0; i < meshes.size(); i++)
 	{
-		for (size_t j = 0; j < meshes[i]->vertices.size(); j++)
+		for (const auto& vertex : meshes[i]->vertices)
 		{
-			Vertex newVertex = meshes[i]->vertices[j];
-			newVertex.position = matrices[i] * meshes[i]->vertices[j].position;
+			Vertex newVertex = vertex;
+			newVertex.position = matrices[i] * vertex.position;
+
+			/*
+			auto res = glm::isnan(newVertex.position) | glm::isnan(newVertex.normal);
+			if (res.x || res.y || res.z)
+				std::cout << "|||\n" << vertex << "--\n" << matrices[i] << "--\n" << newVertex << "--\n";
+			*/
 
 			vertices.push_back(newVertex);
 		}
@@ -71,7 +79,7 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 			if (indexCount == 56286 && (newIndex == 37027 || newIndex == 37028 || newIndex == 37029))
 				indices.pop_back();
 		}
-		
+
 		indexOffset += (uint)meshes[i]->vertices.size();
 	}
 
@@ -103,7 +111,7 @@ Batch& Batch::operator=(Batch&& other) noexcept
 
 Batch::~Batch()
 {
-	if(VAO != -1)
+	if (VAO != -1)
 		GLCall(glDeleteVertexArrays(1, &VAO));
 }
 
@@ -111,10 +119,10 @@ void Batch::Render(const Shader& shader) const
 {
 	for (uint i = 0; i < (uint)textures.size(); i++)
 	{
-		if (textures[i].type == names::textures::diffuse)
+		if (textures[i]->type == names::textures::diffuse)
 		{
 			GLCall(glActiveTexture(GL_TEXTURE0 + i));
-			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i].id));
+			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i]->id));
 			shader.SetDiffuseTexture(i);
 		}
 	}
@@ -122,8 +130,8 @@ void Batch::Render(const Shader& shader) const
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0));
 	GLCall(glBindVertexArray(0));
-	
-	for(uint i = 0; i < (uint)textures.size(); i++)
+
+	for (uint i = 0; i < (uint)textures.size(); i++)
 	{
 		GLCall(glActiveTexture(GL_TEXTURE0 + i));
 		GLCall(glBindTexture(GL_TEXTURE_2D, 0));
@@ -137,7 +145,7 @@ void Batch::DepthRender() const
 	GLCall(glBindVertexArray(0));
 }
 
-void Batch::InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& texture)
+void Batch::InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<std::shared_ptr<Texture>>& texture)
 {
 	GLCall(glGenVertexArrays(1, &VAO));
 	GLCall(glBindVertexArray(VAO));

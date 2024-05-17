@@ -16,14 +16,20 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{e16cbec0-f8ac-40de-a534-f0061b026b4e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Other">
-      <UniqueIdentifier>{3bc6b523-8693-4b34-a56a-455e1bda960d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Lighting">
       <UniqueIdentifier>{687ca7f6-1c92-46c0-aef7-c79652eca266}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Lighting">
       <UniqueIdentifier>{5eb71bed-e5bf-4728-ba39-bc5062b2789f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Build">
+      <UniqueIdentifier>{bf7d7fb4-8553-47bf-8188-a5375850de66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Other resources">
+      <UniqueIdentifier>{3bc6b523-8693-4b34-a56a-455e1bda960d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Models">
+      <UniqueIdentifier>{fe2d5fb0-47d0-4be8-b155-195e68da0701}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -77,12 +83,6 @@
     <None Include="KeyBinder.tpp">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="OpenGL-errors.html">
-      <Filter>Resource Files\Other</Filter>
-    </None>
-    <None Include="postbuild Debug.bat">
-      <Filter>Resource Files\Other</Filter>
-    </None>
     <None Include="Shaders\textureFS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
@@ -125,8 +125,17 @@
     <None Include="Shaders\cubeVS.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="postbuild Release.bat">
-      <Filter>Resource Files\Other</Filter>
+    <None Include="Build\postbuild Debug.bat">
+      <Filter>Resource Files\Build</Filter>
+    </None>
+    <None Include="Build\postbuild Release.bat">
+      <Filter>Resource Files\Build</Filter>
+    </None>
+    <None Include="Other resources\OpenGL-errors.html">
+      <Filter>Resource Files\Other resources</Filter>
+    </None>
+    <None Include="Models\Chinese-Town\chinese town.mtl">
+      <Filter>Resource Files\Models</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -142,7 +151,7 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vertex.h">
+    <ClInclude Include="vertex.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
@@ -151,7 +160,7 @@
     <ClInclude Include="ModelLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="texture.h">
+    <ClInclude Include="texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hotReload.hpp">
@@ -186,11 +195,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="simple cube.txt">
-      <Filter>Resource Files\Other</Filter>
+    <Text Include="Other resources\old code.txt">
+      <Filter>Resource Files\Other resources</Filter>
     </Text>
-    <Text Include="old code.txt">
-      <Filter>Resource Files\Other</Filter>
+    <Text Include="Other resources\simple cube.txt">
+      <Filter>Resource Files\Other resources</Filter>
     </Text>
   </ItemGroup>
 </Project>

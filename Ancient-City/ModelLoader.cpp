@@ -59,7 +59,7 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, 
 	for (uint i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		model.meshes->push_back(ProcessMesh(mesh, scene, onLoadTransforms));
+		model.meshes.push_back(ProcessMesh(mesh, scene, onLoadTransforms));
 	}
 
 	for (uint i = 0; i < node->mNumChildren; i++)
@@ -68,11 +68,11 @@ void ModelLoader::ProcessNode(Model& model, aiNode* node, const aiScene* scene, 
 	}
 }
 
-Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& onLoadTransforms)
+std::shared_ptr<Mesh> ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& onLoadTransforms)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 
 	for (uint i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -83,12 +83,31 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat
 			vertex.normal += mesh->mNormals[i];
 			vertex.normal = glm::normalize(vertex.normal);
 		}
+		else
+		{
+			vertex.normal = glm::vec3(0.0f);
+		}
 
 		if (mesh->mTextureCoords[0])
 		{
 			vertex.texCoords.x = mesh->mTextureCoords[0][i].x;
 			vertex.texCoords.y = mesh->mTextureCoords[0][i].y;
 		}
+
+		/*
+		auto res = glm::isnan(vertex.position);
+		if (res.x || res.y || res.z)
+		{
+			std::cout << "|||\n" << mesh->mVertices[i] << "--\n" << onLoadTransforms << "--\n" << vertex.position << "--\n";
+		}
+
+		res = glm::isnan(vertex.normal);
+		if (res.x || res.y || res.z)
+		{
+			std::cout << "|||\n" << vertex << "--\n";
+			vertex.normal = glm::vec3(0.0f);
+		}
+		*/
 
 		vertices.push_back(vertex);
 	}
@@ -104,24 +123,18 @@ Mesh ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat
 
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-	std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, names::textures::diffuse);
+	std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, names::textures::diffuse);
 	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-	std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, names::textures::specular);
+	std::vector<std::shared_ptr<Texture>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, names::textures::specular);
 	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-	std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, names::textures::height);
-	textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-
-	std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, names::textures::height);
-	textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-
-	return Mesh(vertices, indices, textures);
+	return std::make_shared<Mesh>(vertices, indices, textures);
 }
 
-std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& textureName)
+std::vector<std::shared_ptr<Texture>> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& textureName)
 {
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 	for (uint i = 0; i < material->GetTextureCount(type); i++)
 	{
 		aiString texturePath;
@@ -130,7 +143,7 @@ std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiT
 		bool wasLoaded = false;
 		for (size_t j = 0; j < loadedTextures.size(); j++)
 		{
-			if (strcmp(loadedTextures[j].path.data(), texturePath.C_Str()) == 0)
+			if (strcmp(loadedTextures[j]->path.data(), texturePath.C_Str()) == 0)
 			{
 				textures.push_back(loadedTextures[j]);
 				wasLoaded = true;
@@ -140,12 +153,12 @@ std::vector<Texture> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiT
 
 		if (!wasLoaded)
 		{
-			Texture texture;
-			texture.id = TextureFromFile(texturePath.C_Str());
-			texture.type = textureName;
-			texture.path = texturePath.C_Str();
+			std::shared_ptr<Texture> texture = std::make_shared<Texture>();
+			texture->id = TextureFromFile(texturePath.C_Str());
+			texture->type = textureName;
+			texture->path = texturePath.C_Str();
 
-			LOG(std::format("Texture {} loaded successfully with OpenGL ID={}", texture.path, texture.id), Logger::Level::Info);
+			LOG(std::format("Texture {} loaded successfully with OpenGL ID={}", texture->path, texture->id), Logger::Level::Info);
 
 			textures.push_back(texture);
 			loadedTextures.push_back(texture);
@@ -198,10 +211,11 @@ void ModelLoader::LoadDefaultTextures()
 {
 	SetCurrentDirectory("Models\\standalone-textures\\default.jpg");
 
-	defaultDiffuseTexture.id = TextureFromFile("default.jpg");
-	defaultDiffuseTexture.type = names::textures::diffuse;
-	defaultDiffuseTexture.path = "default.jpg";
+	defaultDiffuseTexture = std::make_shared<Texture>();
 
-	defaultDiffuseTexture;
+	defaultDiffuseTexture->id = TextureFromFile("default.jpg");
+	defaultDiffuseTexture->type = names::textures::diffuse;
+	defaultDiffuseTexture->path = "default.jpg";
+
 	defaultTexturesLoaded = true;
 }

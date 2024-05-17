@@ -42,16 +42,16 @@ void Model::Rotate(const glm::vec3& rotation)
 
 void Model::Render(const Shader& shaders) const
 {
-	for (const auto& mesh : *meshes)
+	for (const auto& mesh : meshes)
 	{
-		mesh.Render(shaders);
+		mesh->Render(shaders);
 	}
 }
 
 void Model::DepthRender() const
 {
-	for (const auto& mesh : *meshes)
+	for (const auto& mesh : meshes)
 	{
-		mesh.DepthRender();
+		mesh->DepthRender();
 	}
 }

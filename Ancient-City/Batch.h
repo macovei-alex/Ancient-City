@@ -3,6 +3,8 @@
 #include "utils.h"
 #include "Mesh.h"
 
+#include <memory>
+
 class Batch
 {
 public:
@@ -20,11 +22,11 @@ public:
 	void DepthRender() const;
 
 private:
-	void InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<Texture>& texture);
+	void InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<std::shared_ptr<Texture>>& texture);
 
 private:
 	uint VAO;
 	uint indexCount;
-	std::vector<Texture> textures;
+	std::vector<std::shared_ptr<Texture>> textures;
 };
 

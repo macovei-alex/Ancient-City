@@ -30,6 +30,7 @@ typedef unsigned int uint;
 std::ostream& operator<<(std::ostream& os, const glm::vec2& vector);
 std::ostream& operator<<(std::ostream& os, const glm::vec3& vector);
 std::ostream& operator<<(std::ostream& os, const glm::mat4& mat);
+std::ostream& operator<<(std::ostream & os, const aiVector3D& vec);
 void GLClearError();
 bool GLLogCall(const char* function, const char* file, int line);
 std::string_view GetKeyPressed(int key);

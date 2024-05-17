@@ -51,6 +51,11 @@ std::ostream& operator<<(std::ostream& os, const glm::mat4& mat)
 	return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const aiVector3D& vector)
+{
+	return os << vector.x << ' ' << vector.y << ' ' << vector.z;
+}
+
 void GLClearError()
 {
 	while (glGetError() != GL_NO_ERROR);

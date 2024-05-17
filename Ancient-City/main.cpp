@@ -201,7 +201,7 @@ static GLFWwindow* InitializeWindow()
 
 static void Clean()
 {
-	delete modelShaders, textureShaders, particleShaders, skyboxShaders, shadowShaders, depthMapShaders;
+	delete modelShaders, textureShaders, particleShaders, skyboxShaders, shadowShaders, depthMapShaders, cubeShaders;
 	delete camera;
 	delete sun;
 
