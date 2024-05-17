@@ -72,11 +72,15 @@ public:
 	inline void SetLightColor(const glm::vec3& vec) const { SetVec3(LightColor, vec); }
 	inline void SetLightDirection(const glm::vec3& vec) const { SetVec3(LightDirection, vec); }
 	inline void SetViewPosition(const glm::vec3& vec) const { SetVec3(ViewPosition, vec); }
-	inline void SetAmbientIntensity(float val) const { SetFloat(AmbientStrength, val); }
-	inline void SetDiffuseIntensity(float val) const { SetFloat(DiffuseStrength, val); }
-	inline void SetSpecularIntensity(float val) const { SetFloat(SpecularStrength, val); }
+	inline void SetAmbientIntensity(float val) const { SetFloat(AmbientIntensity, val); }
+	inline void SetDiffuseIntensity(float val) const { SetFloat(DiffuseIntensity, val); }
+	inline void SetSpecularIntensity(float val) const { SetFloat(SpecularIntensity, val); }
 	inline void SetSpecularExponent(int val) const { SetInt(SpecularExponent, val); }
 	inline void SetDiffuseTexture(int val) const { SetInt(DiffuseTexture, val); }
+	inline void SetSpecularTexture(int val) const { SetInt(SpecularTexture, val); }
+	inline void SetAmbientColor(const glm::vec3& vec) const { SetVec3(AmbientColor, vec); }
+	inline void SetSpecularColor(const glm::vec3& vec) const { SetVec3(SpecularColor, vec); }
+	inline void SetDiffuseColor(const glm::vec3& vec) const { SetVec3(DiffuseColor, vec); }
 	inline void SetShadowMap(int val) const { SetInt(DiffuseTexture, val); }
 	inline void SetParticleStartColor(const glm::vec3& vec) const { SetVec3(ParticleStartColor, vec); }
 	inline void SetParticleEndColor(const glm::vec3& vec) const { SetVec3(ParticleEndColor, vec); }
@@ -94,27 +98,17 @@ private:
 private:
 	GLuint programID;
 
-	GLint ModelMatrix;
-	GLint ViewMatrix;
-	GLint ProjectionMatrix;
-	GLint VP;
-	GLint MVP;
-	GLint LightSpaceMatrix;
+	GLint ModelMatrix, ViewMatrix, ProjectionMatrix;
+	GLint VP, MVP, LightSpaceMatrix;
 	GLint LightColor;
 	GLint LightDirection;
 	GLint LightPosition;
 	GLint ViewPosition;
-	GLint AmbientStrength;
-	GLint DiffuseStrength;
-	GLint SpecularStrength;
-	GLint SpecularExponent;
-	GLint DiffuseTexture;
+	GLint AmbientIntensity, DiffuseIntensity, SpecularIntensity;
+	GLint DiffuseTexture, SpecularTexture;
+	GLint AmbientColor, DiffuseColor, SpecularColor, SpecularExponent;
 	GLint ShadowMap;
-	GLint ParticleStartColor;
-	GLint ParticleEndColor;
-	GLint ParticleScale;
-	GLint ParticlePosition;
-	GLint ParticleColorBlendPercent;
-	GLint ParticleAlpha;
+	GLint ParticleStartColor, ParticleEndColor, ParticleColorBlendPercent, ParticleAlpha;
+	GLint ParticleScale, ParticlePosition;
 	GLint ObjectColor;
 };

@@ -3,10 +3,10 @@
 #include <vector>
 #include "constants.h"
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<std::shared_ptr<Texture>>& textures) noexcept
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const Material& material) noexcept
 	: vertices(vertices),
 	indices(indices),
-	textures(textures)
+	material(material)
 {
 	InitBuffers();
 }
@@ -14,7 +14,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices
 Mesh::Mesh(const Mesh& mesh) noexcept
 	: vertices(mesh.vertices),
 	indices(mesh.indices),
-	textures(mesh.textures)
+	material(mesh.material)
 {
 	InitBuffers();
 }
@@ -22,7 +22,7 @@ Mesh::Mesh(const Mesh& mesh) noexcept
 Mesh::Mesh(Mesh&& mesh) noexcept
 	: vertices(std::move(mesh.vertices)),
 	indices(std::move(mesh.indices)),
-	textures(std::move(mesh.textures))
+	material(std::move(mesh.material))
 {
 	VAO = mesh.VAO;
 	mesh.VAO = 0;
@@ -30,15 +30,7 @@ Mesh::Mesh(Mesh&& mesh) noexcept
 
 void Mesh::Render(const Shader& shader) const
 {
-	for (uint i = 0; i < (uint)textures.size(); i++)
-	{
-		if (textures[i]->type == names::textures::diffuse)
-		{
-			GLCall(glActiveTexture(GL_TEXTURE0 + i));
-			GLCall(glBindTexture(GL_TEXTURE_2D, textures[i]->id));
-			shader.SetDiffuseTexture(i);
-		}
-	}
+	material.Bind(shader);
 
 	GLCall(glBindVertexArray(VAO));
 	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, 0));

@@ -171,7 +171,7 @@
   <ItemGroup>
     <None Include="Build\postbuild Debug.bat" />
     <None Include="Build\postbuild Release.bat" />
-    <None Include="KeyBinder.tpp" />
+    <None Include="KeyBinder.hpp" />
     <None Include="Models\Chinese-Town\chinese town.mtl" />
     <None Include="Other resources\OpenGL-errors.html" />
     <None Include="Shaders\cubeFS.glsl" />

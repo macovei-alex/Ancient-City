@@ -16,6 +16,7 @@ public:
 	inline glm::vec3 GetPosition() const override { return model.GetPosition(); }
 
 	inline void Render(const Shader& shader) const { model.Render(shader); }
+	inline void DepthRender() const { model.DepthRender(); }
 
 public:
 	static const float MODEL_POSITION_MULTIPLIER;

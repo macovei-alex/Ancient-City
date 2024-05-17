@@ -80,7 +80,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="KeyBinder.tpp">
+    <None Include="KeyBinder.hpp">
       <Filter>Header Files</Filter>
     </None>
     <None Include="Shaders\textureFS.glsl">

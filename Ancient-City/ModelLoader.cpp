@@ -6,9 +6,10 @@
 namespace fs = std::filesystem;
 
 #include "constants.h"
+#include "material.hpp"
 
 void ModelLoader::SetCurrentDirectory(const std::string& fileName)
-{	
+{
 	fs::path filePath = fs::absolute(fs::canonical(fileName));
 	currentDirectory = filePath.remove_filename();
 }
@@ -27,7 +28,7 @@ Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLo
 {
 	if (!defaultTexturesLoaded)
 	{
-		LoadDefaultTextures();
+		LoadDefaults();
 		LOG("Default textures loaded successfully", Logger::Level::Info);
 	}
 
@@ -49,7 +50,7 @@ Model* ModelLoader::LoadModel(const std::string& fileName, const glm::mat4& onLo
 	Model* model = new Model();
 	ProcessNode(*model, scene->mRootNode, scene, onLoadTransforms);
 
-	LOG(std::format("Model {} loaded successfully", fileName), Logger::Level::Info);
+	LOG(std::format("Model ( {} ) loaded successfully", fileName), Logger::Level::Info);
 
 	return model;
 }
@@ -72,7 +73,6 @@ std::shared_ptr<Mesh> ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scen
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
-	std::vector<std::shared_ptr<Texture>> textures;
 
 	for (uint i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -121,50 +121,85 @@ std::shared_ptr<Mesh> ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scen
 		}
 	}
 
-	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	aiMaterial* pMaterial = scene->mMaterials[mesh->mMaterialIndex];
+	Material material = LoadMaterial(pMaterial);
 
-	std::vector<std::shared_ptr<Texture>> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, names::textures::diffuse);
-	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-
-	std::vector<std::shared_ptr<Texture>> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, names::textures::specular);
-	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-
-	return std::make_shared<Mesh>(vertices, indices, textures);
+	return std::make_shared<Mesh>(vertices, indices, material);
 }
 
-std::vector<std::shared_ptr<Texture>> ModelLoader::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& textureName)
+Material ModelLoader::LoadMaterial(aiMaterial* pMaterial)
 {
-	std::vector<std::shared_ptr<Texture>> textures;
-	for (uint i = 0; i < material->GetTextureCount(type); i++)
+	Material material;
+	material.diffuseTexture = LoadTexture(pMaterial, aiTextureType_DIFFUSE);
+	material.specularTexture = LoadTexture(pMaterial, aiTextureType_SPECULAR);
+	LoadColors(pMaterial, material);
+
+	return material;
+}
+
+void ModelLoader::LoadColors(aiMaterial* pMaterial, Material& outMaterial)
+{
+	aiColor4D color;
+
+	if (pMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS)
+		outMaterial.ambientColor += color;
+	else
+		outMaterial.ambientColor = glm::vec3(1.0f);
+
+	if (pMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
+		outMaterial.diffuseColor += color;
+	else
+		outMaterial.diffuseColor = glm::vec3(1.0f);
+
+	if (pMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS)
+		outMaterial.specularColor += color;
+	else
+		outMaterial.specularColor = glm::vec3(1.0f);
+
+	if(pMaterial->Get(AI_MATKEY_SPECULAR_FACTOR, outMaterial.specularExponent) != AI_SUCCESS)
+		outMaterial.specularExponent = 32;
+}
+
+std::shared_ptr<Texture> ModelLoader::LoadTexture(aiMaterial* material, aiTextureType type)
+{
+	std::shared_ptr<Texture> texture;
+
+	if (material->GetTextureCount(type) == 0)
 	{
-		aiString texturePath;
-		material->GetTexture(type, i, &texturePath);
-
-		bool wasLoaded = false;
-		for (size_t j = 0; j < loadedTextures.size(); j++)
+		switch (type)
 		{
-			if (strcmp(loadedTextures[j]->path.data(), texturePath.C_Str()) == 0)
-			{
-				textures.push_back(loadedTextures[j]);
-				wasLoaded = true;
-				break;
-			}
-		}
+		case aiTextureType_DIFFUSE:
+			return defaultDiffuseTexture;
 
-		if (!wasLoaded)
-		{
-			std::shared_ptr<Texture> texture = std::make_shared<Texture>();
-			texture->id = TextureFromFile(texturePath.C_Str());
-			texture->type = textureName;
-			texture->path = texturePath.C_Str();
+		case aiTextureType_SPECULAR:
+			return defaultSpecularTexture;
 
-			LOG(std::format("Texture {} loaded successfully with OpenGL ID={}", texture->path, texture->id), Logger::Level::Info);
-
-			textures.push_back(texture);
-			loadedTextures.push_back(texture);
+		default:
+			LOG(std::format("Invalid texture of type ( {} ). The texture will be set to the default value of the diffuse texture", GetTypeName(type)), Logger::Level::Warning);
+			return defaultDiffuseTexture;
 		}
 	}
-	return textures;
+
+	if (material->GetTextureCount(type) > 1)
+		LOG(std::format("Multiple textures of type ( {} ) have been detected inside material ( {} ). Only the first texture will be loaded", GetTypeName(type), material->GetName().C_Str()), Logger::Level::Warning);
+
+	aiString texturePath;
+	material->GetTexture(type, 0, &texturePath);
+
+	for (size_t j = 0; j < loadedTextures.size(); j++)
+		if (strcmp(loadedTextures[j]->path.data(), texturePath.C_Str()) == 0)
+			return loadedTextures[j];
+
+	texture = std::make_shared<Texture>();
+	texture->id = TextureFromFile(texturePath.C_Str());
+	texture->type = GetTypeName(type);
+	texture->path = texturePath.C_Str();
+
+	loadedTextures.push_back(texture);
+
+	LOG(std::format("Texture ( {} ) loaded successfully with OpenGL ID={}", texture->path, texture->id), Logger::Level::Info);
+
+	return texture;
 }
 
 uint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
@@ -207,15 +242,26 @@ uint ModelLoader::TextureFromFile(const std::string& fileName, bool gamma)
 	return textureID;
 }
 
-void ModelLoader::LoadDefaultTextures()
+void ModelLoader::LoadDefaults()
 {
-	SetCurrentDirectory("Models\\standalone-textures\\default.jpg");
+	SetCurrentDirectory(names::textures::defaults::dirPath + "\\" + names::textures::defaults::diffuse);
 
 	defaultDiffuseTexture = std::make_shared<Texture>();
-
-	defaultDiffuseTexture->id = TextureFromFile("default.jpg");
+	defaultDiffuseTexture->id = TextureFromFile(names::textures::defaults::diffuse);
 	defaultDiffuseTexture->type = names::textures::diffuse;
-	defaultDiffuseTexture->path = "default.jpg";
+	defaultDiffuseTexture->path = names::textures::defaults::diffuse;
+
+	defaultSpecularTexture = std::make_shared<Texture>();
+	defaultSpecularTexture->id = TextureFromFile(names::textures::defaults::specular);
+	defaultSpecularTexture->type = names::textures::diffuse;
+	defaultSpecularTexture->path = names::textures::defaults::specular;
+
+	defaultMaterial.diffuseTexture = defaultDiffuseTexture;
+	defaultMaterial.specularTexture = defaultSpecularTexture;
+	defaultMaterial.ambientColor = glm::vec3(1.0f);
+	defaultMaterial.diffuseColor = glm::vec3(1.0f);
+	defaultMaterial.specularColor = glm::vec3(1.0f);
+	defaultMaterial.specularExponent = 32;
 
 	defaultTexturesLoaded = true;
 }

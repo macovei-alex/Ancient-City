@@ -5,6 +5,7 @@
 #include <glfw3.h>
 #include <glm.hpp>
 #include <assimp/types.h>
+#include <assimp/material.h>
 #include <format>
 #include <filesystem>
 
@@ -23,6 +24,7 @@ namespace fs = std::filesystem;
 
 glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other);
 glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other);
+glm::vec3& operator+=(glm::vec3& vec, const aiColor4D& other);
 glm::vec3 operator*(const glm::mat4& mat, const glm::vec3& vec);
 glm::vec3 operator*(const glm::mat4& mat, const aiVector3D& vec);
 typedef unsigned int uint;
@@ -36,4 +38,5 @@ bool GLLogCall(const char* function, const char* file, int line);
 std::string_view GetKeyPressed(int key);
 std::string TrimBeginEnd(const std::string& str, const std::string& beginning, const std::string& end);
 glm::vec3 Rotate(const glm::vec3& vec, const glm::vec3& rotation);
+std::string_view GetTypeName(aiTextureType type);
 

@@ -8,7 +8,7 @@
 class Batch
 {
 public:
-	static std::vector<Batch*> SplitToBatches(const std::vector<Model*>& models);
+	static std::vector<Batch*> SplitIntoBatches(const std::vector<Model*>& models);
 
 public:
 	Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& matrices);
@@ -22,11 +22,11 @@ public:
 	void DepthRender() const;
 
 private:
-	void InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const std::vector<std::shared_ptr<Texture>>& texture);
+	void InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const Material& material);
 
 private:
 	uint VAO;
 	uint indexCount;
-	std::vector<std::shared_ptr<Texture>> textures;
+	Material material;
 };
 

@@ -20,6 +20,14 @@ glm::vec3& operator+=(glm::vec3& vec, const aiVector3D& other)
 	return vec;
 }
 
+glm::vec3& operator+=(glm::vec3& vec, const aiColor4D& other)
+{
+	vec.r += other.r;
+	vec.g += other.g;
+	vec.b += other.b;
+	return vec;
+}
+
 glm::vec3 operator*(const glm::mat4& mat, const glm::vec3& vec)
 {
 	return mat * glm::vec4(vec, 1.0f);
@@ -174,4 +182,17 @@ glm::vec3 Rotate(const glm::vec3& vec, const glm::vec3& rotation)
 	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
 	return glm::vec3(rotationMatrix * glm::vec4(vec, 1.0f));
+}
+
+std::string_view GetTypeName(aiTextureType type)
+{
+	switch (type)
+	{
+		case aiTextureType_DIFFUSE:
+			return "diffuse";
+		case aiTextureType_SPECULAR:
+			return "specular";
+		default:
+			return "invalid";
+	}
 }

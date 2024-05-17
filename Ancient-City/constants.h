@@ -26,6 +26,13 @@ namespace names
 		inline const std::string specular = "SpecularTexture";
 		inline const std::string normal = "NormalTexture";
 		inline const std::string height = "HeightTexture";
+
+		namespace defaults
+		{
+			inline const std::string dirPath = "Models\\standalone-textures";
+			inline const std::string diffuse = "default.jpg";
+			inline const std::string specular = "default.jpg";
+		}
 	}
 
 	namespace locations
@@ -40,8 +47,12 @@ namespace names
 		constexpr char AmbientIntensity[] = "AmbientIntensity";
 		constexpr char DiffuseIntensity[] = "DiffuseIntensity";
 		constexpr char SpecularIntensity[] = "SpecularIntensity";
-		constexpr char SpecularExponent[] = "SpecularExponent";
 		constexpr char DiffuseTexture[] = "DiffuseTexture";
+		constexpr char SpecularTexture[] = "SpecularTexture";
+		constexpr char AmbientColor[] = "Material.AmbientColor";
+		constexpr char DiffuseColor[] = "Material.DiffuseColor";
+		constexpr char SpecularColor[] = "Material.SpecularColor";
+		constexpr char SpecularExponent[] = "Material.SpecularExponent";
 		constexpr char LightSpaceMatrix[] = "LightSpaceMatrix";
 		constexpr char VP[] = "VP";
 		constexpr char MVP[] = "MVP";
@@ -53,5 +64,14 @@ namespace names
 		constexpr char ParticleColorBlendPercent[] = "ParticleColorBlendPercent";
 		constexpr char ParticleAlpha[] = "ParticleAlpha";
 		constexpr char ObjectColor[] = "ObjectColor";
+	}
+}
+
+namespace values
+{
+	namespace textureUnits
+	{
+		inline uint diffuse = 0;
+		inline uint specular = 1;
 	}
 }

@@ -36,7 +36,7 @@ ParticleGenerator::ParticleGenerator()
 	: particleModel()
 {
 	InitMembersDefault();
-	particleModel.meshes.push_back(std::make_shared<Mesh>(Mesh(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, std::vector<std::shared_ptr<Texture>>())));
+	particleModel.meshes.push_back(std::make_shared<Mesh>(DEFAULT_MODEL_VERTICES, DEFAULT_MODEL_INDICES, Material()));
 }
 
 ParticleGenerator::ParticleGenerator(const Model& particleModel)
@@ -78,7 +78,7 @@ void ParticleGenerator::RenderParticles(const Shader& particleShader) const
 			particleShader.SetParticleAlpha(lifePercent);
 		}
 
-		particleModel.Render(particleShader);
+		particleModel.DepthRender();
 	}
 
 	glDisable(GL_BLEND);

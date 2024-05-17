@@ -4,7 +4,6 @@
 #pragma comment (lib, "assimp-vc143-mt.lib")
 
 #include "utils.h"
-#include "KeyBinder.tpp"
 #include "Camera.h"
 #include "Shader.h"
 #include "Sun.h"
@@ -235,7 +234,7 @@ static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompil
 		targetedShaderPtr = &shadowShaders;
 	else if (shaderFilesIdentifier == names::shaders::depthMap)
 		targetedShaderPtr = &depthMapShaders;
-	else if(shaderFilesIdentifier == "cube")
+	else if(shaderFilesIdentifier == names::shaders::cube)
 		targetedShaderPtr = &cubeShaders;
 
 	else
@@ -309,8 +308,11 @@ static void SetupWorld()
 		.WithScale(0.2f);
 	particleGenerators.push_back(gen);
 
-	batches = Batch::SplitToBatches(models);
-	LOG("Loaded meshes into batches", Logger::Level::Info);
+	if (options.batchRendering)
+	{
+		batches = Batch::SplitIntoBatches(models);
+		LOG("Loaded meshes into batches", Logger::Level::Info);
+	}
 }
 
 static void RenderFrame()
@@ -366,7 +368,6 @@ static void RenderFrame()
 	shadowShaders->SetAmbientIntensity(sun->light.ambientIntensity);
 	shadowShaders->SetDiffuseIntensity(sun->light.diffuseIntensity);
 	shadowShaders->SetSpecularIntensity(sun->light.specularIntensity);
-	shadowShaders->SetSpecularExponent(sun->light.specularExponent);
 
 	for (const auto& model : models)
 	{
@@ -385,7 +386,7 @@ static void RenderFrame()
 
 	modelShaders->Use();
 	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->model.modelMatrix);
-	sun->Render(*modelShaders);
+	sun->DepthRender();
 
 	particleShaders->Use();
 	particleShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
@@ -422,7 +423,7 @@ static void BatchRenderFrame()
 
 	modelShaders->Use();
 	modelShaders->SetMVP(camera->GetProjectionMatrix() * camera->GetViewMatrix() * sun->model.modelMatrix);
-	sun->Render(*modelShaders);
+	sun->DepthRender();
 
 	particleShaders->Use();
 	particleShaders->SetVP(camera->GetProjectionMatrix() * camera->GetViewMatrix());
@@ -460,7 +461,7 @@ int main(int argc, char* argv[])
 	InitializeGraphics();
 
 	LoadShader(names::shaders::model, true);
-	LoadShader(names::shaders::texture, true);
+	LoadShader(names::shaders::texture, false);
 	LoadShader(names::shaders::skybox, true);
 	LoadShader(names::shaders::particle, true);
 	LoadShader(names::shaders::depthMap, true);

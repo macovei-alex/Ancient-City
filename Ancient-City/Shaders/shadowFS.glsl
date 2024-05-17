@@ -1,5 +1,14 @@
 #version 330 core
 
+struct MaterialStruct
+{
+	vec3 AmbientColor;
+	vec3 DiffuseColor;
+	vec3 SpecularColor;
+	int SpecularExponent;
+};
+uniform MaterialStruct Material;
+
 in vec3 MidPosition;
 in vec3 MidNormal;
 in vec2 MidTexCoords;
@@ -14,9 +23,9 @@ uniform vec3 ViewPosition;
 uniform float AmbientIntensity;
 uniform float DiffuseIntensity;
 uniform float SpecularIntensity;
-uniform int SpecularExponent;
 
 uniform sampler2D DiffuseTexture;
+uniform sampler2D SpecularTexture;
 uniform sampler2D ShadowMap;
 
 float ShadowCalculation(vec4 lightSpacePosition)
@@ -39,17 +48,19 @@ void main()
 	vec3 normal = normalize(MidNormal);
 
 	// ambient
-	vec3 ambient = AmbientIntensity * LightColor;
+	vec3 ambient = AmbientIntensity * Material.AmbientColor * LightColor;
 
 	// diffuse
 	float diffuseValue = max(dot(LightDirection, normal), 0.0);
-	vec3 diffuse = DiffuseIntensity * diffuseValue * LightColor;
+	vec3 diffuseTexture = texture(DiffuseTexture, MidTexCoords).rgb;
+	vec3 diffuse = DiffuseIntensity * diffuseValue * Material.DiffuseColor * LightColor;
 
 	// specular
 	vec3 viewDirection = normalize(ViewPosition - MidPosition);
 	vec3 reflectionDirection = reflect(-LightDirection, normal);
-	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), SpecularExponent);
-	vec3 specular = SpecularIntensity * specularPower * LightColor;
+	float specularPower = pow(max(dot(viewDirection, reflectionDirection), 0.0), Material.SpecularExponent);
+	vec3 specularTexture = texture(SpecularTexture, MidTexCoords).rgb;
+	vec3 specular = SpecularIntensity * specularPower * Material.SpecularColor * LightColor;
 
 	vec4 texColor = texture(DiffuseTexture, MidTexCoords);
 	// float shadow = ShadowCalculation(MidLightSpacePosition);
