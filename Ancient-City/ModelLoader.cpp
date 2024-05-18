@@ -122,17 +122,26 @@ std::shared_ptr<Mesh> ModelLoader::ProcessMesh(aiMesh* mesh, const aiScene* scen
 	}
 
 	aiMaterial* pMaterial = scene->mMaterials[mesh->mMaterialIndex];
-	Material material = LoadMaterial(pMaterial);
+	std::shared_ptr<Material> material = LoadMaterial(pMaterial);
 
 	return std::make_shared<Mesh>(vertices, indices, material);
 }
 
-Material ModelLoader::LoadMaterial(aiMaterial* pMaterial)
+std::shared_ptr<Material> ModelLoader::LoadMaterial(aiMaterial* pMaterial)
 {
-	Material material;
-	material.diffuseTexture = LoadTexture(pMaterial, aiTextureType_DIFFUSE);
-	material.specularTexture = LoadTexture(pMaterial, aiTextureType_SPECULAR);
-	LoadColors(pMaterial, material);
+	for(size_t i = 0; i < loadedMaterials.size(); i++)
+		if (strcmp(loadedMaterials[i]->name.data(), pMaterial->GetName().C_Str()) == 0)
+			return loadedMaterials[i];
+
+	std::shared_ptr<Material> material = std::make_shared<Material>();
+	material->name = pMaterial->GetName().C_Str();
+	material->diffuseTexture = LoadTexture(pMaterial, aiTextureType_DIFFUSE);
+	material->specularTexture = LoadTexture(pMaterial, aiTextureType_SPECULAR);
+	LoadColors(pMaterial, *material);
+
+	loadedMaterials.push_back(material);
+
+	LOG(std::format("New material ( {} ) loaded successfully", material->name), Logger::Level::Info);
 
 	return material;
 }
@@ -162,8 +171,6 @@ void ModelLoader::LoadColors(aiMaterial* pMaterial, Material& outMaterial)
 
 std::shared_ptr<Texture> ModelLoader::LoadTexture(aiMaterial* material, aiTextureType type)
 {
-	std::shared_ptr<Texture> texture;
-
 	if (material->GetTextureCount(type) == 0)
 	{
 		switch (type)
@@ -190,7 +197,7 @@ std::shared_ptr<Texture> ModelLoader::LoadTexture(aiMaterial* material, aiTextur
 		if (strcmp(loadedTextures[j]->path.data(), texturePath.C_Str()) == 0)
 			return loadedTextures[j];
 
-	texture = std::make_shared<Texture>();
+	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 	texture->id = TextureFromFile(texturePath.C_Str());
 	texture->type = GetTypeName(type);
 	texture->path = texturePath.C_Str();
@@ -250,18 +257,22 @@ void ModelLoader::LoadDefaults()
 	defaultDiffuseTexture->id = TextureFromFile(names::textures::defaults::diffuse);
 	defaultDiffuseTexture->type = names::textures::diffuse;
 	defaultDiffuseTexture->path = names::textures::defaults::diffuse;
+	loadedTextures.push_back(defaultDiffuseTexture);
 
 	defaultSpecularTexture = std::make_shared<Texture>();
 	defaultSpecularTexture->id = TextureFromFile(names::textures::defaults::specular);
 	defaultSpecularTexture->type = names::textures::diffuse;
 	defaultSpecularTexture->path = names::textures::defaults::specular;
+	loadedTextures.push_back(defaultSpecularTexture);
 
-	defaultMaterial.diffuseTexture = defaultDiffuseTexture;
-	defaultMaterial.specularTexture = defaultSpecularTexture;
-	defaultMaterial.ambientColor = glm::vec3(1.0f);
-	defaultMaterial.diffuseColor = glm::vec3(1.0f);
-	defaultMaterial.specularColor = glm::vec3(1.0f);
-	defaultMaterial.specularExponent = 32;
+	defaultMaterial = std::make_shared<Material>();
+	defaultMaterial->diffuseTexture = defaultDiffuseTexture;
+	defaultMaterial->specularTexture = defaultSpecularTexture;
+	defaultMaterial->ambientColor = glm::vec3(1.0f);
+	defaultMaterial->diffuseColor = glm::vec3(1.0f);
+	defaultMaterial->specularColor = glm::vec3(1.0f);
+	defaultMaterial->specularExponent = 32;
+	loadedMaterials.push_back(defaultMaterial);
 
 	defaultTexturesLoaded = true;
 }

@@ -22,11 +22,11 @@ public:
 	void DepthRender() const;
 
 private:
-	void InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const Material& material);
+	void InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, std::shared_ptr<Material> material);
 
 private:
 	uint VAO;
 	uint indexCount;
-	Material material;
+	std::shared_ptr<Material> material;
 };
 

@@ -11,7 +11,7 @@ std::vector<Batch*> Batch::SplitIntoBatches(const std::vector<Model*>& models)
 	static const std::pair<uint, uint> defaultKey = { ModelLoader::defaultDiffuseTexture->id, ModelLoader::defaultSpecularTexture->id };
 
 	std::vector<Batch*> batches;
-	std::map<Material, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>> splitMeshes;
+	std::map<std::string, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>> splitMeshes;
 
 	for (Model* model : models)
 	{
@@ -19,10 +19,10 @@ std::vector<Batch*> Batch::SplitIntoBatches(const std::vector<Model*>& models)
 		{
 			Mesh* mesh = model->meshes[i].get();
 
-			if (splitMeshes.find(mesh->material) == splitMeshes.end())
-				splitMeshes.insert({ mesh->material, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
+			if (splitMeshes.find(mesh->material->name) == splitMeshes.end())
+				splitMeshes.insert({ mesh->material->name, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
 
-			auto& [meshes, matrices] = splitMeshes[mesh->material];
+			auto& [meshes, matrices] = splitMeshes[mesh->material->name];
 			meshes.push_back(mesh);
 			matrices.push_back(model->modelMatrix);
 		}
@@ -75,8 +75,8 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 			indices.push_back(newIndex);
 
 			// remove the weird artifact spanning across half the town
-			if (indexCount == 56286 && (newIndex == 37027 || newIndex == 37028 || newIndex == 37029))
-				indices.pop_back();
+			// if (indexCount == 56286 && (newIndex == 37027 || newIndex == 37028 || newIndex == 37029))
+				// indices.pop_back();
 		}
 
 		indexOffset += (uint)meshes[i]->vertices.size();
@@ -116,21 +116,21 @@ Batch::~Batch()
 
 void Batch::Render(const Shader& shader) const
 {
-	material.Bind(shader);
+	material->Bind(shader);
 
 	GLCall(glBindVertexArray(VAO));
-	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr));
 	GLCall(glBindVertexArray(0));
 }
 
 void Batch::DepthRender() const
 {
 	GLCall(glBindVertexArray(VAO));
-	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr));
 	GLCall(glBindVertexArray(0));
 }
 
-void Batch::InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const Material& material)
+void Batch::InitBuffers(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, std::shared_ptr<Material> material)
 {
 	GLCall(glGenVertexArrays(1, &VAO));
 	GLCall(glBindVertexArray(VAO));

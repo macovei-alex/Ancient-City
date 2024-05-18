@@ -3,7 +3,7 @@
 #include <vector>
 #include "constants.h"
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, const Material& material) noexcept
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices, std::shared_ptr<Material> material) noexcept
 	: vertices(vertices),
 	indices(indices),
 	material(material)
@@ -30,17 +30,17 @@ Mesh::Mesh(Mesh&& mesh) noexcept
 
 void Mesh::Render(const Shader& shader) const
 {
-	material.Bind(shader);
+	material->Bind(shader);
 
 	GLCall(glBindVertexArray(VAO));
-	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, nullptr));
 	GLCall(glBindVertexArray(0));
 }
 
 void Mesh::DepthRender() const
 {
 	GLCall(glBindVertexArray(VAO));
-	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, (int)indices.size(), GL_UNSIGNED_INT, nullptr));
 	GLCall(glBindVertexArray(0));
 }
 

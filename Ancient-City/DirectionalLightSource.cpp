@@ -35,13 +35,6 @@ void DirectionalLightSource::AddSpecularIntensity(float difference)
 		light.specularIntensity += difference;
 }
 
-void DirectionalLightSource::MultiplySpecularExponent(float difference)
-{
-	float total = light.specularExponent * difference;
-	if (0.0f <= total && total <= 256.0f)
-		light.specularExponent = (int)(light.specularExponent * difference);
-}
-
 glm::mat4 DirectionalLightSource::GetLightViewMatrix() const
 {
 	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), light.direction);

@@ -110,7 +110,7 @@ void Skybox::Render(Shader& skyboxShader, const Camera& camera) const
 
 	GLCall(glActiveTexture(GL_TEXTURE0));
 	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
-	GLCall(glDrawElements(GL_TRIANGLES, (GLsizei)Skybox::indices.size(), GL_UNSIGNED_INT, 0));
+	GLCall(glDrawElements(GL_TRIANGLES, (GLsizei)Skybox::indices.size(), GL_UNSIGNED_INT, nullptr));
 
 	GLCall(glBindVertexArray(0));
 

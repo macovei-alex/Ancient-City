@@ -21,7 +21,6 @@ public:
 	void AddAmbientIntensity(float difference);
 	void AddSpecularIntensity(float difference);
 	void AddDiffuseIntensity(float difference);
-	void MultiplySpecularExponent(float difference);
 	void RotateDirection(float x, float y, float z);
 	void RotateDirection(const glm::vec3& rotation);
 

@@ -9,15 +9,13 @@ struct LightAttributes
 	float ambientIntensity;
 	float diffuseIntensity;
 	float specularIntensity;
-	int specularExponent;
 
 	LightAttributes()
 		: direction(0.0f, 1.0f, 0.0f),
 		color(1.0f, 1.0f, 1.0f),
-		ambientIntensity(0.3f),
-		diffuseIntensity(0.3f),
-		specularIntensity(0.3f),
-		specularExponent(32)
+		ambientIntensity(0.2f),
+		diffuseIntensity(0.7f),
+		specularIntensity(0.3f)
 	{
 		// empty
 	}

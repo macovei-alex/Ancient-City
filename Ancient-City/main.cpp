@@ -127,10 +127,6 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 		sun->AddSpecularIntensity(0.1f);
 	else if (key == GLFW_KEY_N && action == GLFW_PRESS)
 		sun->AddSpecularIntensity(-0.1f);
-	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
-		sun->MultiplySpecularExponent(2.0f);
-	else if (key == GLFW_KEY_COMMA && action == GLFW_PRESS)
-		sun->MultiplySpecularExponent(0.5f);
 
 	else if (key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
 		sunStop = !sunStop;
@@ -412,7 +408,6 @@ static void BatchRenderFrame()
 	shadowShaders->SetAmbientIntensity(sun->light.ambientIntensity);
 	shadowShaders->SetDiffuseIntensity(sun->light.diffuseIntensity);
 	shadowShaders->SetSpecularIntensity(sun->light.specularIntensity);
-	shadowShaders->SetSpecularExponent(sun->light.specularExponent);
 
 	for (const auto& batch : batches)
 	{

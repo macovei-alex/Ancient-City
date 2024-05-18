@@ -20,7 +20,7 @@ public:
 private:
 	static void ProcessNode(Model& model, aiNode* node, const aiScene* scene, const glm::mat4& onLoadTransforms);
 	static std::shared_ptr<Mesh> ProcessMesh(aiMesh* mesh, const aiScene* scene, const glm::mat4& onLoadTransforms);
-	static Material LoadMaterial(aiMaterial* material);
+	static std::shared_ptr<Material> LoadMaterial(aiMaterial* material);
 	static void LoadColors(aiMaterial* pMaterial, Material& putMaterial);
 	static std::shared_ptr<Texture> LoadTexture(aiMaterial* material, aiTextureType type);
 	static GLuint TextureFromFile(const std::string& fileName, bool gamma = true);
@@ -29,9 +29,10 @@ private:
 
 public:
 	inline static std::vector<std::shared_ptr<Texture>> loadedTextures = {};
+	inline static std::vector<std::shared_ptr<Material>> loadedMaterials = {};
 	inline static std::shared_ptr<Texture> defaultDiffuseTexture = nullptr;
 	inline static std::shared_ptr<Texture> defaultSpecularTexture = nullptr;
-	inline static Material defaultMaterial;
+	inline static std::shared_ptr<Material> defaultMaterial;
 
 private:
 	inline static fs::path currentDirectory = "";

@@ -7,6 +7,8 @@
 
 struct Material
 {
+	std::string name;
+
 	glm::vec3 ambientColor;
 	glm::vec3 diffuseColor;
 	glm::vec3 specularColor;
@@ -15,7 +17,7 @@ struct Material
 	std::shared_ptr<Texture> diffuseTexture;
 	std::shared_ptr<Texture> specularTexture;
 
-	inline Material() : id(nextID++),
+	inline Material() :
 		ambientColor(0.0f), diffuseColor(0.0f), specularColor(0.0f), specularExponent(32),
 		diffuseTexture(nullptr), specularTexture(nullptr) {}
 
@@ -47,12 +49,4 @@ struct Material
 		specularTexture->Bind(values::textureUnits::specular);
 		shader.SetSpecularTexture(values::textureUnits::specular);
 	}
-
-	inline uint GetID() const { return id; }
-
-private:
-	inline static uint nextID = 1;
-
-private:
-	uint id;
 };
