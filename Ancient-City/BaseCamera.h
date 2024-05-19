@@ -15,6 +15,7 @@ public:
 	glm::mat4 CalculateViewMatrix() const;
 	glm::mat4 CalculateVP() const;
 	inline glm::vec3 GetPosition() const { return position; }
+	inline glm::vec3 GetForward() const { return forward; }
 
 	inline void SetPosition(const glm::vec3& position) { this->position = position; }
 	inline void SetForward(const glm::vec3& forward) { this->forward = glm::normalize(forward); }

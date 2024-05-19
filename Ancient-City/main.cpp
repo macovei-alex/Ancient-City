@@ -162,14 +162,24 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	else if (key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
 		worldState.sunStop = !worldState.sunStop;
 
-	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
-	{
-		auto fires = ParticleGenerator::NewFire(camera->GetPosition());
-		particleGenerators.insert(particleGenerators.end(), fires.begin(), fires.end());
-	}
-
 	if (action == GLFW_PRESS)
 		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
+}
+
+static void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+	{
+		glm::vec3 position = camera->GetPosition();
+		glm::vec3 forward = camera->GetForward();
+		float param = -position.y / forward.y;
+		if (param > 0)
+		{
+			glm::vec3 intersect = position + param * forward;
+			auto fires = ParticleGenerator::NewFire(intersect);
+			particleGenerators.insert(particleGenerators.end(), fires.begin(), fires.end());
+		}
+	}
 }
 
 static void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
@@ -223,6 +233,7 @@ static GLFWwindow* InitWindow()
 	glfwSetFramebufferSizeCallback(window, FramebufferSizeCallback);
 	glfwSetCursorPosCallback(window, MouseCallback);
 	glfwSetScrollCallback(window, ScrollCallback);
+	glfwSetMouseButtonCallback(window, MouseButtonCallback);
 
 	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
