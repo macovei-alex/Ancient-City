@@ -46,7 +46,7 @@ scale: 6.0
 particle generator 1
 speed modifier: 10.0
 lifetime: 10.0
-position: -200.0 15.0 -10.0
+position: -160.0 15.0 -60.0
 particle start color: 1.0 0.0 0.0
 particle end color: 1.0 0.3 0.0
 do particle alpha fade: true
@@ -56,7 +56,7 @@ scale: 4.0
 particle generator 2
 speed modifier: 10.0
 lifetime: 10.0
-position: -200.0 20.0 -10.0
+position: -160.0 20.0 -60.0
 particle start color: 1.0 1.0 0.0
 particle end color: 0.5 0.5 0.0
 do particle alpha fade: true
@@ -66,7 +66,7 @@ scale: 4.0
 particle generator 3
 speed modifier: 10.0
 lifetime: 20.0
-position: -200.0 35.0 -5.0
+position: -160.0 35.0 -55.0
 particle start color: 0.1 0.1 0.1
 particle end color: 0.3 0.3 0.3
 do particle alpha fade: true
@@ -76,7 +76,7 @@ scale: 6.0
 particle generator 4
 speed modifier: 10.0
 lifetime: 20.0
-position: -200.0 35.0 -15.0
+position: -160.0 35.0 -65.0
 particle start color: 0.1 0.1 0.1
 particle end color: 0.3 0.3 0.3
 do particle alpha fade: true
