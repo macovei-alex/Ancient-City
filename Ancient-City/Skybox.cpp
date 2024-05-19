@@ -93,14 +93,14 @@ Skybox::Skybox(const std::string& dirPath)
 	LOG("Successfuly created the sky box", Logger::Level::Info);
 }
 
-void Skybox::Render(Shader& skyboxShader, const Camera& camera) const
+void Skybox::Render(Shader& skyboxShader, BaseCamera* camera) const
 {
 	skyboxShader.Use();
 	GLCall(glDepthFunc(GL_LEQUAL));
 	GLCall(glCullFace(GL_FRONT));
 
-	glm::mat4 view = glm::mat4(glm::mat3(camera.CalculateViewMatrix()));
-	glm::mat4 projection = camera.CalculateProjectionMatrix();
+	glm::mat4 view = glm::mat4(glm::mat3(camera->CalculateViewMatrix()));
+	glm::mat4 projection = camera->CalculateProjectionMatrix();
 
 	skyboxShader.SetMat4("ViewMatrix", view);
 	skyboxShader.SetMat4("ProjectionMatrix", projection);

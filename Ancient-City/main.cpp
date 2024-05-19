@@ -4,7 +4,8 @@
 #pragma comment (lib, "assimp-vc143-mt.lib")
 
 #include "utils.h"
-#include "Camera.h"
+#include "FlyingCamera.h"
+#include "WalkingCamera.h"
 #include "Shader.h"
 #include "Sun.h"
 #include "ModelLoader.h"
@@ -47,7 +48,7 @@ Options options;
 WorldState worldState;
 
 Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr, * cubeShaders = nullptr, * quadTextureShaders = nullptr;
-Camera* camera = nullptr;
+BaseCamera* camera = nullptr;
 Sun* sun = nullptr;
 Skybox* skybox = nullptr;
 
@@ -99,9 +100,9 @@ static void PerformKeysActions(GLFWwindow* window)
 	float time = worldState.deltaTime;
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		time *= Camera::SPEED_BOOST_MULTIPLIER;
+		time *= camera->speedBoostMultiplier;
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-		time *= Camera::SPEED_SLOW_MULTIPLIER;
+		time *= camera->speedSlowMultiplier;
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		camera->MoveForward(time);
@@ -134,7 +135,7 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	{
 		int width, height;
 		glfwGetWindowSize(window, &width, &height);
-		camera->Set(width, height, Camera::START_POSITION);
+		camera->Set(width, height, BaseCamera::START_POSITION);
 	}
 
 	else if (key == GLFW_KEY_Z && action == GLFW_PRESS)
@@ -299,7 +300,7 @@ static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompil
 
 static void SetupWorld()
 {
-	camera = new Camera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, Camera::START_POSITION);
+	camera = new WalkingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
 	skybox = new Skybox("Models\\Skybox");
 
 	glm::mat4 matrix = glm::mat4(1.0f);
@@ -364,7 +365,7 @@ static void RenderFrame()
 	camera->SetViewPort();
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-	skybox->Render(*skyboxShaders, *camera);
+	skybox->Render(*skyboxShaders, camera);
 
 	shadowShaders->Use();
 	sun->GetShadowMap().BindForRead(*shadowShaders);
@@ -410,7 +411,7 @@ static void BatchRenderFrame()
 	camera->SetViewPort();
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-	skybox->Render(*skyboxShaders, *camera);
+	skybox->Render(*skyboxShaders, camera);
 
 	shadowShaders->Use();
 	// sun->GetShadowMap().BindForRead(*shadowShaders);

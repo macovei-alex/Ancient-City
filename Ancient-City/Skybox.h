@@ -4,7 +4,7 @@
 #include <string>
 
 #include "Shader.h"
-#include "Camera.h"
+#include "BaseCamera.h"
 
 class Skybox
 {
@@ -12,7 +12,7 @@ public:
 	Skybox(const std::string& textureDirectory);
 	~Skybox() = default;
 
-	void Render(Shader& skyboxShader, const Camera& camera) const;
+	void Render(Shader& skyboxShader, BaseCamera* camera) const;
 
 private:
 	unsigned int VAO, VBO, EBO, textureID;

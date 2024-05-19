@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils.h"
-#include "Camera.h"
+#include "FlyingCamera.h"
 
 class Model;
 class DirectionalLightSource;

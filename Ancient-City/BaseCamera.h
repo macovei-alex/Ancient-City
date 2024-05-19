@@ -1,13 +1,14 @@
 #pragma once
 
 #include "utils.h"
-#include <glm.hpp>
-#include "gtc/matrix_transform.hpp"
 
-class Camera
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
+
+class BaseCamera
 {
 public:
-	Camera(int width, int height, const glm::vec3& position);
+	BaseCamera(int width, int height, const glm::vec3& position);
 	void Set(int width, int height, const glm::vec3& position);
 
 	glm::mat4 CalculateProjectionMatrix() const;
@@ -19,7 +20,7 @@ public:
 	inline void SetLastMousePos(float x, float y) { lastX = x; lastY = y; }
 	inline void SetViewPort() { glViewport(0, 0, screenWidth, screenHeight); }
 
-	void MoveCamera(float xOffset, float yOffset, float zOffset);
+	virtual void MoveCamera(float xOffset, float yOffset, float zOffset) = 0;
 
 	inline void MoveForward(float distance) { MoveCamera(0, 0, distance); }
 	inline void MoveBackward(float distance) { MoveCamera(0, 0, -distance); }
@@ -31,7 +32,7 @@ public:
 	void HandleMouseMovement(float xPos, float yPos);
 	void HandleMouseScroll(float yOffset);
 
-private:
+protected:
 	void ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
 	void ProcessMouseScroll(float yOffset);
 	void UpdateCameraVectors();
@@ -46,6 +47,10 @@ private:
 
 	bool isFirstMouseMove = true;
 	float lastX = 0.0f, lastY = 0.0f;
+
+public:
+	float speedBoostMultiplier = BaseCamera::SPEED_BOOST_MULTIPLIER;
+	float speedSlowMultiplier = BaseCamera::SPEED_SLOW_MULTIPLIER;
 
 public:
 	inline static const float Z_NEAR = 0.1f;

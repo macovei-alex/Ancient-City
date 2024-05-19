@@ -1,15 +1,13 @@
-#include "Camera.h"
+#include "BaseCamera.h"
 
-#include <gtc/matrix_transform.hpp>
-
-Camera::Camera(int width, int height, const glm::vec3& position)
+BaseCamera::BaseCamera(int width, int height, const glm::vec3& position)
 {
 	lastX = (float)INT_MAX;
 	lastY = (float)INT_MAX;
 	Set(width, height, position);
 }
 
-void Camera::Set(int width, int height, const glm::vec3& position)
+void BaseCamera::Set(int width, int height, const glm::vec3& position)
 {
 	if (width == 0 || height == 0)
 	{
@@ -20,11 +18,11 @@ void Camera::Set(int width, int height, const glm::vec3& position)
 	isPerspective = true;
 	worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	yaw = Camera::YAW;
-	pitch = Camera::PITCH;
-	fovY = Camera::FOV;
-	zNear = Camera::Z_NEAR;
-	zFar = Camera::Z_FAR;
+	yaw = BaseCamera::YAW;
+	pitch = BaseCamera::PITCH;
+	fovY = BaseCamera::FOV;
+	zNear = BaseCamera::Z_NEAR;
+	zFar = BaseCamera::Z_FAR;
 
 	this->screenWidth = width;
 	this->screenHeight = height;
@@ -41,7 +39,7 @@ void Camera::Set(int width, int height, const glm::vec3& position)
 	UpdateCameraVectors();
 }
 
-glm::mat4 Camera::CalculateProjectionMatrix() const
+glm::mat4 BaseCamera::CalculateProjectionMatrix() const
 {
 	if (isPerspective)
 	{
@@ -52,36 +50,29 @@ glm::mat4 Camera::CalculateProjectionMatrix() const
 	static const float scaleFactor = 10.0f;
 	return glm::ortho(
 		-screenWidth / scaleFactor, screenWidth / scaleFactor,
-		-screenHeight / scaleFactor, screenHeight / scaleFactor, 
+		-screenHeight / scaleFactor, screenHeight / scaleFactor,
 		zNear, zFar);
 }
 
-glm::mat4 Camera::CalculateViewMatrix() const
+glm::mat4 BaseCamera::CalculateViewMatrix() const
 {
 	return glm::lookAt(position, position + forward, up);
 }
 
-void Camera::MoveCamera(float xOffset, float yOffset, float zOffset)
-{
-	position += xOffset * right * Camera::SPEED_FACTOR;
-	position += yOffset * worldUp * Camera::SPEED_FACTOR;
-	position += zOffset * forward * Camera::SPEED_FACTOR;
-}
-
-void Camera::HandleMouseMovement(float deltaX, float deltaY)
+void BaseCamera::HandleMouseMovement(float deltaX, float deltaY)
 {
 	ProcessMouseMovement((deltaX - lastX) * MOUSE_SENSITIVITY, (lastY - deltaY) * MOUSE_SENSITIVITY);
 	SetLastMousePos(deltaX, deltaY);
 	UpdateCameraVectors();
 }
 
-void Camera::HandleMouseScroll(float yOffset)
+void BaseCamera::HandleMouseScroll(float yOffset)
 {
 	ProcessMouseScroll(yOffset);
 	UpdateCameraVectors();
 }
 
-void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)
+void BaseCamera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPitch)
 {
 	if (isFirstMouseMove)
 	{
@@ -101,9 +92,9 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool constrainPi
 	}
 }
 
-void Camera::ProcessMouseScroll(float yOffset)
+void BaseCamera::ProcessMouseScroll(float yOffset)
 {
-	fovY -= Camera::MOUSE_SCROLL_MULTIPLIER * yOffset;
+	fovY -= BaseCamera::MOUSE_SCROLL_MULTIPLIER * yOffset;
 
 	if (fovY <= 1.0f)
 		fovY = 1.0f;
@@ -111,7 +102,7 @@ void Camera::ProcessMouseScroll(float yOffset)
 		fovY = 70.0f;
 }
 
-void Camera::UpdateCameraVectors()
+void BaseCamera::UpdateCameraVectors()
 {
 	forward.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	forward.y = sin(glm::radians(pitch));
