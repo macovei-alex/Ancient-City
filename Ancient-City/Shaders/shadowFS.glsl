@@ -51,7 +51,7 @@ void main()
 	vec3 ambient = AmbientIntensity * Material.AmbientColor * LightColor;
 
 	// diffuse
-	float diffusePower = max(dot(LightDirection, normal), 0.0);
+	float diffusePower = max(dot(LightDirection	, normal), 0.0);
 	vec3 diffuseTexture = texture(DiffuseTexture, MidTexCoords).rgb;
 	vec3 diffuse = DiffuseIntensity * diffusePower * Material.DiffuseColor * LightColor * diffuseTexture;
 
@@ -62,9 +62,12 @@ void main()
 	vec3 specularTexture = texture(SpecularTexture, MidTexCoords).rgb;
 	vec3 specular = SpecularIntensity * specularPower * Material.SpecularColor * LightColor * specularTexture;
 
-	float shadow = ShadowCalculation(MidLightSpacePosition);
-	vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
-	// vec3 result = ambient + diffuse + specular;
+	// with shadows
+	// float shadow = ShadowCalculation(MidLightSpacePosition);
+	// vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
+	
+	// without shadows
+	vec3 result = ambient + diffuse + specular;
 
 	OutColor = vec4(result, 1.0);
 }

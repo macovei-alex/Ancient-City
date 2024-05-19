@@ -7,6 +7,7 @@ class Sun : public DirectionalLightSource
 {
 public:
 	Sun(const Model& model);
+	Sun(Model&& model);
 
 	void Rotate(float x, float y, float z);
 	void Rotate(const glm::vec3& rotation);
@@ -18,9 +19,14 @@ public:
 	inline void Render(const Shader& shader) const { model.Render(shader); }
 	inline void DepthRender() const { model.DepthRender(); }
 
+private:
+	void RecalculateIntensity();
+
 public:
 	Model model;
 	float modelPositionMultiplier;
+	float startingDiffuseIntensity;
+	float startingSpecularIntensity;
 
 private:
 	float secondToHoursConversionRate = 1.0f;

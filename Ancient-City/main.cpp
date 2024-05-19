@@ -55,6 +55,26 @@ std::vector<Model*> models;
 std::vector<Batch*> batches;
 std::vector<ParticleGenerator*> particleGenerators;
 
+static void SetupOptions(int argc, char* argv[])
+{
+	if (argc == 1)
+		return;
+
+	for (int i = 1; i < argc; i++)
+	{
+		if (strcmp(argv[i], "-r") == 0 || strcmp(argv[i], "--hotRealoadShaders") == 0)
+		{
+			options.hotReloadShaders = true;
+			AddHotReloadDir(names::shaders::dirName + '\\');
+		}
+
+		else if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--batchRendering") == 0)
+		{
+			options.batchRendering = true;
+		}
+	}
+}
+
 static void DisplayFPS(double currentTime)
 {
 	static uint totalFrameCounter = 0;
@@ -97,15 +117,9 @@ static void PerformKeysActions(GLFWwindow* window)
 		camera->MoveDown(time);
 
 	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
 		sun->PassTime(time);
-		std::cout << sun->light.direction << std::endl;
-	}
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
 		sun->PassTime(-time);
-		std::cout << sun->light.direction << std::endl;
-	}
 }
 
 static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -161,7 +175,7 @@ static void ScrollCallback(GLFWwindow* window, double xoffset, double yOffset)
 	camera->HandleMouseScroll((float)yOffset);
 }
 
-static void InitializeGraphics()
+static void InitGraphics()
 {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_CULL_FACE);
@@ -173,7 +187,7 @@ static void InitializeGraphics()
 	glCullFace(GL_BACK);
 }
 
-static GLFWwindow* InitializeWindow()
+static GLFWwindow* InitWindow()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -293,46 +307,18 @@ static void SetupWorld()
 	matrix = glm::scale(matrix, glm::vec3(10.0f, 10.0f, 10.0f));
 	models.push_back(ModelLoader::LoadModel("Models\\Chinese-Town\\chinese town.obj", matrix));
 
-	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.002f);
-	sun = new Sun(*sphere);
-	sun->model.Scale(200.0f);
+	Model* sphere = ModelLoader::LoadModel("Models\\Sphere\\sphere.obj", 0.4f);
+	sun = new Sun(std::move(*sphere));
 
 	particleGenerators = ParticleGenerator::GetFromFile("Models\\particle generators.txt");
-
-	/*
-	auto gen = &(new ParticleGenerator(*sphere))
-		->WithSpeedModifier(2.0f)
-		.WithLifeTime(2.0f)
-		.WithPosition(-2.0f, 0.0f, -2.0f)
-		.WithParticleColor(1.0f, 0.5f, 0.0f)
-		.WithParticleAlphaFade(true);
-	particleGenerators.push_back(gen);
-
-	gen = &(new ParticleGenerator(*sphere))
-		->WithSpeedModifier(2.0f)
-		.WithLifeTime(2.0f)
-		.WithStartingParticleColor(1.0f, 0.2f, 0.0f)
-		.WithEndingParticleColor(0.0f, 0.5f, 0.7f)
-		.WithPosition(0.0f, 0.0f, -2.0f)
-		.WithScale(2.0f);
-	particleGenerators.push_back(gen);
-
-	gen = &(new ParticleGenerator())
-		->WithSpeedModifier(2.0f)
-		.WithLifeTime(2.0f)
-		.WithStartingParticleColor(0.0f, 0.5f, 0.7f)
-		.WithEndingParticleColor(1.0f, 0.2f, 0.0f)
-		.WithPosition(2.0f, 0.0f, -2.0f)
-		.WithParticleAlphaFade(true)
-		.WithScale(0.2f);
-	particleGenerators.push_back(gen);
-	*/
 
 	if (options.batchRendering)
 	{
 		batches = Batch::SplitIntoBatches(models);
-		LOG("Loaded meshes into batches", Logger::Level::Info);
+		LOG("Split meshes into batches", Logger::Level::Info);
 	}
+
+	delete sphere;
 }
 
 static void RenderFrame()
@@ -419,47 +405,7 @@ static void RenderFrame()
 
 static void BatchRenderFrame()
 {
-#ifdef TEMP ////////////////////////////////////////////////////////////////////////////
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glm::mat4 lightProjection = glm::ortho(-500.0f, 500.0f, -500.0f, 500.0f, 1.0f, 2000.0f);
-
-	glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), sun->light.direction));
-	glm::vec3 up = glm::normalize(glm::cross(sun->light.direction, right));
-	glm::mat4 lightView = glm::lookAt(sun->light.direction, glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
-	if (!worldState.sunStop)
-	{
-		std::cout << right << std::endl;
-		std::cout << up << std::endl;
-	}
-
-
-	GLCall(glViewport(0, 0, worldState.SHADOW_RES_WIDTH, worldState.SHADOW_RES_HEIGHT));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-	GLCall(glClear(GL_DEPTH_BUFFER_BIT));
-	//GLCall(glCullFace(GL_FRONT));
-
-	// render scene from light's point of view
-	depthMapShaders->Use();
-	depthMapShaders->SetLightSpaceMatrix(lightSpaceMatrix);
-	depthMapShaders->SetModelMatrix(glm::mat4(1.0f));
-	for (const auto& batch : batches)
-	{
-		batch->DepthRender();
-	}
-
-	//glCullFace(GL_BACK);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-#else
-
-	sun->WriteToShadowMap(*depthMapShaders, models);
-
-#endif /////////////////////////////////////////////////////////////////////////////////
+	// sun->WriteToShadowMap(*depthMapShaders, models);
 
 	camera->SetViewPort();
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
@@ -467,9 +413,8 @@ static void BatchRenderFrame()
 	skybox->Render(*skyboxShaders, *camera);
 
 	shadowShaders->Use();
-	sun->GetShadowMap().BindForRead(*shadowShaders);
+	// sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetVP(camera->CalculateProjectionMatrix() * camera->CalculateViewMatrix());
-	// shadowShaders->SetVP(lightProjection * lightView);
 	shadowShaders->SetLightDirection(sun->light.direction);
 	shadowShaders->SetLightColor(sun->light.color);
 	shadowShaders->SetViewPosition(camera->GetPosition());
@@ -478,9 +423,9 @@ static void BatchRenderFrame()
 	shadowShaders->SetSpecularIntensity(sun->light.specularIntensity);
 	shadowShaders->SetModelMatrix(glm::mat4(1.0f));
 
-	GLCall(glActiveTexture(GL_TEXTURE0 + values::textureUnits::shadowMap));
-	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
-	shadowShaders->SetShadowMap(values::textureUnits::shadowMap);
+	// GLCall(glActiveTexture(GL_TEXTURE0 + values::textureUnits::shadowMap));
+	// GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
+	// shadowShaders->SetShadowMap(values::textureUnits::shadowMap);
 
 	for (const auto& batch : batches)
 	{
@@ -500,63 +445,16 @@ static void BatchRenderFrame()
 	}
 }
 
-uint quadVAO, quadVBO;
-
-#ifdef TEMP
-void renderQuad()
-{
-	if (quadVAO == 0)
-	{
-		float quadVertices[] = {
-			// positions        // texture Coords
-			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
-			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
-			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		};
-		// setup plane VAO
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	}
-
-	glBindVertexArray(quadVAO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glBindVertexArray(0);
-}
-#endif
-
 int main(int argc, char* argv[])
 {
-	if (argc > 1)
-	{
-		for (int i = 1; i < argc; i++)
-		{
-			if (strcmp(argv[i], "-r") == 0 || strcmp(argv[i], "--hotRealoadShaders") == 0)
-			{
-				options.hotReloadShaders = true;
-				AddHotReloadDir(names::shaders::dirName + '\\');
-			}
+	SetupOptions(argc, argv);
 
-			if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--batchRendering") == 0)
-			{
-				options.batchRendering = true;
-			}
-		}
-	}
-
-	GLFWwindow* window = InitializeWindow();
+	GLFWwindow* window = InitWindow();
 	if (window == nullptr)
 	{
 		return -1;
 	}
-	InitializeGraphics();
+	InitGraphics();
 
 	LoadShader(names::shaders::model, true);
 	LoadShader(names::shaders::texture, false);
@@ -569,34 +467,6 @@ int main(int argc, char* argv[])
 
 	SetupWorld();
 	worldState.Init();
-
-#ifdef TEMP ////////////////////////////////////////////////////////////////////////////
-
-	GLCall(glGenFramebuffers(1, &depthMapFBO));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-
-	GLCall(glGenTextures(1, &depthMap));
-	GLCall(glActiveTexture(GL_TEXTURE0 + values::textureUnits::shadowMap));
-	GLCall(glBindTexture(GL_TEXTURE_2D, depthMap));
-	GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, worldState.SHADOW_RES_WIDTH, worldState.SHADOW_RES_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT));
-	GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT));
-
-	float borderColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	GLCall(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor));
-
-	GLCall(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0));
-	GLCall(glDrawBuffer(GL_NONE));
-	GLCall(glReadBuffer(GL_NONE));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-
-	shadowShaders->Use();
-	shadowShaders->SetShadowMap(values::textureUnits::shadowMap);
-
-
-#endif ///////////////////////////////////////////////////////////////////////////////
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -629,48 +499,10 @@ int main(int argc, char* argv[])
 
 		PerformKeysActions(window);
 
-#ifndef TEMP
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glm::mat4 lightProjection = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 100.0f);
-		glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-
-		glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
-		GLCall(glViewport(0, 0, worldState.SHADOW_RES_WIDTH, worldState.SHADOW_RES_HEIGHT));
-		GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-		GLCall(glClear(GL_DEPTH_BUFFER_BIT));
-		GLCall(glDisable(GL_CULL_FACE));
-
-		depthMapShaders->Use();
-		depthMapShaders->SetLightSpaceMatrix(lightSpaceMatrix);
-
-		for (const auto& model : models)
-		{
-			depthMapShaders->SetModelMatrix(model->modelMatrix);
-			model->DepthRender();
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		GLCall(glViewport(0, 0, worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT));
-		GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
-
-		quadTextureShaders->Use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, depthMap);
-		quadTextureShaders->SetInt("Texture", depthMap);
-		renderQuad();
-
-#else
-
 		if (options.batchRendering)
 			BatchRenderFrame();
 		else
 			RenderFrame();
-
-#endif
 
 		DisplayFPS(currentFrame);
 
