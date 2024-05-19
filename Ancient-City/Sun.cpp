@@ -36,14 +36,6 @@ void Sun::PassTime(float time)
 	float deltaAngle = time * secondToHoursConversionRate * (360.0f / 24.0f);
 	Rotate(0.0f, 0.0f, deltaAngle);
 	RecalculateIntensity();
-
-	/*
-	static float timePassedTotal = 0.0f;
-	timePassedTotal += 2 * time;
-	model.SetPosition(glm::vec3(40 * cos(timePassedTotal), 40.0f, 40 * sin(timePassedTotal)));
-
-	lightDirection = glm::normalize(model.GetPosition());
-	*/
 }
 
 void Sun::RecalculateIntensity()
@@ -68,4 +60,35 @@ void Sun::RecalculateIntensity()
 		light.diffuseIntensity = startingDiffuseIntensity;
 		light.specularIntensity = startingSpecularIntensity;
 	}
+}
+
+float Sun::CalculateSkyboxesMixPercent() const
+{
+	// hours in a day
+	static constexpr float firstFadeStart = 4.0f;
+	static constexpr float firstFadeEnd = 6.0f;
+	static constexpr float secondFadeStart = 18.0f;
+	static constexpr float secondFadeEnd = 20.0f;
+
+	float hour = CalculateHour();
+
+	if(firstFadeStart <= hour && hour <= firstFadeEnd) // dawn
+		return 1.0f - (hour - firstFadeStart) / (firstFadeEnd - firstFadeStart);
+
+	if(secondFadeStart <= hour && hour <= secondFadeEnd) // dusk
+		return (hour - secondFadeStart) / (secondFadeEnd - secondFadeStart);
+
+	if(firstFadeEnd < hour && hour < secondFadeStart) // day
+		return 0.0f;
+
+	return 1.0f; // night
+}
+
+float Sun::CalculateHour() const
+{
+	float angle = glm::degrees(atan2(light.direction.y, light.direction.x));
+	if(angle < 0.0f)
+		angle += 360.0f;
+	float hour = angle * 24.0f / 360.0f;
+	return fmod(hour + 6.0f, 24.0f);
 }

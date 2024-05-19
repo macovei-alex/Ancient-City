@@ -65,6 +65,9 @@ namespace names
 		constexpr char ParticleColorBlendPercent[] = "ParticleColorBlendPercent";
 		constexpr char ParticleAlpha[] = "ParticleAlpha";
 		constexpr char ObjectColor[] = "ObjectColor";
+		constexpr char DaySkyboxTexture[] = "DaySkyboxTexture";
+		constexpr char NightSkyboxTexture[] = "NightSkyboxTexture";
+		constexpr char MixPercent[] = "MixPercent";
 	}
 }
 
@@ -75,5 +78,7 @@ namespace values
 		inline uint diffuse = 0;
 		inline uint specular = 1;
 		inline uint shadowMap = 15;
+		inline uint daySkybox = 10;
+		inline uint nightSkybox = 11;
 	}
 }

@@ -12,13 +12,15 @@ public:
 	Skybox(const std::string& textureDirectory);
 	~Skybox() = default;
 
-	void Render(Shader& skyboxShader, BaseCamera* camera) const;
+	void Bind(uint location) const;
+	static void RenderCube();
 
 private:
-	unsigned int VAO, VBO, EBO, textureID;
+	uint textureID;
 
+	inline static uint VAO = INT_MAX;
 	static const std::array<float, 24> vertices;
-	static const std::array<unsigned int, 36> indices;
+	static const std::array<uint, 36> indices;
 	static const std::array<std::string, 6> facesCubemap;
 };
 

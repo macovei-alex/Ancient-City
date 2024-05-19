@@ -39,22 +39,27 @@ const std::array<std::string, 6> Skybox::facesCubemap =
 
 Skybox::Skybox(const std::string& dirPath)
 {
-	GLCall(glGenVertexArrays(1, &VAO));
-	GLCall(glGenBuffers(1, &VBO));
-	GLCall(glGenBuffers(1, &EBO));
+	if (Skybox::VAO == INT_MAX)
+	{
+		uint vbo, ebo;
 
-	GLCall(glBindVertexArray(VAO));
+		GLCall(glGenVertexArrays(1, &Skybox::VAO));
+		GLCall(glGenBuffers(1, &vbo));
+		GLCall(glGenBuffers(1, &ebo));
 
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Skybox::vertices), Skybox::vertices.data(), GL_STATIC_DRAW));
+		GLCall(glBindVertexArray(Skybox::VAO));
 
-	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(Skybox::vertices[0]), (void*)0));
+		GLCall(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+		GLCall(glBufferData(GL_ARRAY_BUFFER, sizeof(Skybox::vertices), Skybox::vertices.data(), GL_STATIC_DRAW));
 
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Skybox::indices), Skybox::indices.data(), GL_STATIC_DRAW));
+		GLCall(glEnableVertexAttribArray(0));
+		GLCall(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(Skybox::vertices[0]), (void*)0));
 
-	GLCall(glBindVertexArray(0));
+		GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo));
+		GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Skybox::indices), Skybox::indices.data(), GL_STATIC_DRAW));
+
+		GLCall(glBindVertexArray(0));
+	}
 
 	GLCall(glGenTextures(1, &textureID));
 	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
@@ -90,28 +95,22 @@ Skybox::Skybox(const std::string& dirPath)
 		}
 	}
 
-	LOG("Successfuly created the sky box", Logger::Level::Info);
+	LOG(std::format("Successfuly created a new skybox from folder: {}", dirPath), Logger::Level::Info);
 }
 
-void Skybox::Render(Shader& skyboxShader, BaseCamera* camera) const
+void Skybox::Bind(uint location) const
 {
-	skyboxShader.Use();
+	GLCall(glActiveTexture(GL_TEXTURE0 + location));
+	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
+}
+
+void Skybox::RenderCube()
+{
 	GLCall(glDepthFunc(GL_LEQUAL));
 	GLCall(glCullFace(GL_FRONT));
 
-	glm::mat4 view = glm::mat4(glm::mat3(camera->CalculateViewMatrix()));
-	glm::mat4 projection = camera->CalculateProjectionMatrix();
-
-	skyboxShader.SetMat4("ViewMatrix", view);
-	skyboxShader.SetMat4("ProjectionMatrix", projection);
-	skyboxShader.SetInt("SkyboxTexture", 0);
-
-	GLCall(glBindVertexArray(VAO));
-
-	GLCall(glActiveTexture(GL_TEXTURE0));
-	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, textureID));
+	GLCall(glBindVertexArray(Skybox::VAO));
 	GLCall(glDrawElements(GL_TRIANGLES, (GLsizei)Skybox::indices.size(), GL_UNSIGNED_INT, nullptr));
-
 	GLCall(glBindVertexArray(0));
 
 	GLCall(glDepthFunc(GL_LESS));

@@ -13,6 +13,7 @@ public:
 
 	glm::mat4 CalculateProjectionMatrix() const;
 	glm::mat4 CalculateViewMatrix() const;
+	glm::mat4 CalculateVP() const;
 	inline glm::vec3 GetPosition() const { return position; }
 
 	inline void SetPosition(const glm::vec3& position) { this->position = position; }

@@ -9,8 +9,6 @@
 
 std::vector<Batch*> Batch::SplitIntoBatches(const std::vector<Model*>& models)
 {
-	static const std::pair<uint, uint> defaultKey = { ModelLoader::defaultDiffuseTexture->id, ModelLoader::defaultSpecularTexture->id };
-
 	std::vector<Batch*> batches;
 	std::map<std::string, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>> splitMeshes;
 
@@ -19,10 +17,6 @@ std::vector<Batch*> Batch::SplitIntoBatches(const std::vector<Model*>& models)
 		for (size_t i = 0; i < model->meshes.size(); i++)
 		{
 			Mesh* mesh = model->meshes[i].get();
-
-			if (splitMeshes.find(mesh->material->name) == splitMeshes.end())
-				splitMeshes.insert({ mesh->material->name, std::pair<std::vector<Mesh*>, std::vector<glm::mat4>>() });
-
 			auto& [meshes, matrices] = splitMeshes[mesh->material->name];
 			meshes.push_back(mesh);
 			matrices.push_back(model->modelMatrix);
@@ -42,11 +36,11 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 	std::vector<Vertex> vertices;
 	std::vector<uint> indices;
 
-	size_t vertexCount = 0;
+	uint vertexCount = 0;
 	indexCount = 0;
 	for (const Mesh* mesh : meshes)
 	{
-		vertexCount += mesh->vertices.size();
+		vertexCount += (uint)mesh->vertices.size();
 		indexCount += (uint)mesh->indices.size();
 	}
 
@@ -80,7 +74,7 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 				indices.pop_back();
 		}
 
-		indexOffset += (uint)meshes[i]->vertices.size();
+		indexOffset = (uint)vertices.size();
 	}
 
 	/*
@@ -126,7 +120,7 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 	*/
 
 	material = meshes[0]->material;
-	indexCount = indices.size();
+	indexCount = (uint)indices.size();
 	InitBuffers(vertices, indices, meshes[0]->material);
 }
 

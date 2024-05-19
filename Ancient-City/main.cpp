@@ -19,7 +19,7 @@ struct Options
 {
 	bool hotReloadShaders = false;
 	bool batchRendering = false;
-	bool flyingCamera = false;
+	bool walkingCamera = false;
 };
 
 struct WorldState
@@ -28,7 +28,7 @@ struct WorldState
 	const uint SHADOW_RES_WIDTH = 1024, SHADOW_RES_HEIGHT = 1024;
 
 	float deltaTime, lastFrame;
-	bool sunStop = true;
+	bool sunStop = false;
 
 	inline void Init()
 	{
@@ -43,7 +43,7 @@ WorldState worldState;
 Shader* modelShaders, * textureShaders = nullptr, * skyboxShaders = nullptr, * particleShaders = nullptr, * shadowShaders = nullptr, * depthMapShaders = nullptr, * cubeShaders = nullptr, * quadTextureShaders = nullptr;
 BaseCamera* camera = nullptr;
 Sun* sun = nullptr;
-Skybox* skybox = nullptr;
+Skybox* daySkybox = nullptr, * nightSkybox = nullptr;
 
 std::vector<Model*> models;
 std::vector<Batch*> batches;
@@ -67,14 +67,9 @@ static void SetupOptions(int argc, char* argv[])
 			options.batchRendering = true;
 		}
 
-		else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--flyingCamera") == 0)
-		{
-			options.flyingCamera = true;
-		}
-
 		else if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--walkingCamera") == 0)
 		{
-			options.flyingCamera = false;
+			options.walkingCamera = true;
 		}
 	}
 }
@@ -303,12 +298,13 @@ static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompil
 
 static void SetupWorld()
 {
-	if(options.flyingCamera)
-		camera = new FlyingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
-	else
+	if(options.walkingCamera)
 		camera = new WalkingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
+	else
+		camera = new FlyingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
 
-	skybox = new Skybox("Models\\Skybox");
+	daySkybox = new Skybox("Models\\Day-Skybox");
+	nightSkybox = new Skybox("Models\\Night-Skybox");
 
 	glm::mat4 matrix = glm::mat4(1.0f);
 	matrix = glm::translate(matrix, glm::vec3(-205.0f, -5.0f, 0.0f));
@@ -336,7 +332,13 @@ static void RenderFrame()
 	camera->SetViewPort();
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-	skybox->Render(*skyboxShaders, camera);
+	skyboxShaders->Use();
+	daySkybox->Bind(values::textureUnits::daySkybox);
+	nightSkybox->Bind(values::textureUnits::nightSkybox);
+	skyboxShaders->SetVP(camera->CalculateProjectionMatrix() * camera->CalculateViewMatrix());
+	skyboxShaders->SetDaySkyboxTexture(values::textureUnits::daySkybox);
+	skyboxShaders->SetNightSkyboxTexture(values::textureUnits::nightSkybox);
+	Skybox::RenderCube();
 
 	shadowShaders->Use();
 	// sun->GetShadowMap().BindForRead(*shadowShaders);
@@ -382,11 +384,19 @@ static void BatchRenderFrame()
 	camera->SetViewPort();
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-	skybox->Render(*skyboxShaders, camera);
+	skyboxShaders->Use();
+	daySkybox->Bind(values::textureUnits::daySkybox);
+	nightSkybox->Bind(values::textureUnits::nightSkybox);
+	glm::mat4 viewMatrix = glm::mat4(glm::mat3(camera->CalculateViewMatrix()));
+	skyboxShaders->SetVP(camera->CalculateProjectionMatrix() * viewMatrix);
+	skyboxShaders->SetDaySkyboxTexture(values::textureUnits::daySkybox);
+	skyboxShaders->SetNightSkyboxTexture(values::textureUnits::nightSkybox);
+	skyboxShaders->SetMixPercent(sun->CalculateSkyboxesMixPercent());
+	Skybox::RenderCube();
 
 	shadowShaders->Use();
 	// sun->GetShadowMap().BindForRead(*shadowShaders);
-	shadowShaders->SetVP(camera->CalculateProjectionMatrix() * camera->CalculateViewMatrix());
+	shadowShaders->SetVP(camera->CalculateVP());
 	shadowShaders->SetLightDirection(sun->light.direction);
 	shadowShaders->SetLightColor(sun->light.color);
 	shadowShaders->SetViewPosition(camera->GetPosition());
@@ -405,11 +415,11 @@ static void BatchRenderFrame()
 	}
 
 	modelShaders->Use();
-	modelShaders->SetMVP(camera->CalculateProjectionMatrix() * camera->CalculateViewMatrix() * sun->model.modelMatrix);
+	modelShaders->SetMVP(camera->CalculateVP() * sun->model.modelMatrix);
 	sun->DepthRender();
 
 	particleShaders->Use();
-	particleShaders->SetVP(camera->CalculateProjectionMatrix() * camera->CalculateViewMatrix());
+	particleShaders->SetVP(camera->CalculateVP());
 	particleShaders->SetAmbientIntensity(ParticleGenerator::CalculateAmbientIntensity(sun->light.ambientIntensity));
 	for (const auto& particleGenerator : particleGenerators)
 	{

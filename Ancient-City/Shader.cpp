@@ -138,4 +138,7 @@ void Shader::InitUniformLocations()
 	ParticleColorBlendPercent = glGetUniformLocation(programID, names::locations::ParticleColorBlendPercent);
 	ParticleAlpha = glGetUniformLocation(programID, names::locations::ParticleAlpha);
 	ObjectColor = glGetUniformLocation(programID, names::locations::ObjectColor);
+	DaySkyboxTexture = glGetUniformLocation(programID, names::locations::DaySkyboxTexture);
+	NightSkyboxTexture = glGetUniformLocation(programID, names::locations::NightSkyboxTexture);
+	MixPercent = glGetUniformLocation(programID, names::locations::MixPercent);
 }

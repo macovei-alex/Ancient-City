@@ -4,9 +4,11 @@ in vec3 MidTexCoords;
 
 out vec4 OutColor;
 
-uniform samplerCube SkyboxTexture;
+uniform samplerCube DaySkyboxTexture;
+uniform samplerCube NightSkyboxTexture;
+uniform float MixPercent;
 
 void main()
-{    
-    OutColor = texture(SkyboxTexture, MidTexCoords);
+{
+    OutColor = mix(texture(DaySkyboxTexture, MidTexCoords), texture(NightSkyboxTexture, MidTexCoords), MixPercent);
 }

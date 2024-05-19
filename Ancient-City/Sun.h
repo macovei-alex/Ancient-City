@@ -19,6 +19,9 @@ public:
 	inline void Render(const Shader& shader) const { model.Render(shader); }
 	inline void DepthRender() const { model.DepthRender(); }
 
+	float CalculateSkyboxesMixPercent() const;
+	float CalculateHour() const;
+
 private:
 	void RecalculateIntensity();
 

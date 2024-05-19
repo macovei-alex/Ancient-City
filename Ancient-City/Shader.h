@@ -89,6 +89,9 @@ public:
 	inline void SetParticleBlendPercent(float val) const { SetFloat(ParticleColorBlendPercent, val); }
 	inline void SetParticleAlpha(float val) const { SetFloat(ParticleAlpha, val); }
 	inline void SetObjectColor(const glm::vec3& vec) const { SetVec3(ObjectColor, vec); }
+	inline void SetDaySkyboxTexture(int val) const { SetInt(DaySkyboxTexture, val); }
+	inline void SetNightSkyboxTexture(int val) const { SetInt(NightSkyboxTexture, val); }
+	inline void SetMixPercent(float val) const { SetFloat(MixPercent, val); }
 
 private:
 	bool Init(const std::string& vertexPath, const std::string& fragmentPath);
@@ -111,4 +114,5 @@ private:
 	GLint ParticleStartColor, ParticleEndColor, ParticleColorBlendPercent, ParticleAlpha;
 	GLint ParticleScale, ParticlePosition;
 	GLint ObjectColor;
+	GLint DaySkyboxTexture, NightSkyboxTexture, MixPercent;
 };

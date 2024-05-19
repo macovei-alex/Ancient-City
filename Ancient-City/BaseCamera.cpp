@@ -59,6 +59,11 @@ glm::mat4 BaseCamera::CalculateViewMatrix() const
 	return glm::lookAt(position, position + forward, up);
 }
 
+glm::mat4 BaseCamera::CalculateVP() const
+{
+	return CalculateProjectionMatrix() * CalculateViewMatrix();
+}
+
 void BaseCamera::HandleMouseMovement(float deltaX, float deltaY)
 {
 	ProcessMouseMovement((deltaX - lastX) * MOUSE_SENSITIVITY, (lastY - deltaY) * MOUSE_SENSITIVITY);
