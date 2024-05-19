@@ -8,13 +8,13 @@
 
 const std::vector<Vertex> ParticleGenerator::DEFAULT_MODEL_VERTICES = 
 {
-	Vertex(-0.5f, -0.5f,  0.5f),
-	Vertex( 0.5f, -0.5f,  0.5f),
-	Vertex( 0.5f,  0.5f,  0.5f),
-	Vertex(-0.5f,  0.5f,  0.5f),
-	Vertex(-0.5f, -0.5f, -0.5f),
-	Vertex( 0.5f, -0.5f, -0.5f),
-	Vertex( 0.5f,  0.5f, -0.5f),
+	Vertex(-0.5f, -0.5f,  0.5f), //    7--------6
+	Vertex( 0.5f, -0.5f,  0.5f), //   /|       /|
+	Vertex( 0.5f,  0.5f,  0.5f), //  3--------2 |
+	Vertex(-0.5f,  0.5f,  0.5f), //  | |      | |
+	Vertex(-0.5f, -0.5f, -0.5f), //  | 4------|-5
+	Vertex( 0.5f, -0.5f, -0.5f), //  |/       |/
+	Vertex( 0.5f,  0.5f, -0.5f), //  0--------1
 	Vertex(-0.5f,  0.5f, -0.5f)
 };
 
@@ -28,8 +28,8 @@ const std::vector<uint> ParticleGenerator::DEFAULT_MODEL_INDICES =
 	5, 7, 6,
 	4, 0, 3,
 	4, 3, 7,
-	0, 1, 5,
-	0, 5, 4,
+	0, 5, 1,
+	0, 4, 5,
 	3, 2, 6,
 	3, 6, 7
 };

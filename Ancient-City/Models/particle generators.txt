@@ -1,23 +1,167 @@
+######################################### fire 1
+
+# red
 particle generator 1
-speed modifier: 2.0
-lifetime: 2.0
-position: -2.0 0.0 -10.0
-particle color: 1.0 0.5 0.0
+speed modifier: 10.0
+lifetime: 10.0
+position: -160.0 15.0 -10.0
+particle start color: 1.0 0.0 0.0
+particle end color: 1.0 0.3 0.0
 do particle alpha fade: true
+scale: 4.0
 
+# yellow
 particle generator 2
-speed modifier: 2.0
-lifetime: 2.0
-position: 0.0 0.0 -10.0
-particle start color: 1.0 0.2 0.0
-particle end color: 0.0 0.5 0.7
-scale: 2.0
-
-particle generator 3
-speed modifier: 2.0
-lifetime: 2.0
-position: 2.0 0.0 -10.0
-particle start color: 0.0 0.5 0.7
-particle end color: 1.0 0.2 0.0
+speed modifier: 10.0
+lifetime: 10.0
+position: -160.0 20.0 -10.0
+particle start color: 1.0 1.0 0.0
+particle end color: 0.5 0.5 0.0
 do particle alpha fade: true
-scale: 0.2
+scale: 4.0
+
+# gray
+particle generator 3
+speed modifier: 10.0
+lifetime: 20.0
+position: -160.0 35.0 -5.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+# gray
+particle generator 4
+speed modifier: 10.0
+lifetime: 20.0
+position: -160.0 35.0 -15.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+########################################## fire 2
+
+# red
+particle generator 1
+speed modifier: 10.0
+lifetime: 10.0
+position: -200.0 15.0 -10.0
+particle start color: 1.0 0.0 0.0
+particle end color: 1.0 0.3 0.0
+do particle alpha fade: true
+scale: 4.0
+
+# yellow
+particle generator 2
+speed modifier: 10.0
+lifetime: 10.0
+position: -200.0 20.0 -10.0
+particle start color: 1.0 1.0 0.0
+particle end color: 0.5 0.5 0.0
+do particle alpha fade: true
+scale: 4.0
+
+# gray
+particle generator 3
+speed modifier: 10.0
+lifetime: 20.0
+position: -200.0 35.0 -5.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+# gray
+particle generator 4
+speed modifier: 10.0
+lifetime: 20.0
+position: -200.0 35.0 -15.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+########################################## fire 3
+
+# red
+particle generator 1
+speed modifier: 10.0
+lifetime: 10.0
+position: 100.0 0.0 -80.0
+particle start color: 1.0 0.0 0.0
+particle end color: 1.0 0.3 0.0
+do particle alpha fade: true
+scale: 4.0
+
+# yellow
+particle generator 2
+speed modifier: 10.0
+lifetime: 10.0
+position: 100.0 5.0 -80.0
+particle start color: 1.0 1.0 0.0
+particle end color: 0.5 0.5 0.0
+do particle alpha fade: true
+scale: 4.0
+
+# gray
+particle generator 3
+speed modifier: 10.0
+lifetime: 20.0
+position: 100.0 20.0 -75.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+# gray
+particle generator 4
+speed modifier: 10.0
+lifetime: 20.0
+position: 100.0 20.0 -85.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+########################################## fire 4
+
+# red
+particle generator 1
+speed modifier: 10.0
+lifetime: 10.0
+position: 30.0 10.0 -150.0
+particle start color: 1.0 0.0 0.0
+particle end color: 1.0 0.3 0.0
+do particle alpha fade: true
+scale: 4.0
+
+# yellow
+particle generator 2
+speed modifier: 10.0
+lifetime: 10.0
+position: 30.0 15.0 -150.0
+particle start color: 1.0 1.0 0.0
+particle end color: 0.5 0.5 0.0
+do particle alpha fade: true
+scale: 4.0
+
+# gray
+particle generator 3
+speed modifier: 10.0
+lifetime: 20.0
+position: 30.0 30.0 -155.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0
+
+# gray
+particle generator 4
+speed modifier: 10.0
+lifetime: 20.0
+position: 30.0 30.0 -145.0
+particle start color: 0.1 0.1 0.1
+particle end color: 0.3 0.3 0.3
+do particle alpha fade: true
+scale: 6.0

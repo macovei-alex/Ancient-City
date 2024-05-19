@@ -18,7 +18,7 @@
 struct Options
 {
 	bool hotReloadShaders = false;
-	bool batchRendering = false;
+	bool batchRendering = true;
 	bool walkingCamera = false;
 };
 
@@ -62,9 +62,19 @@ static void SetupOptions(int argc, char* argv[])
 			AddHotReloadDir(names::shaders::dirName + '\\');
 		}
 
+		else if (strcmp(argv[i], "-m") == 0 || strcmp(argv[i], "--modelRendering") == 0)
+		{
+			options.batchRendering = false;
+		}
+
 		else if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--batchRendering") == 0)
 		{
 			options.batchRendering = true;
+		}
+
+		else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--flyingCamera") == 0)
+		{
+			options.walkingCamera = false;
 		}
 
 		else if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--walkingCamera") == 0)
