@@ -99,8 +99,8 @@ void Skybox::Render(Shader& skyboxShader, const Camera& camera) const
 	GLCall(glDepthFunc(GL_LEQUAL));
 	GLCall(glCullFace(GL_FRONT));
 
-	glm::mat4 view = glm::mat4(glm::mat3(camera.GetViewMatrix()));
-	glm::mat4 projection = camera.GetProjectionMatrix();
+	glm::mat4 view = glm::mat4(glm::mat3(camera.CalculateViewMatrix()));
+	glm::mat4 projection = camera.CalculateProjectionMatrix();
 
 	skyboxShader.SetMat4("ViewMatrix", view);
 	skyboxShader.SetMat4("ProjectionMatrix", projection);

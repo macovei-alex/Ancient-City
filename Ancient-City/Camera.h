@@ -10,8 +10,8 @@ public:
 	Camera(int width, int height, const glm::vec3& position);
 	void Set(int width, int height, const glm::vec3& position);
 
-	glm::mat4 GetProjectionMatrix() const;
-	inline glm::mat4 GetViewMatrix() const { return glm::lookAt(position, position + forward, up); }
+	glm::mat4 CalculateProjectionMatrix() const;
+	glm::mat4 CalculateViewMatrix() const;
 	inline glm::vec3 GetPosition() const { return position; }
 
 	inline void SetPosition(const glm::vec3& position) { this->position = position; }
@@ -48,16 +48,16 @@ private:
 	float lastX = 0.0f, lastY = 0.0f;
 
 public:
-	static const float Z_NEAR;
-	static const float Z_FAR;
-	static const float YAW;
-	static const float PITCH;
-	static const float FOV;
-	static const float SPEED_FACTOR;
-	static const float MOUSE_SENSITIVITY;
-	static const float SPEED_BOOST_MULTIPLIER;
-	static const float SPEED_SLOW_MULTIPLIER;
-	static const glm::vec3 START_POSITION;
-	static const glm::vec3 START_FACING;
-	static const float MOUSE_SCROLL_MULTIPLIER;
+	inline static const float Z_NEAR = 0.1f;
+	inline static const float Z_FAR = 2000.0f;
+	inline static const float YAW = -90.0f;
+	inline static const float PITCH = 0.0f;
+	inline static const float FOV = 70.0f;
+	inline static const float SPEED_FACTOR = 30.0f;
+	inline static const float MOUSE_SENSITIVITY = 0.1f;
+	inline static const float SPEED_BOOST_MULTIPLIER = 10.0f;
+	inline static const float SPEED_SLOW_MULTIPLIER = 0.1f;
+	inline static const glm::vec3 START_POSITION = glm::vec3(0.0f, 0.0f, 0.0f);
+	inline static const glm::vec3 START_FACING = glm::vec3(0.0f, 0.0f, -1.0f);
+	inline static const float MOUSE_SCROLL_MULTIPLIER = 2.0f;
 };

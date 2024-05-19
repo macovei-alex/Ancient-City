@@ -18,6 +18,7 @@ namespace names
 		inline const std::string shadow = "shadow";
 		inline const std::string depthMap = "depthMap";
 		inline const std::string cube = "cube";
+		inline const std::string quadTexture = "quadTexture";
 	}
 
 	namespace textures
@@ -73,5 +74,6 @@ namespace values
 	{
 		inline uint diffuse = 0;
 		inline uint specular = 1;
+		inline uint shadowMap = 15;
 	}
 }

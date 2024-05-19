@@ -176,6 +176,8 @@
     <None Include="Other resources\OpenGL-errors.html" />
     <None Include="Shaders\cubeFS.glsl" />
     <None Include="Shaders\cubeVS.glsl" />
+    <None Include="Shaders\quadTextureFS.glsl" />
+    <None Include="Shaders\quadTextureVS.glsl" />
     <None Include="Shaders\depthMapFS.glsl" />
     <None Include="Shaders\depthMapVS.glsl" />
     <None Include="Shaders\modelFS.glsl" />
@@ -215,6 +217,7 @@
     <ClInclude Include="vertex.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="Models\particle generators.txt" />
     <Text Include="Other resources\old code.txt" />
     <Text Include="Other resources\simple cube.txt" />
   </ItemGroup>

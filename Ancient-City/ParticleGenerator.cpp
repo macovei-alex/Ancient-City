@@ -1,8 +1,10 @@
 #include "ParticleGenerator.h"
 
+#include "Model.h"
+
 #include <random>
 #include <vector>
-#include "Model.h"
+#include <regex>
 
 const std::vector<Vertex> ParticleGenerator::DEFAULT_MODEL_VERTICES = 
 {
@@ -31,6 +33,115 @@ const std::vector<uint> ParticleGenerator::DEFAULT_MODEL_INDICES =
 	3, 2, 6,
 	3, 6, 7
 };
+
+std::vector<ParticleGenerator*> ParticleGenerator::GetFromFile(const std::string& file)
+{
+	static const std::regex newGenerator(R"(particle generator \d*)");
+	static const std::regex comment(R"(#.*$)");
+	static const std::regex position(R"(position: (-?\d+\.\d+) (-?\d+\.\d+) (-?\d+\.\d+))");
+	static const std::regex spawnDelay(R"(spawn delay: (\d+\.\d+))");
+	static const std::regex speedModifier(R"(speed modifier: (\d+\.\d+))");
+	static const std::regex lifeTime(R"(lifetime: (\d+\.\d+))");
+	static const std::regex particleColor(R"(particle color: (\d+\.\d+) (\d+\.\d+) (\d+\.\d+))");
+	static const std::regex particleStartColor(R"(particle start color: (\d+\.\d+) (\d+\.\d+) (\d+\.\d+))");
+	static const std::regex particleEndColor(R"(particle end color: (\d+\.\d+) (\d+\.\d+) (\d+\.\d+))");
+	static const std::regex scale(R"(scale: (\d+\.\d+))");
+	static const std::regex doParticleAlphaFade(R"(do particle alpha fade: (true|false))");
+
+	std::vector<ParticleGenerator*> generators;
+	std::ifstream fin(file);
+	std::string line;
+	size_t lineCounter = 0;
+
+	while (fin.good() && !fin.eof())
+	{
+		std::getline(fin, line);
+		lineCounter++;
+
+		if(line.empty())
+			continue;
+
+		try
+		{
+			if (std::regex_match(line, newGenerator))
+			{
+				generators.push_back(new ParticleGenerator());
+			}
+			else if (std::regex_match(line, comment))
+			{
+				continue;
+			}
+			else if (std::regex_match(line, position))
+			{
+				std::smatch match;
+				std::regex_search(line, match, position);
+				glm::vec3 position = glm::vec3(std::stof(match[1].str()), std::stof(match[2].str()), std::stof(match[3].str()));
+				generators.back()->WithPosition(position);
+			}
+			else if (std::regex_match(line, spawnDelay))
+			{
+				std::smatch match;
+				std::regex_search(line, match, spawnDelay);
+				generators.back()->WithSpawnDelay(std::stof(match[1].str()));
+			}
+			else if (std::regex_match(line, speedModifier))
+			{
+				std::smatch match;
+				std::regex_search(line, match, speedModifier);
+				generators.back()->WithSpeedModifier(std::stof(match[1].str()));
+			}
+			else if (std::regex_match(line, lifeTime))
+			{
+				std::smatch match;
+				std::regex_search(line, match, lifeTime);
+				generators.back()->WithLifeTime(std::stof(match[1].str()));
+			}
+			else if (std::regex_match(line, particleColor))
+			{
+				std::smatch match;
+				std::regex_search(line, match, particleColor);
+				glm::vec3 color = glm::vec3(std::stof(match[1].str()), std::stof(match[2].str()), std::stof(match[3].str()));
+				generators.back()->WithParticleColor(color.r, color.g, color.b);
+			}
+			else if (std::regex_match(line, particleStartColor))
+			{
+				std::smatch match;
+				std::regex_search(line, match, particleStartColor);
+				glm::vec3 color = glm::vec3(std::stof(match[1].str()), std::stof(match[2].str()), std::stof(match[3].str()));
+				generators.back()->WithStartingParticleColor(color.r, color.g, color.b);
+			}
+			else if (std::regex_match(line, particleEndColor))
+			{
+				std::smatch match;
+				std::regex_search(line, match, particleEndColor);
+				glm::vec3 color = glm::vec3(std::stof(match[1].str()), std::stof(match[2].str()), std::stof(match[3].str()));
+				generators.back()->WithEndingParticleColor(color.r, color.g, color.b);
+			}
+			else if (std::regex_match(line, scale))
+			{
+				std::smatch match;
+				std::regex_search(line, match, scale);
+				generators.back()->WithScale(std::stof(match[1].str()));
+			}
+			else if (std::regex_match(line, doParticleAlphaFade))
+			{
+				std::smatch match;
+				std::regex_search(line, match, doParticleAlphaFade);
+				generators.back()->WithParticleAlphaFade(match[1].str() == "true");
+			}
+			else
+			{
+				LOG(std::format("Invalid line in file ( {} ) at line ( {} ): {}", file, lineCounter, line), Logger::Level::Error);
+			}
+		}
+		catch (const std::exception& e)
+		{
+			LOG(std::format("Error parsing file ( {} ) at line ( {} ) with contents ( {} ): {}", file, lineCounter, line, e.what()), Logger::Level::Error);
+		}
+	}
+
+	return generators;
+}
 
 ParticleGenerator::ParticleGenerator()
 	: particleModel()

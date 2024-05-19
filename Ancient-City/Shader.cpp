@@ -44,9 +44,9 @@ bool Shader::Init(const std::string& vertexPath, const std::string& fragmentPath
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 	}
-	catch (std::ifstream::failure exception)
+	catch (const std::ifstream::failure& exception)
 	{
-		std::cout << "ERROR when reading the shaders: " << exception.what() << std::endl;
+		LOG(std::format("Could not read the shaders ( {} ) and ( {} ): {}\n", vertexPath, fragmentPath, exception.what()), Logger::Level::Error);
 		throw exception;
 	}
 

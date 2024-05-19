@@ -75,8 +75,8 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 			indices.push_back(newIndex);
 
 			// remove the weird artifact spanning across half the town
-			// if (indexCount == 56286 && (newIndex == 37027 || newIndex == 37028 || newIndex == 37029))
-				// indices.pop_back();
+			if (indexCount == 56286 && (newIndex == 37027 || newIndex == 37028 || newIndex == 37029))
+				indices.pop_back();
 		}
 
 		indexOffset += (uint)meshes[i]->vertices.size();

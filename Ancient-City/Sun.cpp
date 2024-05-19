@@ -1,18 +1,16 @@
 #include "Sun.h"
 
-const float Sun::MODEL_POSITION_MULTIPLIER = 1000.0f;
-
 Sun::Sun(const Model& model)
 	: DirectionalLightSource(),
-	model(model)
+	model(model), modelPositionMultiplier(1000.0f)
 {
-	this->model.SetPosition(light.direction * MODEL_POSITION_MULTIPLIER);
+	this->model.SetPosition(light.direction * modelPositionMultiplier);
 }
 
 void Sun::Rotate(float x, float y, float z)
 {
 	DirectionalLightSource::RotateDirection(x, y, z);
-	model.SetPosition(light.direction * MODEL_POSITION_MULTIPLIER);
+	model.SetPosition(light.direction * modelPositionMultiplier);
 }
 
 void Sun::Rotate(const glm::vec3& rotation)

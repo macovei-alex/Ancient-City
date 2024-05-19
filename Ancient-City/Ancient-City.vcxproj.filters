@@ -137,6 +137,12 @@
     <None Include="Models\Chinese-Town\chinese town.mtl">
       <Filter>Resource Files\Models</Filter>
     </None>
+    <None Include="Shaders\quadTextureFS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\quadTextureVS.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -200,6 +206,9 @@
     </Text>
     <Text Include="Other resources\simple cube.txt">
       <Filter>Resource Files\Other resources</Filter>
+    </Text>
+    <Text Include="Models\particle generators.txt">
+      <Filter>Resource Files\Models</Filter>
     </Text>
   </ItemGroup>
 </Project>

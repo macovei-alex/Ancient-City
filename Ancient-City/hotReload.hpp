@@ -1,7 +1,10 @@
 #pragma once
 
-#include <vector>
+#ifdef APIENTRY
+#undef APIENTRY
+#endif
 #include <windows.h>
+#include <vector>
 
 #include "utils.h"
 

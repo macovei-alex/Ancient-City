@@ -19,10 +19,8 @@ public:
 	inline void DepthRender() const { model.DepthRender(); }
 
 public:
-	static const float MODEL_POSITION_MULTIPLIER;
-
-public:
 	Model model;
+	float modelPositionMultiplier;
 
 private:
 	float secondToHoursConversionRate = 1.0f;

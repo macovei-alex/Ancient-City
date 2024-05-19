@@ -62,9 +62,9 @@ void main()
 	vec3 specularTexture = texture(SpecularTexture, MidTexCoords).rgb;
 	vec3 specular = SpecularIntensity * specularPower * Material.SpecularColor * LightColor * specularTexture;
 
-	// float shadow = ShadowCalculation(MidLightSpacePosition);
-	// vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor.rgb;
-	vec3 result = ambient + diffuse + specular;
+	float shadow = ShadowCalculation(MidLightSpacePosition);
+	vec3 result = (ambient + (1.0 - shadow) * (diffuse + specular));
+	// vec3 result = ambient + diffuse + specular;
 
 	OutColor = vec4(result, 1.0);
 }

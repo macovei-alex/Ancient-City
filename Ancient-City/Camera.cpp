@@ -2,19 +2,6 @@
 
 #include <gtc/matrix_transform.hpp>
 
-const float Camera::Z_NEAR = 0.1f;
-const float Camera::Z_FAR = 2000.0f;
-const float Camera::YAW = -90.0f;
-const float Camera::PITCH = 0.0f;
-const float Camera::FOV = 70.0f;
-const float Camera::SPEED_FACTOR = 30.0f;
-const float Camera::MOUSE_SENSITIVITY = 0.1f;
-const float Camera::SPEED_BOOST_MULTIPLIER = 10.0f;
-const float Camera::SPEED_SLOW_MULTIPLIER = 0.1f;
-const glm::vec3 Camera::START_POSITION = glm::vec3(0.0f, 0.0f, 10.0f);
-const glm::vec3 Camera::START_FACING = glm::vec3(0.0f, 0.0f, -1.0f);
-const float Camera::MOUSE_SCROLL_MULTIPLIER = 2.0f;
-
 Camera::Camera(int width, int height, const glm::vec3& position)
 {
 	lastX = (float)INT_MAX;
@@ -54,7 +41,7 @@ void Camera::Set(int width, int height, const glm::vec3& position)
 	UpdateCameraVectors();
 }
 
-glm::mat4 Camera::GetProjectionMatrix() const
+glm::mat4 Camera::CalculateProjectionMatrix() const
 {
 	if (isPerspective)
 	{
@@ -66,15 +53,18 @@ glm::mat4 Camera::GetProjectionMatrix() const
 	return glm::ortho(
 		-screenWidth / scaleFactor, screenWidth / scaleFactor,
 		-screenHeight / scaleFactor, screenHeight / scaleFactor, 
-		-zFar, zFar);
+		zNear, zFar);
+}
+
+glm::mat4 Camera::CalculateViewMatrix() const
+{
+	return glm::lookAt(position, position + forward, up);
 }
 
 void Camera::MoveCamera(float xOffset, float yOffset, float zOffset)
 {
-	static const glm::vec3 straightUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
 	position += xOffset * right * Camera::SPEED_FACTOR;
-	position += yOffset * straightUp * Camera::SPEED_FACTOR;
+	position += yOffset * worldUp * Camera::SPEED_FACTOR;
 	position += zOffset * forward * Camera::SPEED_FACTOR;
 }
 

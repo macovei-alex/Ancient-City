@@ -1,0 +1,23 @@
+particle generator 1
+speed modifier: 2.0
+lifetime: 2.0
+position: -2.0 0.0 -10.0
+particle color: 1.0 0.5 0.0
+do particle alpha fade: true
+
+particle generator 2
+speed modifier: 2.0
+lifetime: 2.0
+position: 0.0 0.0 -10.0
+particle start color: 1.0 0.2 0.0
+particle end color: 0.0 0.5 0.7
+scale: 2.0
+
+particle generator 3
+speed modifier: 2.0
+lifetime: 2.0
+position: 2.0 0.0 -10.0
+particle start color: 0.0 0.5 0.7
+particle end color: 1.0 0.2 0.0
+do particle alpha fade: true
+scale: 0.2

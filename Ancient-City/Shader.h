@@ -81,7 +81,7 @@ public:
 	inline void SetAmbientColor(const glm::vec3& vec) const { SetVec3(AmbientColor, vec); }
 	inline void SetSpecularColor(const glm::vec3& vec) const { SetVec3(SpecularColor, vec); }
 	inline void SetDiffuseColor(const glm::vec3& vec) const { SetVec3(DiffuseColor, vec); }
-	inline void SetShadowMap(int val) const { SetInt(DiffuseTexture, val); }
+	inline void SetShadowMap(int val) const { SetInt(ShadowMap, val); }
 	inline void SetParticleStartColor(const glm::vec3& vec) const { SetVec3(ParticleStartColor, vec); }
 	inline void SetParticleEndColor(const glm::vec3& vec) const { SetVec3(ParticleEndColor, vec); }
 	inline void SetParticleScale(float val) const { SetFloat(ParticleScale, val); }

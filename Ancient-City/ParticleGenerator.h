@@ -7,6 +7,9 @@
 class ParticleGenerator
 {
 public:
+	static std::vector<ParticleGenerator*> GetFromFile(const std::string& file);
+
+public:
 	ParticleGenerator();
 	ParticleGenerator(const Model& particleModel);
 	ParticleGenerator(const ParticleGenerator& other) = default;
@@ -34,6 +37,7 @@ public:
 private:
 	Model particleModel;
 	std::vector<Particle> particles;
+
 	glm::vec3 position;
 	float spawnDelay;
 	float speedModifier;
