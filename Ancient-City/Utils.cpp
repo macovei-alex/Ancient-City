@@ -4,6 +4,8 @@
 #include <array>
 #include <algorithm>
 #include <gtc/matrix_transform.hpp>
+#include <unordered_map>
+#include "vertex.hpp"
 
 glm::vec2& operator+=(glm::vec2& vec, const aiVector2D& other)
 {

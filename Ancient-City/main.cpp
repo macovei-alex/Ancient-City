@@ -15,18 +15,11 @@
 #include "constants.h"
 #include "Batch.h"
 
-#define TEMP
-
-#ifdef TEMP
-
-uint depthMapFBO, depthMap;
-
-#endif
-
 struct Options
 {
 	bool hotReloadShaders = false;
 	bool batchRendering = false;
+	bool flyingCamera = false;
 };
 
 struct WorldState
@@ -72,6 +65,16 @@ static void SetupOptions(int argc, char* argv[])
 		else if (strcmp(argv[i], "-b") == 0 || strcmp(argv[i], "--batchRendering") == 0)
 		{
 			options.batchRendering = true;
+		}
+
+		else if (strcmp(argv[i], "-f") == 0 || strcmp(argv[i], "--flyingCamera") == 0)
+		{
+			options.flyingCamera = true;
+		}
+
+		else if (strcmp(argv[i], "-w") == 0 || strcmp(argv[i], "--walkingCamera") == 0)
+		{
+			options.flyingCamera = false;
 		}
 	}
 }
@@ -300,7 +303,11 @@ static void LoadShader(const std::string& shaderFilesIdentifier, bool mustCompil
 
 static void SetupWorld()
 {
-	camera = new WalkingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
+	if(options.flyingCamera)
+		camera = new FlyingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
+	else
+		camera = new WalkingCamera(worldState.SCREEN_WIDTH, worldState.SCREEN_HEIGHT, glm::vec3(0.0f, 1.8f, 0.0f));
+
 	skybox = new Skybox("Models\\Skybox");
 
 	glm::mat4 matrix = glm::mat4(1.0f);
@@ -324,43 +331,7 @@ static void SetupWorld()
 
 static void RenderFrame()
 {
-
-#ifdef TEMP ////////////////////////////////////////////////////////////////////////////
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glm::mat4 lightProjection = glm::ortho(-100.0f, 100.0f, -100.0f, 100.0f, 1.0f, 2000.0f);
-
-	glm::vec3 right = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), sun->light.direction);
-	glm::vec3 up = glm::cross(sun->light.direction, right);
-	glm::mat4 lightView = glm::lookAt(sun->light.direction, glm::vec3(0.0f), up);
-
-	glm::mat4 lightSpaceMatrix = lightProjection * lightView;
-
-	// render scene from light's point of view
-	depthMapShaders->Use();
-	depthMapShaders->SetLightSpaceMatrix(lightSpaceMatrix);
-
-	GLCall(glViewport(0, 0, worldState.SHADOW_RES_WIDTH, worldState.SHADOW_RES_HEIGHT));
-	GLCall(glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO));
-	GLCall(glClear(GL_DEPTH_BUFFER_BIT));
-	GLCall(glEnable(GL_CULL_FACE));
-	GLCall(glCullFace(GL_FRONT));
-
-	for (const auto& model : models)
-	{
-		depthMapShaders->SetModelMatrix(model->modelMatrix);
-		model->DepthRender();
-	}
-
-	glCullFace(GL_BACK);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-#else
-
-	sun->WriteToShadowMap(*depthMapShaders, models);
-
-#endif /////////////////////////////////////////////////////////////////////////////////
+	// sun->WriteToShadowMap(*depthMapShaders, models);
 
 	camera->SetViewPort();
 	GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
@@ -368,7 +339,7 @@ static void RenderFrame()
 	skybox->Render(*skyboxShaders, camera);
 
 	shadowShaders->Use();
-	sun->GetShadowMap().BindForRead(*shadowShaders);
+	// sun->GetShadowMap().BindForRead(*shadowShaders);
 	shadowShaders->SetVP(camera->CalculateProjectionMatrix() * camera->CalculateViewMatrix());
 	shadowShaders->SetLightColor(sun->light.color);
 	shadowShaders->SetViewPosition(camera->GetPosition());

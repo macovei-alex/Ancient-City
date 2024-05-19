@@ -5,6 +5,7 @@
 #include "constants.h"
 
 #include <map>
+#include <unordered_map>
 
 std::vector<Batch*> Batch::SplitIntoBatches(const std::vector<Model*>& models)
 {
@@ -82,7 +83,50 @@ Batch::Batch(const std::vector<Mesh*>& meshes, const std::vector<glm::mat4>& mat
 		indexOffset += (uint)meshes[i]->vertices.size();
 	}
 
+	/*
+	auto comparator = [](const glm::vec3& a, const glm::vec3& b) {
+		if (a.z > b.z)
+			return true;
+		if (a.z < b.z)
+			return false;
+		if (a.x > b.x)
+			return true;
+		if (a.x < b.x)
+			return false;
+		return a.y > b.y;
+		};
+	
+	std::unordered_map<uint, std::vector<uint>> indexMap;
+	for (uint i = 0; i < indices.size(); i++)
+		indexMap[indices[i]].push_back(i);
+
+	bool swapped = true;
+	for (uint i = 0; i < vertices.size() && swapped; i++)
+	{
+		swapped = false;
+		for (uint j = i + 1; j < vertices.size(); j++)
+		{
+			if (comparator(vertices[i].position, vertices[j].position))
+			{
+				std::swap(vertices[i], vertices[j]);
+				std::vector<uint> vec1 = std::move(indexMap[i]);
+				std::vector<uint> vec2 = std::move(indexMap[j]);
+				indexMap[i] = std::move(vec2);
+				indexMap[j] = std::move(vec1);
+				swapped = true;
+			}
+		}
+	}
+
+	for (auto& [key, value] : indexMap)
+	{
+		for (size_t i = 0; i < value.size(); i++)
+			indices[value[i]] = key;
+	}
+	*/
+
 	material = meshes[0]->material;
+	indexCount = indices.size();
 	InitBuffers(vertices, indices, meshes[0]->material);
 }
 
