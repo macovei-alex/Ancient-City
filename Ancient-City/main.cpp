@@ -162,6 +162,12 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	else if (key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
 		worldState.sunStop = !worldState.sunStop;
 
+	else if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	{
+		auto fires = ParticleGenerator::NewFire(camera->GetPosition());
+		particleGenerators.insert(particleGenerators.end(), fires.begin(), fires.end());
+	}
+
 	if (action == GLFW_PRESS)
 		std::cout << "Key pressed: " << GetKeyPressed(key) << std::endl;
 }

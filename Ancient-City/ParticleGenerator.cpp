@@ -243,3 +243,45 @@ float ParticleGenerator::CalculateDiffuseStrength(float baseDiffuseStrength, con
 	float distance = glm::distance(lightPosition, position);
 	return std::min(std::max(0.3f, 5 * baseDiffuseStrength / std::sqrt(distance)), 1.0f);
 }
+
+std::vector<ParticleGenerator*> ParticleGenerator::NewFire(const glm::vec3& position)
+{
+	std::vector<ParticleGenerator*> generators;
+	generators.push_back(&(new ParticleGenerator())
+		->WithPosition(position)
+		.WithSpeedModifier(10.0f)
+		.WithLifeTime(10.0f)
+		.WithStartingParticleColor(1.0f, 0.0f, 0.0f)
+		.WithEndingParticleColor(1.0f, 0.3f, 0.0f)
+		.WithParticleAlphaFade(true)
+		.WithScale(4.0f));
+
+	generators.push_back(&(new ParticleGenerator())
+		->WithPosition(position + glm::vec3(0.0f, 5.0f, 0.0f))
+		.WithSpeedModifier(10.0f)
+		.WithLifeTime(10.0f)
+		.WithStartingParticleColor(1.0f, 1.0f, 0.0f)
+		.WithEndingParticleColor(0.5f, 0.5f, 0.0f)
+		.WithParticleAlphaFade(true)
+		.WithScale(4.0f));
+
+	generators.push_back(&(new ParticleGenerator())
+		->WithPosition(position + glm::vec3(0.0f, 20.0f, 5.0f))
+		.WithSpeedModifier(10.0f)
+		.WithLifeTime(20.0f)
+		.WithStartingParticleColor(0.1f, 0.1f, 0.1f)
+		.WithEndingParticleColor(0.3f, 0.3f, 0.3f)
+		.WithParticleAlphaFade(true)
+		.WithScale(6.0f));
+
+	generators.push_back(&(new ParticleGenerator())
+		->WithPosition(position + glm::vec3(0.0f, 20.0f, -5.0f))
+		.WithSpeedModifier(10.0f)
+		.WithLifeTime(20.0f)
+		.WithStartingParticleColor(0.1f, 0.1f, 0.1f)
+		.WithEndingParticleColor(0.3f, 0.3f, 0.3f)
+		.WithParticleAlphaFade(true)
+		.WithScale(6.0f));
+
+	return generators;
+}

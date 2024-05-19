@@ -33,6 +33,7 @@ public:
 
 	static float CalculateAmbientIntensity(float ambientStrength);
 	float CalculateDiffuseStrength(float baseDiffuseStrength, const glm::vec3& lightPosition) const;
+	static std::vector<ParticleGenerator*> NewFire(const glm::vec3& position);
 
 private:
 	Model particleModel;
